@@ -1,29 +1,588 @@
 <!-- Imports polymer -->
 <link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../paper-search/paper-search.html">
 
 <!-- Defines element markup -->
-<dom-module id="my-element">
-    <template></template>
-    
+<dom-module id="actindo-grid">
+    <template>
+        <style>
+            :host {
+                display: block;
+                box-sizing: border-box;
+                height: 100%;
+                width: 100%;
+                padding: 0;
+                margin: 0;
+            }
+
+            vaadin-grid {
+                border-top: 2px solid #00e676;
+                height: 100%;
+            }
+
+            paper-toolbar {
+                background: white;
+                color: black;
+            }
+
+            paper-search-bar {
+                color: black;
+            }
+        </style>
+
+            <paper-toolbar>
+
+                <content select=".toolbar"></content>
+                <div class="title"></div>
+                <paper-search-bar placeholder="Schnellsuche"
+                                  query="{{searchValue}}"
+                                  nr-selected-filters="[[selectedFilters.length]]"
+                                  on-paper-search-search="search"
+                                  on-paper-search-clear="search"
+                                  on-paper-search-filter="openFilters"></paper-search-bar>
+                <paper-filter-dialog id="filterDialog" filters="[[filters]]"
+                                     selected-filters="{{selectedFilters}}"
+                                     on-save="search"></paper-filter-dialog>
+
+            </paper-toolbar>
+            <vaadin-grid id="grid"
+                         cell-class-generator="{{cellClassGenerator}}"
+                         disabled="{{disabled}}"
+                         header="{{header}}"
+                         footer="{{footer}}"
+                         frozen-columns="{{frozenColumns}}"
+                         items="{{gridItems}}"
+                         columns="{{columns}}"
+                         row-class-generator="{{rowClassGenerator}}"
+                         selection="{{selection}}"
+                         sort-order="{{sortOrder}}"
+                         size="{{size}}"
+                         visible-rows="{{visibleRows}}"
+                         column-reordering-allowed="{{columnReorderingAllowed}}"
+                         selection-mode$="{{selectionMode}}"
+                         on-selected-items-changed="_selectedItemsChanged"
+                         style="min-width: 500px; height:100%;">
+                <content select="table"></content>
+            </vaadin-grid>
+
+
+    </template>
+
     <!-- Registers custom element -->
     <script>
-    Polymer({
-        is: 'my-element',
-    
-        // Fires when an instance of the element is created
-        created: function() {},
-    
-        // Fires when the local DOM has been fully prepared
-        ready: function() {},
-    
-        // Fires when the element was inserted into the document
-        attached: function() {},
-    
-        // Fires when the element was removed from the document
-        detached: function() {},
-    
-        // Fires when an attribute was added, removed, or updated
-        attributeChanged: function(name, type) {}
-    });
+        Polymer({
+            is: 'actindo-grid',
+
+
+            properties: {
+                loadUrl: {
+                    type: String,
+                    notify: false,
+                    readOnly: false
+                },
+
+
+                /**
+                 * The array of selected items of the grid
+                 *
+                 * Convenience property, as the selection object is
+                 * at least difficult to handle using declarative data binding alone
+                 *
+                 * Warning: will only contain the first 500 selected rows.
+                 *
+                 * @property {Array<object>} columns
+                 * @type {Array<object>}
+                 */
+                selectedItems: {
+                    type: Array,
+                    notify: true,
+                    readOnly: true,
+                    value: []
+                },
+
+                /**
+                 * The array of selected indexes of the grid
+                 *
+                 * Convenience property, as the selection object is
+                 * at least difficult to handle using declarative data binding alone
+                 *
+                 * Warning: will only contain the first 500 selected indexes.
+                 *
+                 * @property {Array<Number>} columns
+                 * @type {Array<Number>}
+                 */
+                selectedIndexes: {
+                    type: Array,
+                    notify: true,
+                    readOnly: true,
+                    value: []
+                },
+
+                /**
+                 * A function which is used for generating CSS class names for data cells.
+                 *
+                 * See the API documentation for the “cell” object for more details about
+                 * the parameter of this function.
+                 *
+                 * #### Example:
+                 * ```js
+                 * grid.cellClassGenerator = function(cell) {
+               *   if (cell.index == 2) {
+               *      return "activity-" + cell.data.toLowerCase();
+               *    }
+               *  };
+                 * ```
+                 * @property {function} cellClassGenerator
+                 * @type {function}
+                 */
+                cellClassGenerator: {
+                    type: Function,
+                },
+
+                /**
+                 * Disables the grid.
+                 *
+                 * #### Declarative example:
+                 * ```html
+                 * <vaadin-grid disabled>...</vaadin-grid>
+                 * ```
+                 *
+                 * @default false
+                 * @type {boolean}
+                 */
+                disabled: {
+                    type: Boolean,
+                    reflectToAttribute: true,
+                    value: false
+                },
+
+                /**
+                 * Object for controlling and accessing the header rows in the grid.
+                 *
+                 * See the API documentation for “header” for more details.
+                 *
+                 * @property {header} footer
+                 * @type {header}
+                 */
+                header: {
+                    type: Object,
+                },
+
+                /**
+                 * Object for controlling and accessing the footer rows in the grid.
+                 *
+                 * See the API documentation for “footer” for more details.
+                 *
+                 * @property {footer} footer
+                 * @type {footer}
+                 */
+                footer: {
+                    type: Object,
+                },
+
+                /**
+                 * The index of the last frozen columns in this grid. A frozen column will
+                 * always stay visible in the grid viewport when the user scrolls the grid
+                 * viewport horizontally.
+                 *
+                 * Setting the property to 0 means that no columns will be frozen,
+                 * but the built-in selection checkbox column will still be frozen if
+                 * it’s in use. Setting the count to -1 will unfreeze the selection
+                 * column also.
+                 *
+                 * #### Declarative example:
+                 * ```html
+                 * <vaadin-grid frozen-columns="2">...</vaadin-grid>
+                 * ```
+                 *
+                 * @default 0
+                 * @type {number}
+                 */
+                frozenColumns: {
+                    type: Number,
+                    reflectToAttribute: true,
+                    value: 0
+                },
+
+                /**
+                 * The array of columns attached to the grid.
+                 *
+                 * See the API documentation for “column” for more details about the
+                 * column objects.
+                 *
+                 * @property {Array<object>} columns
+                 * @type {Array<object>}
+                 */
+                columns: {
+                    type: Array,
+                    notify: true
+                },
+
+                /**
+                 * A function which is used for generating CSS class names for data rows.
+                 *
+                 * See the API documentation for the “row” object for more details about
+                 * the parameter of this function.
+                 *
+                 * #### Example:
+                 * ```js
+                 * grid.rowClassGenerator = function(row) {
+               *   var activity = row.data[2];
+               *   return "activity-" + activity.toLowerCase();
+               * };
+                 *```
+                 *
+                 * @property {function} rowClassGenerator
+                 * @type {function}
+                 */
+                rowClassGenerator: {
+                    type: Function,
+                },
+
+                /**
+                 * The row details generator is used for generating detail content for
+                 * data rows. The details element is added directly under the row.
+                 *
+                 * #### Example:
+                 * ```js
+                 * grid.rowDetailsGenerator = function(rowIndex) {
+               *   var detail = document.createElement("div");
+               *   detail.textContent = "Row detail content for row " + rowIndex;
+               *   return detail;
+               * };
+                 *```
+                 *
+                 * @property {function} rowDetailsGenerator
+                 * @type {function}
+                 */
+                rowDetailsGenerator: {
+                    type: Function,
+                },
+
+                /**
+                 * Object for controlling and accessing the selected rows in the grid.
+                 *
+                 * See the API documentation for the “selection” object for more details.
+                 *
+                 * @property {selection} selection
+                 * @type {selection}
+                 * @default {}
+                 */
+                selection: {
+                    type: Object,
+                    readOnly: false,
+                    notify: true,
+                },
+
+                /**
+                 * An array defining the sorting of columns. The order of the objects in
+                 * the array defines the order of sort (if the grid is sorted by
+                 * multiple columns).
+                 *
+                 * See the API documentation for the “sort-order” object for more details.
+                 *
+                 * @property {Array<sort-order>}
+                 * @type {Array<sort-order>}
+                 */
+                sortOrder: {
+                    type: Array,
+                },
+
+                /**
+                 * Explicitly sets the number of records the `items` array/function
+                 * provides for the grid to display.
+                 *
+                 * This may also be set indirectly by passing the value as the second
+                 * parameter for data request callback function.
+                 *
+                 * @property {Number} size
+                 * @type {Number}
+                 */
+                size: {
+                    type: Number,
+                },
+
+                /**
+                 * Sets the height of the grid so that the specified amount of data rows
+                 * is visible. Overrides any height specified in CSS.
+                 *
+                 * #### Declarative example:
+                 * ```html
+                 * <vaadin-grid visible-rows="5">...</vaadin-grid>
+                 * ```
+                 *
+                 * @property {number} visibleRows
+                 * @default 10
+                 * @type {number}
+                 */
+                visibleRows: {
+                    type: Number,
+                    reflectToAttribute: true,
+                },
+
+                /**
+                 * Boolean property to set whether column reordering is allowed by the grid.
+                 *
+                 * @property {boolean} columnReorderingAllowed
+                 * @default false
+                 * @type {boolean}
+                 */
+                columnReorderingAllowed: {
+                    type: Boolean,
+                    value: false,
+                },
+
+                selectionMode: {
+                    type: String,
+                    value: 'single'
+                }
+
+            },
+
+            gridItems: [],
+
+            searchValue: '',
+            sortCol: '',
+            sortOrder: '',
+
+            selectedFilters: [],
+
+
+            /**
+             * Clears the grid’s internal data cache, causing it to request the
+             * visible items in the grid viewport from the `items` property or the
+             * `datasource` function.
+             *
+             * Needs to be called whenever the data items are modified in some way
+             * (added, removed, updated, re-ordered etc.).
+             *
+             * @type {Function}
+             */
+            refreshItems: function() {
+                this.grid.refreshItems();
+            },
+
+
+            _dump: function(e) {
+                console.log(e);
+            },
+
+            clearInput: function () {
+                this.searchValue = '';
+                this.grid.refreshItems();
+            },
+
+            search: function () {
+                this.grid.refreshItems();
+            },
+
+            openFilters: function () {
+                this._calculatePossibleFilters();
+                this.$.filterDialog.open();
+            },
+            // Element Lifecycle
+
+            _selectedItemsChanged: function(e) {
+                var _this = this;
+                var selectedIndexes = Array.from(this.grid.selection.selected());
+
+                var isRowIndexInArray = function(arr, rowIndex) {
+                    return arr.findIndex(function(el) {
+                        return el == rowIndex;
+                    }) != -1;
+                };
+                var getItemSynchronous = function(rowIndex) {
+                    var myItem;
+                    _this.grid.getItem( rowIndex, function(err,item) {
+                        myItem = item;
+                    }, true );
+                    return myItem;
+                }
+
+//                console.log( selectedIndexes );
+                // remove items not selected anymore
+                this.selectedIndexes.forEach( function(rowIndex, arrIndex) {
+                    if( !isRowIndexInArray(selectedIndexes, rowIndex) )
+                    {
+                        _this.splice( 'selectedIndexes', arrIndex, 1 );
+                        _this.splice( 'selectedItems', arrIndex, 1 );
+                    }
+                });
+                selectedIndexes.forEach( function(rowIndex) {
+                    if( !isRowIndexInArray(_this.selectedIndexes, rowIndex) )
+                    {
+                        _this.push( 'selectedIndexes', rowIndex );
+                        _this.push( 'selectedItems', getItemSynchronous(rowIndex) );
+                    }
+                });
+//                console.log( this.selectedIndexes );
+//                console.log( this.selectedItems );
+            },
+
+            _calculatePossibleFilters: function() {
+                var filters = [];
+                var cols = Array.from(this.querySelectorAll('col'));
+                var ths = Array.from(this.querySelectorAll('th'));
+                cols.forEach(function(col, index) {
+                    if( !ths[index]  || !col.getAttribute('filter') )
+                        return;
+                    var filter = {
+                        id: col.getAttribute('name'),
+                        name: ths[index].textContent,
+                        type: col.getAttribute('filter'),
+                    };
+                    if( filter.type == 'values' )
+                    {
+                        filter.values = [];
+                    }
+                    filters.push( filter );
+                });
+                this.filters = filters;
+            },
+
+
+            ready: function () {
+                // `ready` is called after all elements have been configured, but
+                // propagates bottom-up. This element's children are ready, but parents
+                // are not.
+                //
+                // This is the point where you should make modifications to the DOM (when
+                // necessary), or kick off any processes the element wants to perform.
+
+                var me = this;
+                this.selection = null;
+                this.route1 = 'vaadin-grid';
+
+
+                var grid = me.grid = this.$$('#grid');
+                this.selection = grid.selection;
+
+                this._calculatePossibleFilters();
+
+//            console.log( grid );
+                grid.items = me.delegateBuffered(function (params, callback) {
+                    var url = me.loadUrl+'?start=' +
+                            params.index + '&limit=' + params.count;
+                    if (params.sortOrder) {
+                        for (var i = 0; i < params.sortOrder.length; i++) {
+                            var s = params.sortOrder[i];
+                            url +=
+                                    '&sort[' + i + '][field]=' + grid.columns[s.column].name +
+                                    '&sort[' + i + '][order]=' + (s.direction == 'asc' ? 'ASC' : 'DESC');
+                        }
+                    }
+                    var selectedFilters = [];
+                    for (var i in me.filters) {
+                        var f = me.filters[i];
+                        var id = f.id;
+                        if (id in me.selectedFilters) {
+                            if (!f.type || f.type == 'values') {
+                                selectedFilters.push({property: id, operator: 'in', value: me.selectedFilters[id]});
+                            }
+                            else if (f.type == 'string') {
+                                selectedFilters.push({
+                                    property: id,
+                                    operator: 'like',
+                                    value: me.selectedFilters[id]
+                                });
+                            }
+                            else if (f.type == 'boolean') {
+                                selectedFilters.push({
+                                    property: id,
+                                    operator: '=',
+                                    value: me.selectedFilters[id] ? 1 : 0
+                                });
+                            }
+                        }
+                    }
+                    url += me.toQueryString(selectedFilters, 'filter');
+                    if (me.searchValue.length) {
+                        url += '&query=' + encodeURIComponent(me.searchValue);
+                        url += '&fields[]=controllerMethod';
+                    }
+                    var xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                            var response = JSON.parse(xhr.responseText);
+                            callback(response.data, response.n_rows);
+                        }
+                    };
+
+                    xhr.open('GET', url, true);
+                    xhr.send();
+                }, 200);
+
+            },
+
+            attached: function () {
+                // `attached` fires once the element and its parents have been inserted
+                // into a document.
+                //
+                // This is a good place to perform any work related to your element's
+                // visual state or active behavior (measuring sizes, beginning animations,
+                // loading resources, etc).
+            },
+
+            detached: function () {
+                // The analog to `attached`, `detached` fires when the element has been
+                // removed from a document.
+                //
+                // Use this to clean up anything you did in `attached`.
+            },
+
+            toQueryString: function (object, base) {
+                var queryString = [];
+                var me = this;
+
+                Object.keys(object).forEach(function (key) {
+
+                    var result,
+                            value;
+
+                    value = object[key];
+
+                    if (base) {
+                        key = base + '[' + key + ']';
+                    }
+                    switch (typeof value) {
+                        case 'object':
+                            result = me.toQueryString(value, key);
+                            break;
+                        case 'array':
+                            var qs = {};
+                            value.forEach(function (val, i) {
+                                qs[i] = val;
+                            });
+                            result = me.toQueryString(qs, key);
+                            break;
+                        default:
+                            result = key + '=' + encodeURIComponent(value);
+                    }
+
+                    if (value != null) {
+                        queryString.push(result);
+                    }
+                });
+                return queryString.join('&');
+            },
+
+            delegateBuffered: function (func, buffer) {
+                var timer;
+
+                return function () {
+                    var callArgs = arguments,
+                            me = this;
+
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+
+                    timer = setTimeout(function () {
+                        func.apply(me, callArgs);
+                    }, buffer);
+                };
+            }
+        });
     </script>
 </dom-module>
