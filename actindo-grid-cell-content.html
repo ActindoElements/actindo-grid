@@ -1,0 +1,74 @@
+<dom-module id="actindo-grid-cell-content">
+    <template></template>
+
+    <script>
+        class ActindoGridCellContent extends Polymer.Element {
+            static get is() { return 'actindo-grid-cell-content'; }
+
+            static get properties() {
+                return {
+                    /**
+                     * an object containing all values for this row
+                     */
+                    row: {
+                        type: Object,
+                        value: null
+                    },
+
+                    /**
+                     * an object containing the column configuration for the cell being rendered
+                     */
+                    column: {
+                        type: Object,
+                        value: null
+                    },
+                }
+            }
+
+            static get observers() {
+                return [
+                    'renderValue(row, column)'
+                ];
+            }
+
+            /**
+             * renders the content if this cell
+             *
+             * @param {{}} row
+             * @param {{field: String, type: {}}} column
+             */
+            renderValue(row, column) {
+                let root = Polymer.dom(this.root);
+                root.innerHTML = '';
+
+                let node;
+                let value = row[column.field];
+
+                if(typeof column.render === 'function')
+                {
+                    node = column.render(value, this.row)
+                }
+                else
+                {
+                    switch(column.type) {
+                        case Number:
+                        case Date:
+                            node = document.createTextNode(value.toLocaleString());
+                            break;
+                        case Boolean:
+                            node = document.createElement('iron-icon');
+                            node.icon = value ? 'check' : 'clear';
+                            break;
+                        case String:
+                        default:
+                            node = document.createTextNode(value);
+                    }
+                }
+
+                Polymer.dom(this.root).appendChild(node);
+            }
+        }
+
+        customElements.define(ActindoGridCellContent.is, ActindoGridCellContent);
+    </script>
+</dom-module>

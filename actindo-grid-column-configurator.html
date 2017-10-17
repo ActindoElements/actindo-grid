@@ -1,0 +1,122 @@
+<link rel="import" href="../../bower_components/polymer-sortablejs/polymer-sortablejs.html">
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+
+<dom-module id="actindo-grid-column-configurator">
+    <template>
+        <style>
+            paper-dialog {
+                width: 20%;
+                min-width: 320px;
+            }
+            .column {
+                display: flex;
+                justify-content: space-between;
+            }
+            iron-icon {
+                opacity: 0.54;
+            }
+        </style>
+        <paper-icon-button icon="view-column" on-tap="openColumnConfiguration"></paper-icon-button>
+
+        <paper-dialog id="dialog" with-backdrop="true">
+            <sortable-js id="sorting" handle="iron-icon">
+                <template is="dom-repeat" items="[[_columns]]" id="repeat">
+                    <div class="column">
+                        <span>
+                            <input type="checkbox" checked$="[[!item.hidden]]" on-tap="_toggleVisibility">
+                            [[item.label]]
+                        </span>
+                        <iron-icon icon="menu"></iron-icon>
+                    </div>
+                </template>
+            </sortable-js>
+        </paper-dialog>
+    </template>
+
+    <script>
+        class ActindoGridColumnConfigurator extends Polymer.Element {
+            static get is() { return 'actindo-grid-column-configurator'; }
+
+            static get properties() {
+                return {
+                    /**
+                     * contains all available columns from the actindo-grid
+                     */
+                    columns: {
+                        type: Array,
+                        notify: true
+                    },
+
+                    /**
+                     * internal structure for keeping the columns
+                     */
+                    _columns: {
+                        type: Array,
+                        value: null
+                    }
+                }
+            }
+
+            static get observers() {
+                return [
+                    '_onColumnsChanged(columns.*)',
+                ];
+            }
+
+            ready() {
+                super.ready();
+
+                let me = this;
+                this.$.sorting.addEventListener('update', function(e) {
+                    if(e.hasOwnProperty('detail') && e.detail.hasOwnProperty('newIndex') && e.detail.hasOwnProperty('oldIndex'))
+                    {
+                        me.splice("columns", e.detail.newIndex, 0, me.splice("columns", e.detail.oldIndex, 1)[0]);
+                    }
+                }, false);
+
+                window.setTimeout(function() {
+                    me.set("_columns", me.columns);
+                }, 0);
+            }
+
+            /**
+             * opens the dialog which allows the user to select the visible columns and sort them
+             */
+            openColumnConfiguration() {
+                this.$.dialog.open();
+            }
+
+            /**
+             * called when the columns array changes. Reflects the changes to the internal column list
+             *
+             * @param e
+             * @private
+             */
+            _onColumnsChanged(e) {
+                let me = this;
+                window.setTimeout(function() {
+                    me._columns = null;
+                    window.setTimeout(function() {
+                        me._columns = me.columns;
+                        me.$.dialog.refit();
+                    }, 0);
+                }, 0);
+            }
+
+            /**
+             * called when a user taps a visibility checkbox for a column. Toggles the columns visibility
+             *
+             * @param e
+             * @private
+             */
+            _toggleVisibility(e) {
+                let index = e.model.index;
+                let path = 'columns.' + index + '.hidden';
+                this.set(path, !this.get(path));
+            }
+        }
+
+        customElements.define(ActindoGridColumnConfigurator.is, ActindoGridColumnConfigurator);
+    </script>
+</dom-module>
+<paper-icon-button icon="view-column" on-tap="_configureColumns"></paper-icon-button>

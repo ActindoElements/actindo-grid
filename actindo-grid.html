@@ -1,321 +1,582 @@
-<!-- Imports polymer -->
-<link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../vaadin-grid/vaadin-grid.html">
-<link rel="import" href="../vaadin-grid/vaadin-grid-sorter.html">
-<link rel="import" href="../vaadin-grid/vaadin-grid-selection-column.html">
-<link rel="import" href="../paper-search/paper-search.html">
+<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="actindo-grid-cell-content.html">
+<link rel="import" href="actindo-grid-column-configurator.html">
 
-<!-- Defines element markup -->
+<!--
+`<actindo-grid>` implements a highly reusable data grid to display your data.
+
+### Features
+
+- column configuration as property, therefore dynamic column changes are propagated through data binding
+- global search bar (hidden if no column is configured to be `searchable`)
+- filter panel (hidden if no column is configured to be `filterable`)
+- sorting (by every column that is configured to be `sortable`)
+- pagination as long as a `remote` is specified to fetch data from
+- remote loading of data, including sorting, paging, searching, filtering
+- static data display (disables pagination)
+- custom cell formatting through `render` callbacks
+- hidden columns that can be shown manually
+
+-->
 <dom-module id="actindo-grid">
     <template>
         <style>
             :host {
-                display: block;
-                box-sizing: border-box;
+                display: flex;
+                flex-direction: column;
                 height: 100%;
                 width: 100%;
-                padding: 0;
-                margin: 0;
             }
 
-            .toolbar {
-                align-items: center;
+            table {
+                border-collapse: collapse;
+                min-width: 100%;
+                table-layout: fixed;
+            }
+            th {
+                font-weight: normal;
+                position: relative;
+                text-align: left;
+            }
+
+            table.tap-row-select-true tbody tr {
+                cursor: pointer;
+            }
+
+            #grid {
+                flex-grow: 1;
+                overflow: auto;
+                overflow-x: scroll;
+            }
+
+            #toolbar {
                 display: flex;
                 justify-content: space-between;
-                width: 100%;
             }
-                .toolbar .title {
-                    flex-grow: 1;
-                }
 
-                paper-search-bar {
-                    color: var(--actindo-font-color);
-                }
-
-            vaadin-grid {
-                border-top: 2px solid var(--actindo-primary);
-                height: 100%;
+            .sizer {
+                bottom: 0;
+                cursor: col-resize;
+                position: absolute;
+                right: 0;
+                top: 0;
+                width: 5px;
             }
         </style>
 
-        <paper-toolbar>
-            <div slot="top" class="toolbar">
+        <div id="toolbar">
+            <div>
                 <slot name="toolbar"></slot>
-                <div class="title"></div>
-                <paper-search-bar placeholder="Schnellsuche"
-                                  query="{{searchValue}}"
-                                  nr-selected-filters="[[selectedFilters.length]]"
-                                  on-paper-search-search="search"
-                                  on-paper-search-clear="search"
-                                  on-paper-search-filter="openFilters"
-                                  hide-filter-button="[[!filters.length]]"></paper-search-bar>
-                <paper-filter-dialog id="filterDialog" filters="[[filters]]"
-                                     selected-filters="{{selectedFilters}}"
-                                     on-save="search"></paper-filter-dialog>
             </div>
-        </paper-toolbar>
+            <div id="actions">
+                <paper-icon-button icon="refresh" hidden$="[[!remote]]"></paper-icon-button>
+                <actindo-grid-column-configurator columns="{{_columns}}"></actindo-grid-column-configurator>
+            </div>
+        </div>
 
-        <vaadin-grid id="grid"
-                     selected-items="{{selectedItems}}"
-                     size="{{size}}"
-                     column-reordering-allowed="{{columnReorderingAllowed}}"
-                     multi-sort="[[multiSort]]"
-                     style="min-width: 500px; height:100%;">
-            <slot></slot>
-        </vaadin-grid>
+        <div id="grid">
+            <table class$="tap-row-select-[[tapRowToSelect]]">
+                <thead>
+                    <tr>
+                        <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
+                            <th style="width: 16px; min-width: 16px;"><input type="checkbox" checked="[[_everythingSelected]]" hidden="[[!_stringEquals(selectionMode, 'multi')]]" on-tap="_toggleAllSelection"></th>
+                        </template>
+                        <template is="dom-repeat" items="{{_columns}}" filter="_isColumnVisibile" observe="hidden">
+                            <th>
+                                [[item.label]]
+                                <template is="dom-if" if="[[_evaluatesTrue(item.resizable)]]">
+                                    <div class="sizer"></div>
+                                </template>
+                            </th>
+                        </template>
+                        <th class="filler" style="width: auto;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <template is="dom-repeat" items="[[_items]]" as="row">
+                        <tr data-identifier$="[[row.id]]" on-tap="_onRowTap">
+                            <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
+                                <td><input type="checkbox" checked="[[_isItemSelected(row, selectedItems.*)]]" on-tap="_onRowTap"></td>
+                            </template>
+                            <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
+                                <td><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                            </template>
+                        </tr>
+                    </template>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="paging" hidden="[[!remote]]">
+            paging
+        </div>
     </template>
-
-    <!-- Registers custom element -->
     <script>
-        Polymer({
-            is: 'actindo-grid',
+        class ActindoGrid extends Polymer.Element {
+            static get is() { return 'actindo-grid'; }
 
+            static get properties() {
+                return {
+                    /**
+                     * contains the columns and their configuration.
+                     * * label: the name of this column, used in the header
+                     * * field: data index where this columns value is located
+                     * * type: the data type of this column, can be any valid javascript type
+                     * * identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode
+                     * * hidden: if this column is hidden by default and needs to be enabled manually
+                     * * searchable: if this field is searched through the global search field. Defaults to false
+                     * * sortable: if the grid can by sorted by this field. Defaults to false
+                     * * filterable: if the grid can be filtered by this columns values
+                     * * resizable: if this column is resizable
+                     * * render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed
+                     *
+                     * @type {[{
+                     *     label: string,
+                     *     field: string,
+                     *     type: mixed,
+                     *     identifying: bool,
+                     *     hidden: bool,
+                     *     searchable: bool,
+                     *     sortable: bool,
+                     *     filterable: bool,
+                     *     resizable: bool,
+                     *     render: function
+                     * }]}
+                     */
+                    columnConfiguration: {
+                        type: Array,
+                        value: [],
+                    },
 
-            properties: {
-                loadUrl: {
-                    type: String,
-                    notify: false,
-                    readOnly: false
-                },
+                    /**
+                     * the current page number
+                     */
+                    currentPage: {
+                        type: Number,
+                        value: 1,
+                        notify: true,
+                        readOnly: true
+                    },
 
-                /**
-                 * The array of selected items of the grid
-                 *
-                 * Convenience property, as the selection object is
-                 * at least difficult to handle using declarative data binding alone
-                 *
-                 * Warning: will only contain the first 500 selected rows.
-                 *
-                 * @property {Array<object>} columns
-                 * @type {Array<object>}
-                 */
-                selectedItems: {
-                    type: Array,
-                    notify: true,
-                    value: []
-                },
+                    /**
+                     * the total number of pages
+                     */
+                    totalPages: {
+                        type: Number,
+                        value: 1,
+                        readOnly: true
+                    },
 
-                /**
-                 * when true, it's possible to order by multiple columns
-                 *
-                 * @property {Boolean} multiSort
-                 * @default false
-                 * @type {Boolean}
-                 */
-                multiSort: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * contains all items that are currently in the grid. You can set this property to manually
+                     * handle the content of the grid in case you don't want to use the remote loading
+                     */
+                    items: {
+                        type: Array,
+                        value: [],
+                        notify: true
+                    },
+                    
+                    /**
+                     * how mny items to show per page
+                     */
+                    itemsPerPage: {
+                        type: Number,
+                        value: 50
+                    },
 
-                /**
-                 * Explicitly sets the number of records the `items` array/function
-                 * provides for the grid to display.
-                 *
-                 * This may also be set indirectly by passing the value as the second
-                 * parameter for data request callback function.
-                 *
-                 * @property {Number} size
-                 * @type {Number}
-                 */
-                size: {
-                    type: Number,
-                    value: 50
-                },
+                    /**
+                     * the url to load items from. Alternatively you can use the property `items` to manually add data to the grid,
+                     * however that disables the possibility to search, filter, or sort
+                     */
+                    remote: {
+                        type: String,
+                        value: null
+                    },
 
-                /**
-                 * Boolean property to set whether column reordering is allowed by the grid.
-                 *
-                 * @property {boolean} columnReorderingAllowed
-                 * @default false
-                 * @type {boolean}
-                 */
-                columnReorderingAllowed: {
-                    type: Boolean,
-                    value: false
-                },
+                    /**
+                     * where the items array is located in the remote response. This defaults to response[result][data]
+                     */
+                    remotePathData: {
+                        type: String,
+                        value: 'result.data'
+                    },
 
-                /**
-                 * contains all the calculated filters from the contained columns
-                 *
-                 * @property {Array} filters
-                 * @type Array
-                 */
-                filters: {
-                    type: Array,
-                    notify: true,
-                    value: []
-                }
-            },
+                    /**
+                     * where the total count of items is located in the remote response. This defaults to response[result][n_rows]
+                     */
+                    remotePathCount: {
+                        type: String,
+                        value: 'result.n_rows'
+                    },
 
-            searchValue: '',
-            selectedFilters: [],
+                    /**
+                     * this url param is added to the `remote` url containing the user selected filters
+                     */
+                    remoteParamFilter: {
+                        type: String,
+                        value: 'filter'
+                    },
 
-            /**
-             * Clears the grid’s internal data cache, causing it to request the
-             * visible items in the grid viewport from the `items` property or the
-             * `datasource` function.
-             *
-             * Needs to be called whenever the data items are modified in some way
-             * (added, removed, updated, re-ordered etc.).
-             *
-             * @type {Function}
-             */
-            refreshItems: function() {
-                this.$.grid.clearCache();
-            },
+                    /**
+                     * this url param is added to the `remote` url containing the number of items to be loaded
+                     */
+                    remoteParamLimit: {
+                        type: String,
+                        value: 'limit'
+                    },
 
-            _dump: function(e) {
-                console.log(e);
-            },
+                    /**
+                     * this url param is added to the `remote` url containing the requested page
+                     */
+                    remoteParamPage: {
+                        type: String,
+                        value: 'page'
+                    },
 
-            clearInput: function () {
-                this.searchValue = '';
-                this.$.grid.clearCache();
-            },
+                    /**
+                     * this url parameter is added to the `remote` url containing the user selected sorting. Set this
+                     * to null to sort the data locally
+                     */
+                    remoteParamSort: {
+                        type: String,
+                        value: 'sort'
+                    },
 
-            search: function () {
-                this.$.grid.clearCache();
-            },
+                    /**
+                     * how rows can be selected. "multi" to allow the selection of n elements, "single" to allow the
+                     * selection of only a single element (selecting a new one will deselect the previously selected one).
+                     * Any other value will disable the selection model entirely.
+                     * If a selection mode is enabled, a checkbox is added to the start of each row
+                     */
+                    selectionMode: {
+                        type: String
+                    },
 
-            openFilters: function () {
-                this._calculatePossibleFilters();
-                this.$.filterDialog.open();
-            },
+                    /**
+                     * contains all the currently selected items
+                     */
+                    selectedItems: {
+                        type: Array,
+                        value: [],
+                        notify: true
+                    },
 
-            _calculatePossibleFilters: function() {
-                var filters = [];
+                    /**
+                     * if this is enabled and a selection mode is active, tapping a row will select it
+                     */
+                    tapRowToSelect: {
+                        type: Boolean,
+                        value: true
+                    },
 
-                var filterableColumns = Array.from(this.querySelectorAll('vaadin-grid-column[filter]'));
-                filterableColumns.forEach(function(column, index) {
-                    var filter = {
-                        id: column.getAttribute('filter-column'),
-                        name: column.getAttribute('filter-label'),
-                        type: column.getAttribute('filter')
-                    };
-                    if(filter.type === 'values')
-                    {
-                        filter.values = [];
+                    /**
+                     * internal property that holds the processed columns
+                     */
+                    _columns: {
+                        type: Array,
+                        value: []
+                    },
+
+                    /**
+                     * internal property that holds the actually shown data rows
+                     */
+                    _items: {
+                        type: Array,
+                        value: []
+                    },
+
+                    /**
+                     * holds the colmumn that is marked as identifying
+                     */
+                    _identifyingColumn: {
+                        type: Object
+                    },
+
+                    /**
+                     * property that controls the checked state of the "select all checkbox" in selectionMode=multi
+                     */
+                    _everythingSelected: {
+                        type: Boolean,
+                        value: false
                     }
-
-                    filters.push(filter);
-                });
-
-                this.filters = filters;
-            },
-
-
-            ready: function () {
-                var me = this;
-                var grid = me.grid = this.$.grid;
-
-                this._calculatePossibleFilters();
-
-                grid.dataProvider = me.delegateBuffered(function (params, callback) {
-                    var url = me.loadUrl + '?start=' + (params.page * params.pageSize) +
-                                           '&limit=' + params.pageSize;
-                    if (params.sortOrders) {
-                        for(var i = 0; i < params.sortOrders.length; i++) {
-                            var s = params.sortOrders[i];
-                            url +=
-                                    '&sort[' + i + '][field]=' + s.path +
-                                    '&sort[' + i + '][order]=' + (s.direction === 'asc' ? 'ASC' : 'DESC');
-                        }
-                    }
-                    var selectedFilters = [];
-                    for (var i in me.filters) {
-                        var f = me.filters[i];
-                        var id = f.id;
-                        if (id in me.selectedFilters) {
-                            if (!f.type || f.type === 'values') {
-                                selectedFilters.push({property: id, operator: 'in', value: me.selectedFilters[id]});
-                            }
-                            else if (f.type === 'string') {
-                                selectedFilters.push({
-                                    property: id,
-                                    operator: 'like',
-                                    value: me.selectedFilters[id]
-                                });
-                            }
-                            else if (f.type === 'boolean') {
-                                selectedFilters.push({
-                                    property: id,
-                                    operator: '=',
-                                    value: me.selectedFilters[id] ? 1 : 0
-                                });
-                            }
-                        }
-                    }
-                    url += me.toQueryString(selectedFilters, 'filter');
-                    if (me.searchValue.length) {
-                        url += '&query=' + encodeURIComponent(me.searchValue);
-                        url += '&fields[]=controllerMethod';
-                    }
-                    var xhr = new XMLHttpRequest();
-                    xhr.onreadystatechange = function () {
-                        if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                            var response = JSON.parse(xhr.responseText);
-                            me.size = response.data.length;
-                            callback(response.data, response.n_rows);
-                        }
-                    };
-
-                    xhr.open('GET', url, true);
-                    xhr.send();
-                }, 200);
-            },
-
-            toQueryString: function (object, base) {
-                var queryString = [];
-                var me = this;
-
-                Object.keys(object).forEach(function (key) {
-
-                    var result,
-                            value;
-
-                    value = object[key];
-
-                    if (base) {
-                        key = base + '[' + key + ']';
-                    }
-                    switch (typeof value) {
-                        case 'object':
-                            result = me.toQueryString(value, key);
-                            break;
-                        case 'array':
-                            var qs = {};
-                            value.forEach(function (val, i) {
-                                qs[i] = val;
-                            });
-                            result = me.toQueryString(qs, key);
-                            break;
-                        default:
-                            result = key + '=' + encodeURIComponent(value);
-                    }
-
-                    if(value !== null) {
-                        queryString.push(result);
-                    }
-                });
-                return queryString.join('&');
-            },
-
-            delegateBuffered: function (func, buffer) {
-                var timer;
-
-                return function () {
-                    var callArgs = arguments,
-                            me = this;
-
-                    if (timer) {
-                        clearTimeout(timer);
-                    }
-
-                    timer = setTimeout(function () {
-                        func.apply(me, callArgs);
-                    }, buffer);
                 };
             }
-        });
+
+            static get observers() {
+                return [
+                    '_consolidateColumns(columnConfiguration.*)',
+                    '_onItemsChanged(items.*)',
+                    '_onSelectionChanged(selectedItems.*)'
+                ];
+            }
+
+            /**
+             * returns the default configuration for a column
+             *
+             * @return {{}}
+             */
+            static get columnDefaults() {
+                return {
+                    label: '',
+                    field: '',
+                    type: String,
+                    identifying: false,
+                    hidden: false,
+                    searchable: false,
+                    sortable: false,
+                    filterable: false,
+                    resizable: true,
+                    render: null
+                };
+            }
+
+            ready() {
+                super.ready();
+                let me = this;
+
+                window.setTimeout(function() {
+                    me._initColumnResizing();
+                }, 0);
+            }
+
+
+
+            /*
+             * event callbacks
+             */
+
+            /**
+             * called when a row in the table is tapped. If row tapping should select the row and a selection mode
+             * is active, the tapped row is selected
+             */
+            _onRowTap(e) {
+                e.stopPropagation();
+                if(!this.selectionMode || (e.target.tagName !== 'INPUT' && !this.tapRowToSelect))
+                {
+                    return;
+                }
+                let index = e.model.index;
+                let row = this.items[index];
+
+                let rowSelectedIndex = this.selectedItems.indexOf(row);
+                if(rowSelectedIndex > -1)
+                {
+                    this.splice('selectedItems', rowSelectedIndex, 1);
+                }
+                else
+                {
+                    if(this.selectionMode === 'single') {
+                        this.set('selectedItems', [this.items[index]]);
+                    }
+                    else
+                    {
+                        this.push('selectedItems', this.items[index]);
+                    }
+                }
+            }
+
+            /**
+             * called when the "select all" checkbox is tapped. Toggles the selection of all items
+             */
+            _toggleAllSelection() {
+                if(this._everythingSelected)
+                {
+                    this.set('selectedItems', []);
+                }
+                else
+                {
+                    let selected = [];
+                    for(let i = 0, c = this.items.length; i < c; i++)
+                    {
+                        selected.push(this.items[i]);
+                    }
+                    this.set('selectedItems', selected);
+                }
+            }
+
+            /**
+             * called when the items property changes. Move it to _items and make sure to properly
+             * propagate the change.
+             * Unfortunately a copy of th original item has to be created to make polymer aware of this change.
+             *
+             * @param {{path: String, base: []}} items
+             */
+            _onItemsChanged(items) {
+                this._items = items.base;
+
+                let index = parseInt(items.path.split('.')[1]);
+                if(!isNaN(index))
+                {
+                    let item = this.splice('_items', index, 1)[0];
+
+                    let copy = {};
+                    for(let key in item) {
+                        copy[key] = item[key];
+                    }
+                    this.splice('_items', index, 0, copy);
+                }
+            }
+
+            /**
+             * called when the selected items change. Fires an event
+             */
+            _onSelectionChanged() {
+                this._everythingSelected = (this.selectedItems.length === this.items.length);
+                this.dispatchEvent(new CustomEvent('selected-items-changed', {detail: {path: 'selectedItems', value: this.selectedItems}}));
+            }
+
+            /**
+             * called when the columnConfiguration changes. Process the columns and copy them to the internal
+             * _columns property.
+             *
+             * @param {{base: []}} columnConfiguration
+             */
+            _consolidateColumns(columnConfiguration) {
+                let configuration = columnConfiguration.base;
+
+                let columns = [];
+
+                this._identifyingColumn = null;
+
+                for(let i = 0, c = configuration.length; i < c; i++)
+                {
+                    let item = ActindoGrid.columnDefaults;
+
+                    for(let key in configuration[i]) {
+                        item[key] = configuration[i][key];
+                    }
+
+                    if(item.identifying)
+                    {
+                        if(this._identifyingColumn !== null)
+                        {
+                            console.warn('more than one identifying columns given, ignoring this', item);
+                        }
+                        else
+                        {
+                            this._identifyingColumn = item;
+                        }
+                    }
+
+                    columns.push(item);
+                }
+
+                if(this._identifyingColumn === null && this.selectionMode) {
+                    console.warn('no identifying column given, disabling selection model', columns);
+                    this.selectionMode = null;
+                }
+
+                this._columns = columns;
+            }
+
+
+
+            /**
+             * sets up the column resizing handlers
+             *
+             * @private
+             */
+            _initColumnResizing() {
+                let me = this;
+
+                let heads = Polymer.dom(me.root).querySelectorAll('th');
+                let i = 0, c = heads.length;
+                if(me.selectionMode) {
+                    ++i;
+                }
+                for(; i < c; i++)
+                {
+                    if(i<c-1){
+                        let width = heads[i].clientWidth;
+                        heads[i].style.minWidth = width + 'px';
+                        heads[i].style.width = width + 'px';
+                    }
+                }
+
+                this.resizingColumn = undefined;
+                this.resizingColumnOffset = 0;
+                this.$.grid.addEventListener('mousedown', function(e) {
+                    if(e.target.classList && e.target.classList.contains('sizer')) {
+                        me.resizingColumn = e.target.parentNode;
+                        me.resizingColumnOffset = me.resizingColumn.offsetWidth - e.pageX;
+                    }
+                });
+                document.addEventListener('mousemove', function(e) {
+                    if(me.resizingColumn) {
+                        me.resizingColumn.style.width = me.resizingColumn.style.minWidth = me.resizingColumnOffset + e.pageX + 'px';
+                    }
+                });
+                document.addEventListener('mouseup', function(e) {
+                    me.resizingColumn = undefined;
+                });
+            }
+
+
+
+
+
+            /*
+             * template helpers
+             */
+
+            /**
+             * determines if the given column is visible
+             *
+             * @param {{hidden: bool}} column
+             * @returns {boolean}
+             * @private
+             */
+            _isColumnVisibile(column) {
+                return !column.hidden;
+            }
+
+            /**
+             * checks if the given string equals one or more given strings. The first given parameter is the value to
+             * look for, it is compared with oll other given params and if one of them matches, true is returned; otherwise
+             * false
+             *
+             * @returns {boolean}
+             * @private
+             */
+            _stringEquals() {
+                let test = arguments[0];
+                for(let i = 1, c = arguments.length; i < c; i++)
+                {
+                    if(arguments[i] === test)
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            /**
+             * checks if the given value evaluates to true
+             *
+             * @param value
+             * @returns {boolean}
+             * @private
+             */
+            _evaluatesTrue(value) {
+                return Boolean(value);
+            }
+
+            /**
+             * checks if the given item is selected
+             *
+             * @param {{}} item
+             * @param {[]} selectedItems
+             * @returns {boolean}
+             * @private
+             */
+            _isItemSelected(item, selectedItems) {
+                return selectedItems.base.indexOf(item) > -1;
+            }
+        }
+
+        customElements.define(ActindoGrid.is, ActindoGrid);
     </script>
 </dom-module>

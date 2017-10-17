@@ -1,7 +1,7 @@
 {
     "name": "actindo-grid",
-    "version": "0.9.0",
-    "description": "Wrapper element for vaadin-grid, paper-search-bar & paper-filter-dialog",
+    "version": "0.9.1",
+    "description": "A highly reusable data grid to display, search, filter and sort remote data with configurable columns",
     "license": "Apache-2.0",
     "main": "actindo-grid.html",
     "keywords": [
@@ -13,8 +13,9 @@
         "bower_components"
     ],
     "dependencies": {
-        "polymer": "Polymer/polymer#^1.0.0",
-        "vaadin-grid": "vaadin/vaadin-grid#^1.2.0",
-        "paper-search": "ActindoElements/paper-search"
+        "polymer": "Polymer/polymer#^2.0.0",
+        "paper-dialog": "^2.0.0",
+        "paper-icon-button": "^2.0.0",
+        "polymer-sortablejs": "^0.1.3"
     }
 }
