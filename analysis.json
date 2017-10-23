@@ -590,7 +590,7 @@
       "tagname": "actindo-grid-search"
     },
     {
-      "description": "`<actindo-grid>` implements a highly reusable data grid to display your data.\n\n### Features\n\n- column configuration as property, therefore dynamic column changes are propagated through data binding\n- global search bar (hidden if no column is configured to be `searchable`)\n- filter panel (hidden if no column is configured to be `filterable`)\n- sorting (by every column that is configured to be `sortable`)\n- pagination as long as a `remote` is specified to fetch data from\n- remote loading of data, including sorting, paging, searching, filtering\n- static data display (disables pagination)\n- custom cell formatting through `render` callbacks\n- hidden columns that can be shown manually",
+      "description": "",
       "summary": "",
       "path": "actindo-grid.html",
       "properties": [
@@ -601,11 +601,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 300,
+              "line": 301,
               "column": 20
             },
             "end": {
-              "line": 303,
+              "line": 304,
               "column": 21
             }
           },
@@ -621,11 +621,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 308,
+              "line": 309,
               "column": 20
             },
             "end": {
-              "line": 313,
+              "line": 314,
               "column": 21
             }
           },
@@ -644,11 +644,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 319,
+              "line": 320,
               "column": 20
             },
             "end": {
-              "line": 323,
+              "line": 324,
               "column": 21
             }
           },
@@ -666,11 +666,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 328,
+              "line": 329,
               "column": 20
             },
             "end": {
-              "line": 333,
+              "line": 334,
               "column": 21
             }
           },
@@ -689,11 +689,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 338,
+              "line": 339,
               "column": 20
             },
             "end": {
-              "line": 343,
+              "line": 344,
               "column": 21
             }
           },
@@ -712,11 +712,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 349,
+              "line": 350,
               "column": 20
             },
             "end": {
-              "line": 353,
+              "line": 354,
               "column": 21
             }
           },
@@ -734,11 +734,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 358,
+              "line": 359,
               "column": 20
             },
             "end": {
-              "line": 361,
+              "line": 362,
               "column": 21
             }
           },
@@ -754,11 +754,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 367,
+              "line": 368,
               "column": 20
             },
             "end": {
-              "line": 370,
+              "line": 371,
               "column": 21
             }
           },
@@ -770,15 +770,15 @@
         {
           "name": "remotePathData",
           "type": "string",
-          "description": "where the items array is located in the remote response. This defaults to response[result][data]",
+          "description": "where the items array is located in the remote response.",
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 375,
+              "line": 376,
               "column": 20
             },
             "end": {
-              "line": 378,
+              "line": 379,
               "column": 21
             }
           },
@@ -790,15 +790,15 @@
         {
           "name": "remotePathCount",
           "type": "string",
-          "description": "where the total count of items is located in the remote response. This defaults to response[result][n_rows]",
+          "description": "where the total count of items is located in the remote response.",
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 383,
+              "line": 384,
               "column": 20
             },
             "end": {
-              "line": 386,
+              "line": 387,
               "column": 21
             }
           },
@@ -814,11 +814,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 391,
+              "line": 392,
               "column": 20
             },
             "end": {
-              "line": 394,
+              "line": 395,
               "column": 21
             }
           },
@@ -834,11 +834,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 399,
+              "line": 400,
               "column": 20
             },
             "end": {
-              "line": 402,
+              "line": 403,
               "column": 21
             }
           },
@@ -854,11 +854,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 407,
+              "line": 408,
               "column": 20
             },
             "end": {
-              "line": 410,
+              "line": 411,
               "column": 21
             }
           },
@@ -874,11 +874,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 415,
+              "line": 416,
               "column": 20
             },
             "end": {
-              "line": 418,
+              "line": 419,
               "column": 21
             }
           },
@@ -894,11 +894,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 423,
+              "line": 424,
               "column": 20
             },
             "end": {
-              "line": 426,
+              "line": 427,
               "column": 21
             }
           },
@@ -914,11 +914,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 432,
+              "line": 433,
               "column": 20
             },
             "end": {
-              "line": 435,
+              "line": 436,
               "column": 21
             }
           },
@@ -934,11 +934,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 443,
+              "line": 444,
               "column": 20
             },
             "end": {
-              "line": 445,
+              "line": 446,
               "column": 21
             }
           },
@@ -953,11 +953,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 450,
+              "line": 451,
               "column": 20
             },
             "end": {
-              "line": 454,
+              "line": 455,
               "column": 21
             }
           },
@@ -975,11 +975,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 460,
+              "line": 461,
               "column": 20
             },
             "end": {
-              "line": 463,
+              "line": 464,
               "column": 21
             }
           },
@@ -995,11 +995,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 468,
+              "line": 469,
               "column": 20
             },
             "end": {
-              "line": 471,
+              "line": 472,
               "column": 21
             }
           },
@@ -1015,11 +1015,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 476,
+              "line": 477,
               "column": 20
             },
             "end": {
-              "line": 479,
+              "line": 480,
               "column": 21
             }
           },
@@ -1035,11 +1035,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 484,
+              "line": 485,
               "column": 20
             },
             "end": {
-              "line": 486,
+              "line": 487,
               "column": 21
             }
           },
@@ -1054,11 +1054,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 491,
+              "line": 492,
               "column": 20
             },
             "end": {
-              "line": 494,
+              "line": 495,
               "column": 21
             }
           },
@@ -1074,11 +1074,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 499,
+              "line": 500,
               "column": 20
             },
             "end": {
-              "line": 502,
+              "line": 503,
               "column": 21
             }
           },
@@ -1095,11 +1095,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 515,
+              "line": 516,
               "column": 12
             },
             "end": {
-              "line": 517,
+              "line": 518,
               "column": 13
             }
           },
@@ -1112,11 +1112,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 522,
+              "line": 523,
               "column": 12
             },
             "end": {
-              "line": 524,
+              "line": 525,
               "column": 13
             }
           },
@@ -1129,11 +1129,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 529,
+              "line": 530,
               "column": 12
             },
             "end": {
-              "line": 531,
+              "line": 532,
               "column": 13
             }
           },
@@ -1146,11 +1146,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 536,
+              "line": 537,
               "column": 12
             },
             "end": {
-              "line": 538,
+              "line": 539,
               "column": 13
             }
           },
@@ -1163,11 +1163,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 543,
+              "line": 544,
               "column": 12
             },
             "end": {
-              "line": 559,
+              "line": 560,
               "column": 13
             }
           },
@@ -1180,11 +1180,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 576,
+              "line": 577,
               "column": 12
             },
             "end": {
-              "line": 583,
+              "line": 584,
               "column": 13
             }
           },
@@ -1197,11 +1197,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 609,
+              "line": 610,
               "column": 12
             },
             "end": {
-              "line": 681,
+              "line": 682,
               "column": 13
             }
           },
@@ -1214,11 +1214,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 693,
+              "line": 694,
               "column": 12
             },
             "end": {
-              "line": 731,
+              "line": 732,
               "column": 13
             }
           },
@@ -1235,11 +1235,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 737,
+              "line": 738,
               "column": 12
             },
             "end": {
-              "line": 739,
+              "line": 740,
               "column": 13
             }
           },
@@ -1252,11 +1252,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 746,
+              "line": 747,
               "column": 12
             },
             "end": {
-              "line": 770,
+              "line": 771,
               "column": 13
             }
           },
@@ -1273,11 +1273,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 776,
+              "line": 777,
               "column": 12
             },
             "end": {
-              "line": 790,
+              "line": 791,
               "column": 13
             }
           },
@@ -1290,11 +1290,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 800,
+              "line": 801,
               "column": 12
             },
             "end": {
-              "line": 826,
+              "line": 827,
               "column": 13
             }
           },
@@ -1312,11 +1312,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 834,
+              "line": 835,
               "column": 12
             },
             "end": {
-              "line": 839,
+              "line": 840,
               "column": 13
             }
           },
@@ -1334,11 +1334,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 845,
+              "line": 846,
               "column": 12
             },
             "end": {
-              "line": 849,
+              "line": 850,
               "column": 13
             }
           },
@@ -1351,11 +1351,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 858,
+              "line": 859,
               "column": 12
             },
             "end": {
-              "line": 894,
+              "line": 895,
               "column": 13
             }
           },
@@ -1373,11 +1373,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 901,
+              "line": 902,
               "column": 12
             },
             "end": {
-              "line": 939,
+              "line": 940,
               "column": 13
             }
           },
@@ -1430,11 +1430,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 956,
+              "line": 957,
               "column": 12
             },
             "end": {
-              "line": 967,
+              "line": 968,
               "column": 13
             }
           },
@@ -1461,11 +1461,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 978,
+              "line": 979,
               "column": 12
             },
             "end": {
-              "line": 985,
+              "line": 986,
               "column": 13
             }
           },
@@ -1490,11 +1490,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 993,
+              "line": 994,
               "column": 12
             },
             "end": {
-              "line": 1011,
+              "line": 1012,
               "column": 13
             }
           },
@@ -1507,11 +1507,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1028,
+              "line": 1029,
               "column": 12
             },
             "end": {
-              "line": 1030,
+              "line": 1031,
               "column": 13
             }
           },
@@ -1533,11 +1533,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1041,
+              "line": 1042,
               "column": 12
             },
             "end": {
-              "line": 1043,
+              "line": 1044,
               "column": 13
             }
           },
@@ -1569,11 +1569,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1053,
+              "line": 1054,
               "column": 12
             },
             "end": {
-              "line": 1055,
+              "line": 1056,
               "column": 13
             }
           },
@@ -1600,11 +1600,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1064,
+              "line": 1065,
               "column": 12
             },
             "end": {
-              "line": 1066,
+              "line": 1067,
               "column": 13
             }
           },
@@ -1631,11 +1631,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1075,
+              "line": 1076,
               "column": 12
             },
             "end": {
-              "line": 1077,
+              "line": 1078,
               "column": 13
             }
           },
@@ -1655,11 +1655,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1086,
+              "line": 1087,
               "column": 12
             },
             "end": {
-              "line": 1088,
+              "line": 1089,
               "column": 13
             }
           },
@@ -1680,11 +1680,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1098,
+              "line": 1099,
               "column": 12
             },
             "end": {
-              "line": 1100,
+              "line": 1101,
               "column": 13
             }
           },
@@ -1711,11 +1711,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1110,
+              "line": 1111,
               "column": 12
             },
             "end": {
-              "line": 1116,
+              "line": 1117,
               "column": 13
             }
           },
@@ -1742,11 +1742,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1126,
+              "line": 1127,
               "column": 12
             },
             "end": {
-              "line": 1137,
+              "line": 1138,
               "column": 13
             }
           },
@@ -1762,11 +1762,11 @@
       "metadata": {},
       "sourceRange": {
         "start": {
-          "line": 269,
+          "line": 270,
           "column": 8
         },
         "end": {
-          "line": 1138,
+          "line": 1139,
           "column": 9
         }
       },
@@ -1779,11 +1779,11 @@
           "description": "contains the columns and their configuration.\n* label: the name of this column, used in the header\n* field: data index where this columns value is located\n* type: the data type of this column, can be any valid javascript type\n* identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode\n* hidden: if this column is hidden by default and needs to be enabled manually\n* searchable: if this field is searched through the global search field. Defaults to false\n* sortable: if the grid can by sorted by this field. Defaults to false\n* filterable: if the grid can be filtered by this columns values\n* resizable: if this column is resizable\n* render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed",
           "sourceRange": {
             "start": {
-              "line": 300,
+              "line": 301,
               "column": 20
             },
             "end": {
-              "line": 303,
+              "line": 304,
               "column": 21
             }
           },
@@ -1795,11 +1795,11 @@
           "description": "the current page number",
           "sourceRange": {
             "start": {
-              "line": 308,
+              "line": 309,
               "column": 20
             },
             "end": {
-              "line": 313,
+              "line": 314,
               "column": 21
             }
           },
@@ -1811,11 +1811,11 @@
           "description": "contains the current sorting criteria, the key \"field\" contains the field name, the field \"order\" a boolean: true is ASC, false is DESC\n{field: String, order: Boolean}",
           "sourceRange": {
             "start": {
-              "line": 319,
+              "line": 320,
               "column": 20
             },
             "end": {
-              "line": 323,
+              "line": 324,
               "column": 21
             }
           },
@@ -1827,11 +1827,11 @@
           "description": "contains the current search query",
           "sourceRange": {
             "start": {
-              "line": 328,
+              "line": 329,
               "column": 20
             },
             "end": {
-              "line": 333,
+              "line": 334,
               "column": 21
             }
           },
@@ -1843,11 +1843,11 @@
           "description": "stores the number of total items (over all pages)",
           "sourceRange": {
             "start": {
-              "line": 338,
+              "line": 339,
               "column": 20
             },
             "end": {
-              "line": 343,
+              "line": 344,
               "column": 21
             }
           },
@@ -1859,11 +1859,11 @@
           "description": "contains all items that are currently in the grid. You can set this property to manually\nhandle the content of the grid in case you don't want to use the remote loading",
           "sourceRange": {
             "start": {
-              "line": 349,
+              "line": 350,
               "column": 20
             },
             "end": {
-              "line": 353,
+              "line": 354,
               "column": 21
             }
           },
@@ -1875,11 +1875,11 @@
           "description": "how mny items to show per page",
           "sourceRange": {
             "start": {
-              "line": 358,
+              "line": 359,
               "column": 20
             },
             "end": {
-              "line": 361,
+              "line": 362,
               "column": 21
             }
           },
@@ -1891,11 +1891,11 @@
           "description": "the url to load items from. Alternatively you can use the property `items` to manually add data to the grid,\nhowever that disables the possibility to search, filter, or sort",
           "sourceRange": {
             "start": {
-              "line": 367,
+              "line": 368,
               "column": 20
             },
             "end": {
-              "line": 370,
+              "line": 371,
               "column": 21
             }
           },
@@ -1904,14 +1904,14 @@
         },
         {
           "name": "remote-path-data",
-          "description": "where the items array is located in the remote response. This defaults to response[result][data]",
+          "description": "where the items array is located in the remote response.",
           "sourceRange": {
             "start": {
-              "line": 375,
+              "line": 376,
               "column": 20
             },
             "end": {
-              "line": 378,
+              "line": 379,
               "column": 21
             }
           },
@@ -1920,14 +1920,14 @@
         },
         {
           "name": "remote-path-count",
-          "description": "where the total count of items is located in the remote response. This defaults to response[result][n_rows]",
+          "description": "where the total count of items is located in the remote response.",
           "sourceRange": {
             "start": {
-              "line": 383,
+              "line": 384,
               "column": 20
             },
             "end": {
-              "line": 386,
+              "line": 387,
               "column": 21
             }
           },
@@ -1939,11 +1939,11 @@
           "description": "this url param is added to the `remote` url containing the user selected filters",
           "sourceRange": {
             "start": {
-              "line": 391,
+              "line": 392,
               "column": 20
             },
             "end": {
-              "line": 394,
+              "line": 395,
               "column": 21
             }
           },
@@ -1955,11 +1955,11 @@
           "description": "this url param is added to the `remote` url containing the number of items to be loaded",
           "sourceRange": {
             "start": {
-              "line": 399,
+              "line": 400,
               "column": 20
             },
             "end": {
-              "line": 402,
+              "line": 403,
               "column": 21
             }
           },
@@ -1971,11 +1971,11 @@
           "description": "this url param is added to the `remote` url containing the requested page",
           "sourceRange": {
             "start": {
-              "line": 407,
+              "line": 408,
               "column": 20
             },
             "end": {
-              "line": 410,
+              "line": 411,
               "column": 21
             }
           },
@@ -1987,11 +1987,11 @@
           "description": "this url param is added to the `remote` url containing the search phrase the user entered",
           "sourceRange": {
             "start": {
-              "line": 415,
+              "line": 416,
               "column": 20
             },
             "end": {
-              "line": 418,
+              "line": 419,
               "column": 21
             }
           },
@@ -2003,11 +2003,11 @@
           "description": "this url param is added to the `remote` url containing the fields that should be searched for `query`",
           "sourceRange": {
             "start": {
-              "line": 423,
+              "line": 424,
               "column": 20
             },
             "end": {
-              "line": 426,
+              "line": 427,
               "column": 21
             }
           },
@@ -2019,11 +2019,11 @@
           "description": "this url parameter is added to the `remote` url containing the user selected sorting. Set this\nto null to sort the data locally",
           "sourceRange": {
             "start": {
-              "line": 432,
+              "line": 433,
               "column": 20
             },
             "end": {
-              "line": 435,
+              "line": 436,
               "column": 21
             }
           },
@@ -2035,11 +2035,11 @@
           "description": "how rows can be selected. \"multi\" to allow the selection of n elements, \"single\" to allow the\nselection of only a single element (selecting a new one will deselect the previously selected one).\nAny other value will disable the selection model entirely.\nIf a selection mode is enabled, a checkbox is added to the start of each row",
           "sourceRange": {
             "start": {
-              "line": 443,
+              "line": 444,
               "column": 20
             },
             "end": {
-              "line": 445,
+              "line": 446,
               "column": 21
             }
           },
@@ -2051,11 +2051,11 @@
           "description": "contains all the currently selected items",
           "sourceRange": {
             "start": {
-              "line": 450,
+              "line": 451,
               "column": 20
             },
             "end": {
-              "line": 454,
+              "line": 455,
               "column": 21
             }
           },
@@ -2067,11 +2067,11 @@
           "description": "if this is enabled and a selection mode is active, tapping a row will not select it. Rows can then\nonly be selected by explicitely checking their checkboxes",
           "sourceRange": {
             "start": {
-              "line": 460,
+              "line": 461,
               "column": 20
             },
             "end": {
-              "line": 463,
+              "line": 464,
               "column": 21
             }
           },
@@ -2121,23 +2121,7 @@
         "cssVariables": [],
         "selectors": []
       },
-      "slots": [
-        {
-          "description": "",
-          "name": "toolbar",
-          "range": {
-            "file": "actindo-grid.html",
-            "start": {
-              "line": 207,
-              "column": 16
-            },
-            "end": {
-              "line": 207,
-              "column": 44
-            }
-          }
-        }
-      ],
+      "slots": [],
       "tagname": "actindo-grid"
     }
   ]
