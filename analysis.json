@@ -1,0 +1,2144 @@
+{
+  "schema_version": "1.0.0",
+  "elements": [
+    {
+      "description": "",
+      "summary": "",
+      "path": "actindo-grid-cell-content.html",
+      "properties": [
+        {
+          "name": "row",
+          "type": "Object",
+          "description": "an object containing all values for this row",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 12,
+              "column": 20
+            },
+            "end": {
+              "line": 15,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "null"
+        },
+        {
+          "name": "column",
+          "type": "Object",
+          "description": "an object containing the column configuration for the cell being rendered",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 20,
+              "column": 20
+            },
+            "end": {
+              "line": 23,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "renderValue",
+          "description": "renders the content if this cell",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 39,
+              "column": 12
+            },
+            "end": {
+              "line": 68,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "row",
+              "type": "{}"
+            },
+            {
+              "name": "column",
+              "type": "{field: String, type: {}}"
+            }
+          ]
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 4,
+          "column": 8
+        },
+        "end": {
+          "line": 69,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "HTMLElement",
+      "name": "ActindoGridCellContent",
+      "attributes": [
+        {
+          "name": "row",
+          "description": "an object containing all values for this row",
+          "sourceRange": {
+            "start": {
+              "line": 12,
+              "column": 20
+            },
+            "end": {
+              "line": 15,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        },
+        {
+          "name": "column",
+          "description": "an object containing the column configuration for the cell being rendered",
+          "sourceRange": {
+            "start": {
+              "line": 20,
+              "column": 20
+            },
+            "end": {
+              "line": 23,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        }
+      ],
+      "events": [],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "actindo-grid-cell-content"
+    },
+    {
+      "description": "",
+      "summary": "",
+      "path": "actindo-grid-column-configurator.html",
+      "properties": [
+        {
+          "name": "columns",
+          "type": "Array",
+          "description": "contains all available columns from the actindo-grid",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 44,
+              "column": 20
+            },
+            "end": {
+              "line": 47,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          }
+        },
+        {
+          "name": "_columns",
+          "type": "Array",
+          "description": "internal structure for keeping the columns",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 52,
+              "column": 20
+            },
+            "end": {
+              "line": 55,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "null"
+        }
+      ],
+      "methods": [
+        {
+          "name": "ready",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 65,
+              "column": 12
+            },
+            "end": {
+              "line": 79,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "openColumnConfiguration",
+          "description": "opens the dialog which allows the user to select the visible columns and sort them",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 84,
+              "column": 12
+            },
+            "end": {
+              "line": 86,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onColumnsChanged",
+          "description": "called when the columns array changes. Reflects the changes to the internal column list",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 94,
+              "column": 12
+            },
+            "end": {
+              "line": 103,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        },
+        {
+          "name": "_toggleVisibility",
+          "description": "called when a user taps a visibility checkbox for a column. Toggles the columns visibility",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 111,
+              "column": 12
+            },
+            "end": {
+              "line": 115,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 36,
+          "column": 8
+        },
+        "end": {
+          "line": 116,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "HTMLElement",
+      "name": "ActindoGridColumnConfigurator",
+      "attributes": [
+        {
+          "name": "columns",
+          "description": "contains all available columns from the actindo-grid",
+          "sourceRange": {
+            "start": {
+              "line": 44,
+              "column": 20
+            },
+            "end": {
+              "line": 47,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        }
+      ],
+      "events": [
+        {
+          "type": "CustomEvent",
+          "name": "columns-changed",
+          "description": "Fired when the `columns` property changes.",
+          "metadata": {}
+        }
+      ],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "actindo-grid-column-configurator"
+    },
+    {
+      "description": "",
+      "summary": "",
+      "path": "actindo-grid-search.html",
+      "properties": [
+        {
+          "name": "collapsed",
+          "type": "boolean",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 27,
+              "column": 20
+            },
+            "end": {
+              "line": 31,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "true"
+        },
+        {
+          "name": "userInput",
+          "type": "string",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 32,
+              "column": 20
+            },
+            "end": {
+              "line": 35,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "query",
+          "type": "string",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 36,
+              "column": 20
+            },
+            "end": {
+              "line": 41,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_onQueryChanged\""
+            }
+          },
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "fields",
+          "type": "Array",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 42,
+              "column": 20
+            },
+            "end": {
+              "line": 45,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "[]"
+        }
+      ],
+      "methods": [
+        {
+          "name": "ready",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 49,
+              "column": 12
+            },
+            "end": {
+              "line": 54,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onButtonTap",
+          "description": "called when the user taps the search button",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 64,
+              "column": 12
+            },
+            "end": {
+              "line": 75,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onQueryChanged",
+          "description": "called when the query changes. Let userInput follow this new value",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 83,
+              "column": 12
+            },
+            "end": {
+              "line": 85,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "newVal",
+              "type": "String"
+            }
+          ]
+        },
+        {
+          "name": "_onSearch",
+          "description": "called when the user wishes to search for the current query",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 92,
+              "column": 12
+            },
+            "end": {
+              "line": 105,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        },
+        {
+          "name": "_onSearchBlur",
+          "description": "called when the serch input is blurred",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 111,
+              "column": 12
+            },
+            "end": {
+              "line": 120,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 22,
+          "column": 8
+        },
+        "end": {
+          "line": 121,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "HTMLElement",
+      "name": "ActindoGridSearch",
+      "attributes": [
+        {
+          "name": "collapsed",
+          "description": "",
+          "sourceRange": {
+            "start": {
+              "line": 27,
+              "column": 20
+            },
+            "end": {
+              "line": 31,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "user-input",
+          "description": "",
+          "sourceRange": {
+            "start": {
+              "line": 32,
+              "column": 20
+            },
+            "end": {
+              "line": 35,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "query",
+          "description": "",
+          "sourceRange": {
+            "start": {
+              "line": 36,
+              "column": 20
+            },
+            "end": {
+              "line": 41,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "fields",
+          "description": "",
+          "sourceRange": {
+            "start": {
+              "line": 42,
+              "column": 20
+            },
+            "end": {
+              "line": 45,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        }
+      ],
+      "events": [
+        {
+          "type": "CustomEvent",
+          "name": "query-changed",
+          "description": "Fired when the `query` property changes.",
+          "metadata": {}
+        }
+      ],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "actindo-grid-search"
+    },
+    {
+      "description": "`<actindo-grid>` implements a highly reusable data grid to display your data.\n\n### Features\n\n- column configuration as property, therefore dynamic column changes are propagated through data binding\n- global search bar (hidden if no column is configured to be `searchable`)\n- filter panel (hidden if no column is configured to be `filterable`)\n- sorting (by every column that is configured to be `sortable`)\n- pagination as long as a `remote` is specified to fetch data from\n- remote loading of data, including sorting, paging, searching, filtering\n- static data display (disables pagination)\n- custom cell formatting through `render` callbacks\n- hidden columns that can be shown manually",
+      "summary": "",
+      "path": "actindo-grid.html",
+      "properties": [
+        {
+          "name": "columnConfiguration",
+          "type": "[{label: string, field: string, type: mixed, identifying: bool, hidden: bool, searchable: bool, sortable: bool, filterable: bool, resizable: bool, render: function}]",
+          "description": "contains the columns and their configuration.\n* label: the name of this column, used in the header\n* field: data index where this columns value is located\n* type: the data type of this column, can be any valid javascript type\n* identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode\n* hidden: if this column is hidden by default and needs to be enabled manually\n* searchable: if this field is searched through the global search field. Defaults to false\n* sortable: if the grid can by sorted by this field. Defaults to false\n* filterable: if the grid can be filtered by this columns values\n* resizable: if this column is resizable\n* render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 300,
+              "column": 20
+            },
+            "end": {
+              "line": 303,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "page",
+          "type": "number",
+          "description": "the current page number",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 308,
+              "column": 20
+            },
+            "end": {
+              "line": 313,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_onPageChanged\""
+            }
+          },
+          "defaultValue": "1"
+        },
+        {
+          "name": "sort",
+          "type": "Object",
+          "description": "contains the current sorting criteria, the key \"field\" contains the field name, the field \"order\" a boolean: true is ASC, false is DESC\n{field: String, order: Boolean}",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 319,
+              "column": 20
+            },
+            "end": {
+              "line": 323,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "defaultValue": "{}"
+        },
+        {
+          "name": "query",
+          "type": "string",
+          "description": "contains the current search query",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 328,
+              "column": 20
+            },
+            "end": {
+              "line": 333,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "observer": "\"_onQueryChanged\""
+            }
+          },
+          "defaultValue": "\"\""
+        },
+        {
+          "name": "totalItems",
+          "type": "number",
+          "description": "stores the number of total items (over all pages)",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 338,
+              "column": 20
+            },
+            "end": {
+              "line": 343,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true,
+              "readOnly": true
+            }
+          },
+          "defaultValue": "0"
+        },
+        {
+          "name": "items",
+          "type": "Array",
+          "description": "contains all items that are currently in the grid. You can set this property to manually\nhandle the content of the grid in case you don't want to use the remote loading",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 349,
+              "column": 20
+            },
+            "end": {
+              "line": 353,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "itemsPerPage",
+          "type": "number",
+          "description": "how mny items to show per page",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 358,
+              "column": 20
+            },
+            "end": {
+              "line": 361,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "25"
+        },
+        {
+          "name": "remote",
+          "type": "string",
+          "description": "the url to load items from. Alternatively you can use the property `items` to manually add data to the grid,\nhowever that disables the possibility to search, filter, or sort",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 367,
+              "column": 20
+            },
+            "end": {
+              "line": 370,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "null"
+        },
+        {
+          "name": "remotePathData",
+          "type": "string",
+          "description": "where the items array is located in the remote response. This defaults to response[result][data]",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 375,
+              "column": 20
+            },
+            "end": {
+              "line": 378,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"data\""
+        },
+        {
+          "name": "remotePathCount",
+          "type": "string",
+          "description": "where the total count of items is located in the remote response. This defaults to response[result][n_rows]",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 383,
+              "column": 20
+            },
+            "end": {
+              "line": 386,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"n_rows\""
+        },
+        {
+          "name": "remoteParamFilter",
+          "type": "string",
+          "description": "this url param is added to the `remote` url containing the user selected filters",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 391,
+              "column": 20
+            },
+            "end": {
+              "line": 394,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"filter\""
+        },
+        {
+          "name": "remoteParamLimit",
+          "type": "string",
+          "description": "this url param is added to the `remote` url containing the number of items to be loaded",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 399,
+              "column": 20
+            },
+            "end": {
+              "line": 402,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"limit\""
+        },
+        {
+          "name": "remoteParamOffset",
+          "type": "string",
+          "description": "this url param is added to the `remote` url containing the requested page",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 407,
+              "column": 20
+            },
+            "end": {
+              "line": 410,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"start\""
+        },
+        {
+          "name": "remoteParamSearch",
+          "type": "string",
+          "description": "this url param is added to the `remote` url containing the search phrase the user entered",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 415,
+              "column": 20
+            },
+            "end": {
+              "line": 418,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"query\""
+        },
+        {
+          "name": "remoteParamSearchFields",
+          "type": "string",
+          "description": "this url param is added to the `remote` url containing the fields that should be searched for `query`",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 423,
+              "column": 20
+            },
+            "end": {
+              "line": 426,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"fields\""
+        },
+        {
+          "name": "remoteParamSort",
+          "type": "string",
+          "description": "this url parameter is added to the `remote` url containing the user selected sorting. Set this\nto null to sort the data locally",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 432,
+              "column": 20
+            },
+            "end": {
+              "line": 435,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"sort\""
+        },
+        {
+          "name": "selectionMode",
+          "type": "string",
+          "description": "how rows can be selected. \"multi\" to allow the selection of n elements, \"single\" to allow the\nselection of only a single element (selecting a new one will deselect the previously selected one).\nAny other value will disable the selection model entirely.\nIf a selection mode is enabled, a checkbox is added to the start of each row",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 443,
+              "column": 20
+            },
+            "end": {
+              "line": 445,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "selectedItems",
+          "type": "Array",
+          "description": "contains all the currently selected items",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 450,
+              "column": 20
+            },
+            "end": {
+              "line": 454,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "disableTapRowToSelect",
+          "type": "boolean",
+          "description": "if this is enabled and a selection mode is active, tapping a row will not select it. Rows can then\nonly be selected by explicitely checking their checkboxes",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 460,
+              "column": 20
+            },
+            "end": {
+              "line": 463,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "_columns",
+          "type": "Array",
+          "description": "internal property that holds the processed columns",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 468,
+              "column": 20
+            },
+            "end": {
+              "line": 471,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "_items",
+          "type": "Array",
+          "description": "internal property that holds the actually shown data rows",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 476,
+              "column": 20
+            },
+            "end": {
+              "line": 479,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "_identifyingColumn",
+          "type": "Object",
+          "description": "holds the colmumn that is marked as identifying",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 484,
+              "column": 20
+            },
+            "end": {
+              "line": 486,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "_everythingSelected",
+          "type": "boolean",
+          "description": "property that controls the checked state of the \"select all checkbox\" in selectionMode=multi",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 491,
+              "column": 20
+            },
+            "end": {
+              "line": 494,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "_partiallySelected",
+          "type": "boolean",
+          "description": "property that indicates if a partial selection is active (at least one item, but not all)",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 499,
+              "column": 20
+            },
+            "end": {
+              "line": 502,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        }
+      ],
+      "methods": [
+        {
+          "name": "firstPage",
+          "description": "loads the first page",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 515,
+              "column": 12
+            },
+            "end": {
+              "line": 517,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "lastPage",
+          "description": "loads the last page",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 522,
+              "column": 12
+            },
+            "end": {
+              "line": 524,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "nextPage",
+          "description": "loads the next page",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 529,
+              "column": 12
+            },
+            "end": {
+              "line": 531,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "previousPage",
+          "description": "loads the previous page",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 536,
+              "column": 12
+            },
+            "end": {
+              "line": 538,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "refresh",
+          "description": "reloads the grid data from the remote",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 543,
+              "column": 12
+            },
+            "end": {
+              "line": 559,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "ready",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 576,
+              "column": 12
+            },
+            "end": {
+              "line": 583,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_initColumnResizing",
+          "description": "sets up the column resizing handlers",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 609,
+              "column": 12
+            },
+            "end": {
+              "line": 681,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onHeadTapped",
+          "description": "called when the table head is tapped. Check if the tapped column is sortable and if so, sort by it",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 693,
+              "column": 12
+            },
+            "end": {
+              "line": 731,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        },
+        {
+          "name": "_onQueryChanged",
+          "description": "called when the property `query` changes. Set page to 1",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 737,
+              "column": 12
+            },
+            "end": {
+              "line": 739,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onRowTap",
+          "description": "called when a row in the table is tapped. If row tapping should select the row and a selection mode\nis active, the tapped row is selected",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 746,
+              "column": 12
+            },
+            "end": {
+              "line": 770,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "e"
+            }
+          ]
+        },
+        {
+          "name": "_toggleAllSelection",
+          "description": "called when the \"select all\" checkbox is tapped. Toggles the selection of all items",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 776,
+              "column": 12
+            },
+            "end": {
+              "line": 790,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onItemsChanged",
+          "description": "called when the items property changes. Move it to _items and make sure to properly\npropagate the change.\nUnfortunately a copy of th original item has to be created to make polymer aware of this change.",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 800,
+              "column": 12
+            },
+            "end": {
+              "line": 826,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "items",
+              "type": "{path: String, base: []}"
+            }
+          ]
+        },
+        {
+          "name": "_onPageChanged",
+          "description": "called when a new page is set. Make sure it's within the possible bounds",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 834,
+              "column": 12
+            },
+            "end": {
+              "line": 839,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "newVal",
+              "type": "Number"
+            }
+          ]
+        },
+        {
+          "name": "_onSelectionChanged",
+          "description": "called when the selected items change. Fires an event",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 845,
+              "column": 12
+            },
+            "end": {
+              "line": 849,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_consolidateColumns",
+          "description": "called when the columnConfiguration changes. Process the columns and copy them to the internal\n_columns property.",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 858,
+              "column": 12
+            },
+            "end": {
+              "line": 894,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "columnConfiguration",
+              "type": "{base: []}"
+            }
+          ]
+        },
+        {
+          "name": "_onRemoteChanged",
+          "description": "called on explicit refresh or if any of the parameter changes that require a reload from the remote",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 901,
+              "column": 12
+            },
+            "end": {
+              "line": 939,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "remote"
+            },
+            {
+              "name": "remotePathData"
+            },
+            {
+              "name": "remotePathCount"
+            },
+            {
+              "name": "remoteParamFilter"
+            },
+            {
+              "name": "remoteParamLimit"
+            },
+            {
+              "name": "remoteParamOffset"
+            },
+            {
+              "name": "remoteParamSearch"
+            },
+            {
+              "name": "remoteParamSearchFields"
+            },
+            {
+              "name": "remoteParamSort"
+            },
+            {
+              "name": "itemsPerPage"
+            },
+            {
+              "name": "page"
+            },
+            {
+              "name": "sort"
+            },
+            {
+              "name": "query"
+            }
+          ]
+        },
+        {
+          "name": "_serialize",
+          "description": "takes the given object and creates an http query string from it\nusage: let str = _serialize({foo: 'bar', baz: ['a', 'b']}); => 'foo=bar&baz[0]=a&baz[1]=b'",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 956,
+              "column": 12
+            },
+            "end": {
+              "line": 967,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "obj",
+              "type": "{}",
+              "description": "the object to serialize"
+            },
+            {
+              "name": "prefix",
+              "type": "String",
+              "description": "internal only (used in recursive calls for nested objects)"
+            }
+          ],
+          "return": {
+            "type": "String"
+          }
+        },
+        {
+          "name": "_extractPath",
+          "description": "extracts an objects value from a given path \"polymer style\"\nusage: let val = _extractPath({foo: {bar: 'baz'}}, 'foo.bar') => 'baz'",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 978,
+              "column": 12
+            },
+            "end": {
+              "line": 985,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "obj",
+              "type": "{}",
+              "description": "the object to extract a path from"
+            },
+            {
+              "name": "path"
+            }
+          ],
+          "return": {
+            "desc": "mixed, object content at given path"
+          }
+        },
+        {
+          "name": "_sizeColumnsByHeaders",
+          "description": "sets the width of all grid cells to the width of its headers. This is sometimes required, for example when adding\nnew rows: without setting an explicit width they are autosized and may end up blowing up the width of the entire column",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 993,
+              "column": 12
+            },
+            "end": {
+              "line": 1011,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_canPageBackward",
+          "description": "checks if the user can page backwards",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1028,
+              "column": 12
+            },
+            "end": {
+              "line": 1030,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "page",
+              "type": "Number",
+              "description": "the current page"
+            }
+          ],
+          "return": {
+            "type": "Boolean"
+          }
+        },
+        {
+          "name": "_canPageForward",
+          "description": "checks if the user can page forwards",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1041,
+              "column": 12
+            },
+            "end": {
+              "line": 1043,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "page",
+              "type": "Number",
+              "description": "the current page"
+            },
+            {
+              "name": "itemsPerPage",
+              "type": "Number",
+              "description": "how many items per page should be shown"
+            },
+            {
+              "name": "totalItems",
+              "type": "Number",
+              "description": "how mnay items are in the grid in total"
+            }
+          ],
+          "return": {
+            "type": "Boolean"
+          }
+        },
+        {
+          "name": "_getItemsFrom",
+          "description": "calculates the offset for the pagination query",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1053,
+              "column": 12
+            },
+            "end": {
+              "line": 1055,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "page",
+              "type": "Number",
+              "description": "the page to calculate the offset for"
+            },
+            {
+              "name": "itemsPerPage",
+              "type": "Number",
+              "description": "how many items per page should be shown"
+            }
+          ],
+          "return": {
+            "type": "Number"
+          }
+        },
+        {
+          "name": "_getItemsTo",
+          "description": "returns the index of the last item on the given page",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1064,
+              "column": 12
+            },
+            "end": {
+              "line": 1066,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "page",
+              "type": "Number",
+              "description": "the pag to calculate the last index for"
+            },
+            {
+              "name": "itemsPerPage",
+              "type": "Number",
+              "description": "how many items per page should be shown"
+            },
+            {
+              "name": "totalItems"
+            }
+          ]
+        },
+        {
+          "name": "_evaluatesTrue",
+          "description": "checks if the given value evaluates to true",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1075,
+              "column": 12
+            },
+            "end": {
+              "line": 1077,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "value"
+            }
+          ],
+          "return": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "_isColumnVisibile",
+          "description": "determines if the given column is visible",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1086,
+              "column": 12
+            },
+            "end": {
+              "line": 1088,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "column",
+              "type": "{hidden: bool}"
+            }
+          ],
+          "return": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "_isItemSelected",
+          "description": "checks if the given item is selected",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1098,
+              "column": 12
+            },
+            "end": {
+              "line": 1100,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "item",
+              "type": "{}",
+              "description": "one item from the current data array"
+            },
+            {
+              "name": "selectedItems",
+              "type": "[]",
+              "description": "an array of currently selected items"
+            }
+          ],
+          "return": {
+            "type": "boolean"
+          }
+        },
+        {
+          "name": "_isSortedBy",
+          "description": "checks if the grid is currently sorted by the given column",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1110,
+              "column": 12
+            },
+            "end": {
+              "line": 1116,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "column",
+              "type": "{field: String}",
+              "description": "the column to check"
+            },
+            {
+              "name": "sort",
+              "type": "{field: String}",
+              "description": "the current sorting array"
+            }
+          ],
+          "return": {
+            "type": "Boolean"
+          }
+        },
+        {
+          "name": "_stringEquals",
+          "description": "checks if the given string equals one or more given strings. The first given parameter is the value to\nlook for, it is compared with oll other given params and if one of them matches, true is returned; otherwise\nfalse",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1126,
+              "column": 12
+            },
+            "end": {
+              "line": 1137,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [],
+          "return": {
+            "type": "boolean"
+          }
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 269,
+          "column": 8
+        },
+        "end": {
+          "line": 1138,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "HTMLElement",
+      "name": "ActindoGrid",
+      "attributes": [
+        {
+          "name": "column-configuration",
+          "description": "contains the columns and their configuration.\n* label: the name of this column, used in the header\n* field: data index where this columns value is located\n* type: the data type of this column, can be any valid javascript type\n* identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode\n* hidden: if this column is hidden by default and needs to be enabled manually\n* searchable: if this field is searched through the global search field. Defaults to false\n* sortable: if the grid can by sorted by this field. Defaults to false\n* filterable: if the grid can be filtered by this columns values\n* resizable: if this column is resizable\n* render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed",
+          "sourceRange": {
+            "start": {
+              "line": 300,
+              "column": 20
+            },
+            "end": {
+              "line": 303,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "[{label: string, field: string, type: mixed, identifying: bool, hidden: bool, searchable: bool, sortable: bool, filterable: bool, resizable: bool, render: function}]"
+        },
+        {
+          "name": "page",
+          "description": "the current page number",
+          "sourceRange": {
+            "start": {
+              "line": 308,
+              "column": 20
+            },
+            "end": {
+              "line": 313,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "number"
+        },
+        {
+          "name": "sort",
+          "description": "contains the current sorting criteria, the key \"field\" contains the field name, the field \"order\" a boolean: true is ASC, false is DESC\n{field: String, order: Boolean}",
+          "sourceRange": {
+            "start": {
+              "line": 319,
+              "column": 20
+            },
+            "end": {
+              "line": 323,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        },
+        {
+          "name": "query",
+          "description": "contains the current search query",
+          "sourceRange": {
+            "start": {
+              "line": 328,
+              "column": 20
+            },
+            "end": {
+              "line": 333,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "total-items",
+          "description": "stores the number of total items (over all pages)",
+          "sourceRange": {
+            "start": {
+              "line": 338,
+              "column": 20
+            },
+            "end": {
+              "line": 343,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "number"
+        },
+        {
+          "name": "items",
+          "description": "contains all items that are currently in the grid. You can set this property to manually\nhandle the content of the grid in case you don't want to use the remote loading",
+          "sourceRange": {
+            "start": {
+              "line": 349,
+              "column": 20
+            },
+            "end": {
+              "line": 353,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        },
+        {
+          "name": "items-per-page",
+          "description": "how mny items to show per page",
+          "sourceRange": {
+            "start": {
+              "line": 358,
+              "column": 20
+            },
+            "end": {
+              "line": 361,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "number"
+        },
+        {
+          "name": "remote",
+          "description": "the url to load items from. Alternatively you can use the property `items` to manually add data to the grid,\nhowever that disables the possibility to search, filter, or sort",
+          "sourceRange": {
+            "start": {
+              "line": 367,
+              "column": 20
+            },
+            "end": {
+              "line": 370,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "remote-path-data",
+          "description": "where the items array is located in the remote response. This defaults to response[result][data]",
+          "sourceRange": {
+            "start": {
+              "line": 375,
+              "column": 20
+            },
+            "end": {
+              "line": 378,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "remote-path-count",
+          "description": "where the total count of items is located in the remote response. This defaults to response[result][n_rows]",
+          "sourceRange": {
+            "start": {
+              "line": 383,
+              "column": 20
+            },
+            "end": {
+              "line": 386,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "remote-param-filter",
+          "description": "this url param is added to the `remote` url containing the user selected filters",
+          "sourceRange": {
+            "start": {
+              "line": 391,
+              "column": 20
+            },
+            "end": {
+              "line": 394,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "remote-param-limit",
+          "description": "this url param is added to the `remote` url containing the number of items to be loaded",
+          "sourceRange": {
+            "start": {
+              "line": 399,
+              "column": 20
+            },
+            "end": {
+              "line": 402,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "remote-param-offset",
+          "description": "this url param is added to the `remote` url containing the requested page",
+          "sourceRange": {
+            "start": {
+              "line": 407,
+              "column": 20
+            },
+            "end": {
+              "line": 410,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "remote-param-search",
+          "description": "this url param is added to the `remote` url containing the search phrase the user entered",
+          "sourceRange": {
+            "start": {
+              "line": 415,
+              "column": 20
+            },
+            "end": {
+              "line": 418,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "remote-param-search-fields",
+          "description": "this url param is added to the `remote` url containing the fields that should be searched for `query`",
+          "sourceRange": {
+            "start": {
+              "line": 423,
+              "column": 20
+            },
+            "end": {
+              "line": 426,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "remote-param-sort",
+          "description": "this url parameter is added to the `remote` url containing the user selected sorting. Set this\nto null to sort the data locally",
+          "sourceRange": {
+            "start": {
+              "line": 432,
+              "column": 20
+            },
+            "end": {
+              "line": 435,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "selection-mode",
+          "description": "how rows can be selected. \"multi\" to allow the selection of n elements, \"single\" to allow the\nselection of only a single element (selecting a new one will deselect the previously selected one).\nAny other value will disable the selection model entirely.\nIf a selection mode is enabled, a checkbox is added to the start of each row",
+          "sourceRange": {
+            "start": {
+              "line": 443,
+              "column": 20
+            },
+            "end": {
+              "line": 445,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "selected-items",
+          "description": "contains all the currently selected items",
+          "sourceRange": {
+            "start": {
+              "line": 450,
+              "column": 20
+            },
+            "end": {
+              "line": 454,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        },
+        {
+          "name": "disable-tap-row-to-select",
+          "description": "if this is enabled and a selection mode is active, tapping a row will not select it. Rows can then\nonly be selected by explicitely checking their checkboxes",
+          "sourceRange": {
+            "start": {
+              "line": 460,
+              "column": 20
+            },
+            "end": {
+              "line": 463,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        }
+      ],
+      "events": [
+        {
+          "type": "CustomEvent",
+          "name": "page-changed",
+          "description": "Fired when the `page` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "sort-changed",
+          "description": "Fired when the `sort` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "query-changed",
+          "description": "Fired when the `query` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "total-items-changed",
+          "description": "Fired when the `totalItems` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "items-changed",
+          "description": "Fired when the `items` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "selected-items-changed",
+          "description": "Fired when the `selectedItems` property changes.",
+          "metadata": {}
+        }
+      ],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [
+        {
+          "description": "",
+          "name": "toolbar",
+          "range": {
+            "file": "actindo-grid.html",
+            "start": {
+              "line": 207,
+              "column": 16
+            },
+            "end": {
+              "line": 207,
+              "column": 44
+            }
+          }
+        }
+      ],
+      "tagname": "actindo-grid"
+    }
+  ]
+}
