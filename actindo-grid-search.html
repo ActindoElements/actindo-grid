@@ -1,0 +1,126 @@
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
+
+<dom-module id="actindo-grid-search">
+    <template>
+        <style>
+            :host([collapsed]) #input {
+                transform: scale(0, 1);
+            }
+
+            #input {
+                transform: scale(1, 1);
+                transform-origin: 100% 50%;
+                transition: transform 200ms;
+            }
+        </style>
+        <iron-a11y-keys keys="enter esc" on-keys-pressed="_onSearch">
+            <input id="input" type="text" on-blur="_onSearchBlur" value="{{userInput::input}}">
+        </iron-a11y-keys>
+        <paper-icon-button icon="search" on-tap="_onButtonTap"></paper-icon-button>
+    </template>
+
+    <script>
+        class ActindoGridSearch extends Polymer.Element {
+            static get is() { return 'actindo-grid-search'; }
+
+            static get properties() {
+                return {
+                    collapsed: {
+                        type: Boolean,
+                        value: true,
+                        reflectToAttribute: true
+                    },
+                    userInput: {
+                        type: String,
+                        value: ''
+                    },
+                    query: {
+                        type: String,
+                        value: '',
+                        observer: '_onQueryChanged',
+                        notify: true
+                    },
+                    fields: {
+                        type: Array,
+                        value: []
+                    }
+                };
+            }
+
+            ready() {
+                super.ready();
+
+                this.input = this.$.input;
+                this.blurDebounce = 0;
+            }
+
+            /*
+             * event callbacks
+             */
+
+            /**
+             * called when the user taps the search button
+             * @private
+             */
+            _onButtonTap() {
+                if(this.userInput.length) {
+                    this._onSearch(this.userInput);
+                }
+                else {
+                    this.collapsed = !this.collapsed;
+                    if(!this.collapsed)
+                    {
+                        this.$.input.focus();
+                    }
+                }
+            }
+
+            /**
+             * called when the query changes. Let userInput follow this new value
+             *
+             * @param {String} newVal
+             * @private
+             */
+            _onQueryChanged(newVal) {
+                this.userInput = newVal;
+            }
+
+            /**
+             * called when the user wishes to search for the current query
+             *
+             * @private
+             */
+            _onSearch(e) {
+                if(e && e.hasOwnProperty('detail') && e.detail.keyboardEvent && e.detail.keyboardEvent.code === 'Escape') {
+                    this.setProperties({
+                        userInput: '',
+                        query: ''
+                    });
+                    this.$.input.blur();
+                }
+                else
+                {
+                    this.query = this.userInput.trim();
+                }
+
+            }
+
+            /**
+             * called when the serch input is blurred
+             * @private
+             */
+            _onSearchBlur() {
+                if(!this.userInput.length) {
+                    window.clearTimeout(this.blurDebounce);
+                    let me = this;
+                    this.blurDebounce = window.setTimeout(function() {
+                        me.collapsed = true;
+                        me._onSearch();
+                    }, 250);
+                }
+            }
+        }
+
+        customElements.define(ActindoGridSearch.is, ActindoGridSearch);
+    </script>
+</dom-module>

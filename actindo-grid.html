@@ -1,7 +1,9 @@
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="actindo-grid-cell-content.html">
 <link rel="import" href="actindo-grid-column-configurator.html">
+<link rel="import" href="actindo-grid-search.html">
 
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
@@ -26,6 +28,7 @@
                 display: flex;
                 flex-direction: column;
                 height: 100%;
+                overflow: hidden;
                 width: 100%;
             }
 
@@ -34,24 +37,136 @@
                 min-width: 100%;
                 table-layout: fixed;
             }
-            th {
+            table th {
+                border: none;
+                color: transparent;
                 font-weight: normal;
-                position: relative;
+                line-height: 0;
+                padding: 0;
                 text-align: left;
             }
+            th.sortable-true {
+                cursor: pointer;
+            }
+            th.is-sorted-true,
+            th.is-sorted-false {
+                font-weight: 500;
+            }
+            th.sortable-true div.th span:after {
+                background: url(data:image/svg+xml;charset=utf-8,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22UTF-8%22%3F%3E%3C%21DOCTYPE%20svg%20PUBLIC%20%22-%2F%2FW3C%2F%2FDTD%20SVG%201.1%2F%2FEN%22%20%22http%3A%2F%2Fwww.w3.org%2FGraphics%2FSVG%2F1.1%2FDTD%2Fsvg11.dtd%22%3E%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20version%3D%221.1%22%20width%3D%2224%22%20height%3D%2224%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20d%3D%22M11%2C4H13V16L18.5%2C10.5L19.92%2C11.92L12%2C19.84L4.08%2C11.92L5.5%2C10.5L11%2C16V4Z%22%20%2F%3E%3C%2Fsvg%3E) no-repeat center center;
+                background-size: contain;
+                content: "";
+                display: inline-block;
+                height: 16px;
+                margin-left: 0.25em;
+                opacity: 0;
+                vertical-align: text-bottom;
+                width: 16px;
+                transition: transform 150ms 150ms, opacity 150ms;
+                transform: rotate(180deg);
+            }
+            th.is-sorted-true div.th span:after { /* sorted ASC */
+                opacity: 0.74;
+                transform: rotate(180deg);
+            }
+            th.is-sorted-false div.th span:after { /* sorted DESC */
+                opacity: 0.74;
+                transform: rotate(0deg);
+                transition: transform 150ms, opacity 150ms;
+            }
+            div.th {
+                box-sizing: border-box;
+                border-bottom: 1px solid var(--actindo-border-dark);
+                color: #000;
+                line-height: 60px;
+                padding: 0 0.75em;
+                position: absolute;
+                top: 0;
+            }
+            div.th span {
+                display: block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+            th.checkbox,
+            td.checkbox,
+            div.checkbox {
+                box-sizing: content-box;
+                max-width: 32px;
+                min-width: 32px;
+                overflow: visible;
+                text-align: center;
+                text-overflow: clip;
+                width: 32px;
+            }
+            #toggleAll {
+                position: relative;
+                left: -1px;
+            }
+            #toggleAll:after {
+                background: #000;
+                content: "";
+                display: block;
+                font-weight: bold;
+                height: 2px;
+                left: 6px;
+                opacity: 0;
+                position: absolute;
+                top: 8px;
+                transition: opacity 200ms;
+                width: 6px;
+            }
+            #toggleAll[partial]:after {
+                opacity: 1;
+            }
+            td {
+                padding: 0.95em 0.75em;
+            }
 
-            table.tap-row-select-true tbody tr {
+            th, td {
+                border: solid var(--actindo-border-dark);
+                border-width: 1px 0;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
+
+            tr:last-of-type td,
+            tbody tr:first-of-type td {
+                border: 0;
+            }
+
+            input[type="checkbox"] {
                 cursor: pointer;
             }
 
-            #grid {
+            table tbody tr {
+                cursor: pointer;
+            }
+            table.disable-tap-row-select-true tbody tr {
+                cursor: auto;
+            }
+
+            #fixed {
+                display: flex;
+                overflow-x: auto;
+                padding-top: 60px;
+                position: relative;
                 flex-grow: 1;
-                overflow: auto;
-                overflow-x: scroll;
+            }
+
+            #grid {
+                background-color: #fff;
+                overflow-y: auto;
+                width: 100%;
             }
 
             #toolbar {
+                align-items: center;
                 display: flex;
+                max-height: 4.7em;
+                min-height: 4.7em;
                 justify-content: space-between;
             }
 
@@ -61,7 +176,24 @@
                 position: absolute;
                 right: 0;
                 top: 0;
-                width: 5px;
+                width: 6px;
+            }
+            .sizer.active {
+                transform: scale(10, 1.2);
+                transform-origin: 50% 50%;
+                z-index: 1;
+            }
+
+            #paging {
+                align-items: center;
+                border-top: 1px solid var(--actindo-border-dark);
+                display: flex;
+                justify-content: flex-end;
+                max-height: 4.15em;
+                min-height: 4.15em;
+            }
+            #paging > div {
+                opacity: 0.54;
             }
         </style>
 
@@ -70,46 +202,62 @@
                 <slot name="toolbar"></slot>
             </div>
             <div id="actions">
-                <paper-icon-button icon="refresh" hidden$="[[!remote]]"></paper-icon-button>
+                <actindo-grid-search query="{{query}}"></actindo-grid-search>
+                <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="refresh"></paper-icon-button>
                 <actindo-grid-column-configurator columns="{{_columns}}"></actindo-grid-column-configurator>
             </div>
         </div>
-
-        <div id="grid">
-            <table class$="tap-row-select-[[tapRowToSelect]]">
-                <thead>
-                    <tr>
-                        <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
-                            <th style="width: 16px; min-width: 16px;"><input type="checkbox" checked="[[_everythingSelected]]" hidden="[[!_stringEquals(selectionMode, 'multi')]]" on-tap="_toggleAllSelection"></th>
-                        </template>
-                        <template is="dom-repeat" items="{{_columns}}" filter="_isColumnVisibile" observe="hidden">
-                            <th>
-                                [[item.label]]
-                                <template is="dom-if" if="[[_evaluatesTrue(item.resizable)]]">
-                                    <div class="sizer"></div>
-                                </template>
-                            </th>
-                        </template>
-                        <th class="filler" style="width: auto;"></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <template is="dom-repeat" items="[[_items]]" as="row">
-                        <tr data-identifier$="[[row.id]]" on-tap="_onRowTap">
-                            <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
-                                <td><input type="checkbox" checked="[[_isItemSelected(row, selectedItems.*)]]" on-tap="_onRowTap"></td>
+        <div id="fixed">
+            <div id="grid">
+                <table class$="disable-tap-row-select-[[disableTapRowToSelect]]" id="table">
+                    <thead on-tap="_onHeadTapped">
+                        <tr>
+                            <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]" id="toggleAllIf">
+                                <th class="checkbox">
+                                    <div class="th checkbox">
+                                        <paper-checkbox id="toggleAll" partial$="[[_partiallySelected]]" checked="[[_everythingSelected]]" hidden="[[!_stringEquals(selectionMode, 'multi')]]" on-checked-changed="_toggleAllSelection"></paper-checkbox>
+                                    </div>
+                                </th>
                             </template>
-                            <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
-                                <td><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                            <template is="dom-repeat" items="{{_columns}}" filter="_isColumnVisibile" observe="hidden" id="headerRepeat">
+                                <th data-index$="[[index]]" class$="c[[index]] sortable-[[item.sortable]] is-sorted-[[_isSortedBy(item, sort)]]">
+                                    <div class="th">
+                                        <span>[[item.label]]</span>
+                                        <template is="dom-if" if="[[_evaluatesTrue(item.resizable)]]">
+                                            <div class="sizer"></div>
+                                        </template>
+                                    </div>
+                                    [[item.label]]
+                                </th>
                             </template>
+                            <th class="filler" style="width: auto;"></th>
                         </tr>
-                    </template>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <template is="dom-repeat" items="[[_items]]" as="row">
+                            <tr on-tap="_onRowTap">
+                                <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
+                                    <td class="checkbox"><paper-checkbox checked="[[_isItemSelected(row, selectedItems.*)]]"></paper-checkbox></td>
+                                </template>
+                                <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
+                                    <td class$="c[[index]]"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                                </template>
+                                <td></td>
+                            </tr>
+                        </template>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div id="paging" hidden="[[!remote]]">
-            paging
+            <div>
+                [[_getItemsFrom(page, itemsPerPage)]]-[[_getItemsTo(page, itemsPerPage, totalItems)]] of [[totalItems]]
+                <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
+                <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
+                <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
+                <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
+            </div>
         </div>
     </template>
     <script>
@@ -146,25 +294,45 @@
                      */
                     columnConfiguration: {
                         type: Array,
-                        value: [],
+                        value: []
                     },
 
                     /**
                      * the current page number
                      */
-                    currentPage: {
+                    page: {
                         type: Number,
                         value: 1,
                         notify: true,
-                        readOnly: true
+                        observer: '_onPageChanged'
                     },
 
                     /**
-                     * the total number of pages
+                     * contains the current sorting criteria, the key "field" contains the field name, the field "order" a boolean: true is ASC, false is DESC
+                     * {field: String, order: Boolean}
                      */
-                    totalPages: {
+                    sort: {
+                        type: Object,
+                        value: {},
+                        notify: true
+                    },
+
+                    /**
+                     * contains the current search query
+                     */
+                    query: {
+                        type: String,
+                        value: '',
+                        observer: '_onQueryChanged'
+                    },
+
+                    /**
+                     * stores the number of total items (over all pages)
+                     */
+                    totalItems: {
                         type: Number,
-                        value: 1,
+                        value: 0,
+                        notify: true,
                         readOnly: true
                     },
 
@@ -183,7 +351,7 @@
                      */
                     itemsPerPage: {
                         type: Number,
-                        value: 50
+                        value: 25
                     },
 
                     /**
@@ -200,7 +368,7 @@
                      */
                     remotePathData: {
                         type: String,
-                        value: 'result.data'
+                        value: 'data'
                     },
 
                     /**
@@ -208,7 +376,7 @@
                      */
                     remotePathCount: {
                         type: String,
-                        value: 'result.n_rows'
+                        value: 'n_rows'
                     },
 
                     /**
@@ -230,9 +398,25 @@
                     /**
                      * this url param is added to the `remote` url containing the requested page
                      */
-                    remoteParamPage: {
+                    remoteParamOffset: {
                         type: String,
-                        value: 'page'
+                        value: 'start'
+                    },
+
+                    /**
+                     * this url param is added to the `remote` url containing the search phrase the user entered
+                     */
+                    remoteParamSearch: {
+                        type: String,
+                        value: 'query'
+                    },
+
+                    /**
+                     * this url param is added to the `remote` url containing the fields that should be searched for `query`
+                     */
+                    remoteParamSearchFields: {
+                        type: String,
+                        value: 'fields'
                     },
 
                     /**
@@ -264,11 +448,11 @@
                     },
 
                     /**
-                     * if this is enabled and a selection mode is active, tapping a row will select it
+                     * if this is enabled and a selection mode is active, tapping a row will not select it. Only check checkbox for the row
                      */
-                    tapRowToSelect: {
+                    disableTapRowToSelect: {
                         type: Boolean,
-                        value: true
+                        value: false
                     },
 
                     /**
@@ -300,6 +484,14 @@
                     _everythingSelected: {
                         type: Boolean,
                         value: false
+                    },
+
+                    /**
+                     * property that indicates if a partial selection is active (at least one item, but not all)
+                     */
+                    _partiallySelected: {
+                        type: Boolean,
+                        value: false
                     }
                 };
             }
@@ -308,7 +500,8 @@
                 return [
                     '_consolidateColumns(columnConfiguration.*)',
                     '_onItemsChanged(items.*)',
-                    '_onSelectionChanged(selectedItems.*)'
+                    '_onSelectionChanged(selectedItems.*)',
+                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query)'
                 ];
             }
 
@@ -342,10 +535,114 @@
             }
 
 
+            /*
+             * public api
+             */
+
+            /**
+             * loads the first page
+             */
+            firstPage() {
+                this.page = 1;
+            }
+
+            /**
+             * loads the last page
+             */
+            lastPage() {
+                this.page = Math.max(1, Math.ceil(this.totalItems / this.itemsPerPage));
+            }
+
+            /**
+             * loads the next page
+             */
+            nextPage() {
+                this.page = Math.max(1, Math.min(this.page + 1, Math.ceil(this.totalItems / this.itemsPerPage)));
+            }
+
+            /**
+             * loads the previous page
+             */
+            previousPage() {
+                this.page = Math.max(1, this.page - 1);
+            }
+
+            /**
+             * reloads the grid data from the remote
+             */
+            refresh() {
+                this._onRemoteChanged(
+                    this.remote,
+                    this.remotePathData,
+                    this.remotePathCount,
+                    this.remoteParamFilter,
+                    this.remoteParamLimit,
+                    this.remoteParamOffset,
+                    this.remoteParamSearch,
+                    this.remoteParamSearchFields,
+                    this.remoteParamSort,
+                    this.itemsPerPage,
+                    this.page,
+                    this.sort,
+                    this.query
+                );
+            }
+
+
 
             /*
              * event callbacks
              */
+
+            /**
+             * called when the table head is tapped. Check if the tapped column is sortable and if so, sort by it
+             */
+            _onHeadTapped(e) {
+                let column;
+                for(let i = 0, c = e.path.length; i < c; i++) {
+                    if(i > 5 || !e.path[i].classList) {
+                        return;
+                    }
+                    if(e.path[i].classList.contains('sortable-true')) {
+                        column = e.path[i];
+                        break;
+                    }
+                }
+
+                column = this._columns[column.getAttribute('data-index')];
+                if(column)
+                {
+                    let field = column.field;
+                    if(!this.sort.hasOwnProperty('field'))
+                    {
+                        // currently no sorting, sort by the given column ASC
+                        this.set('sort', {field: field, order: true});
+                    }
+                    else
+                    {
+                        // a sorting is defined
+                        if(this.sort.field !== field) {
+                            // currently sorted by differen field, sort by this field asc
+                            this.set('sort', {field: field, order: true});
+                        }
+                        else if(this.sort.order === true) {
+                            // currently sorted asc by this field, sort desc by this field now
+                            this.set('sort', {field: field, order: false});
+                        }
+                        else {
+                            // currently sorted desc by this field, remove sorting
+                            this.set('sort', {});
+                        }
+                    }
+                }
+            }
+
+            /**
+             * called when the property `query` changes. Set page to 1
+             */
+            _onQueryChanged() {
+                this.firstPage();
+            }
 
             /**
              * called when a row in the table is tapped. If row tapping should select the row and a selection mode
@@ -353,7 +650,7 @@
              */
             _onRowTap(e) {
                 e.stopPropagation();
-                if(!this.selectionMode || (e.target.tagName !== 'INPUT' && !this.tapRowToSelect))
+                if(!this.selectionMode || (e.target.tagName !== 'PAPER-CHECKBOX' && this.disableTapRowToSelect))
                 {
                     return;
                 }
@@ -404,6 +701,11 @@
              * @param {{path: String, base: []}} items
              */
             _onItemsChanged(items) {
+                let resizeColumns = false;
+                if(this._items.length < items.base.length) {
+                    resizeColumns = true;
+                }
+
                 this._items = items.base;
 
                 let index = parseInt(items.path.split('.')[1]);
@@ -417,13 +719,33 @@
                     }
                     this.splice('_items', index, 0, copy);
                 }
+
+                if(resizeColumns) {
+                    let me = this;
+                    window.setTimeout(function() {
+                        me._sizeColumnsByHeaders();
+                    }, 0);
+                }
+            }
+
+            /**
+             * called when a new page is set. Make sure it's within the possible bounds
+             *
+             * @param {Number} newVal
+             */
+            _onPageChanged(newVal) {
+                if(this.totalItems > 0 && this.itemsPerPage > 0)
+                {
+                    this.page = Math.max(1, Math.min(this.page, Math.ceil(this.totalItems / this.itemsPerPage)));
+                }
             }
 
             /**
              * called when the selected items change. Fires an event
              */
             _onSelectionChanged() {
-                this._everythingSelected = (this.selectedItems.length === this.items.length);
+                this._everythingSelected = (this.selectedItems.length > 0 && this.selectedItems.length === this.items.length);
+                this._partiallySelected = this.selectedItems.length > 0 && !this._everythingSelected;
                 this.dispatchEvent(new CustomEvent('selected-items-changed', {detail: {path: 'selectedItems', value: this.selectedItems}}));
             }
 
@@ -481,36 +803,157 @@
             _initColumnResizing() {
                 let me = this;
 
-                let heads = Polymer.dom(me.root).querySelectorAll('th');
-                let i = 0, c = heads.length;
-                if(me.selectionMode) {
-                    ++i;
-                }
-                for(; i < c; i++)
-                {
-                    if(i<c-1){
-                        let width = heads[i].clientWidth;
-                        heads[i].style.minWidth = width + 'px';
-                        heads[i].style.width = width + 'px';
-                    }
-                }
-
-                this.resizingColumn = undefined;
+                this.resizingColumns = undefined;
                 this.resizingColumnOffset = 0;
+                this.resizingHandle = undefined;
                 this.$.grid.addEventListener('mousedown', function(e) {
                     if(e.target.classList && e.target.classList.contains('sizer')) {
-                        me.resizingColumn = e.target.parentNode;
-                        me.resizingColumnOffset = me.resizingColumn.offsetWidth - e.pageX;
+                        e.target.classList.add('active');
+                        me.resizingHandle = e.target;
+                        let column = e.target.parentNode.parentNode;
+                        let selectIndex = column.getAttribute('data-index');
+                        me.resizingColumns = Polymer.dom(me.root).querySelectorAll('.c' + selectIndex);
+                        me.resizingColumnOffset = column.offsetWidth - e.pageX;
+                        for(let i = 0, c = me.resizingColumns.length; i < c; i++) {
+                            let resizeChild = me.resizingColumns[i].getElementsByClassName('th')[0];
+                            if(resizeChild) {
+                                me.resizingColumns[i].resizeChild = resizeChild;
+                            }
+                            else {
+                                me.resizingColumns[i].resizeChild = null;
+                            }
+                        }
                     }
                 });
                 document.addEventListener('mousemove', function(e) {
-                    if(me.resizingColumn) {
-                        me.resizingColumn.style.width = me.resizingColumn.style.minWidth = me.resizingColumnOffset + e.pageX + 'px';
+                    if(me.resizingColumns && me.resizingColumns.length) {
+                        let width = Math.max(me.resizingColumnOffset + e.pageX - 19.5, 24); // -19.5 is the width of the columns left/right padding
+                        let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
+                        for(let i = 0, c = me.resizingColumns.length; i < c; i++)
+                        {
+                            me.resizingColumns[i].setAttribute('style', styleText);
+                            if(me.resizingColumns[i].resizeChild) {
+                                width += 19.5;
+                                me.resizingColumns[i].resizeChild.setAttribute('style', 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;');
+                            }
+                        }
                     }
                 });
                 document.addEventListener('mouseup', function(e) {
-                    me.resizingColumn = undefined;
+                    me.resizingColumns = undefined;
+                    if(me.resizingHandle) {
+                        me.$.grid.setAttribute('style', 'width: ' + me.$.table.clientWidth + 'px; min-width: ' + me.$.table.clientWidth + 'px; max-width: ' + me.$.table.clientWidth + 'px;');
+                        me.resizingHandle.classList.remove('active');
+                    }
+                    me.resizingHandle = undefined;
                 });
+
+                // set initial column widths
+                let heads = Polymer.dom(me.root).querySelectorAll('th');
+                let i = 0, c = heads.length;
+                let interval = window.setInterval(function() {
+                    i = me.selectionMode ? 1 : 0;
+                    for(; i < c; i++)
+                    {
+                        if(i < c-1) {
+                            let width = heads[i].clientWidth;
+                            if(width < 1) {
+                                return;
+                            }
+                            let styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
+                            heads[i].setAttribute('style', styleString);
+                            let div = heads[i].getElementsByClassName('th')[0];
+                            if(div) {
+                                div.setAttribute('style', styleString);
+                            }
+                        }
+                        window.clearInterval(interval);
+                    }
+                    me.$.grid.style.width = me.$.table.clientWidth + 'px';
+                    me._sizeColumnsByHeaders();
+                }, 50);
+            }
+
+            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query) {
+                let me = this;
+                let request = {};
+
+                // pagination
+                request[remoteParamLimit] = itemsPerPage;
+                request[remoteParamOffset] = (page - 1) * itemsPerPage;
+
+                // sorting
+                if(sort.hasOwnProperty('field')) {
+                    request[remoteParamSort] = [];
+                    request[remoteParamSort].push({field: sort.field, order: sort.order ? 'ASC' : 'DESC'});
+                }
+
+                // searching
+                if(query.length) {
+                    request[remoteParamSearch] = query;
+                    request[remoteParamSearchFields] = [];
+                    for(let i = 0, c = me._columns.length; i < c; i++) {
+                        let column = me._columns[i];
+                        if(column.searchable) {
+                            request[remoteParamSearchFields].push(column.field);
+                        }
+                    }
+                }
+
+                return fetch(remote, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    body: me._serialize(request)
+                }).then(function(response) {
+                    return response.json();
+                }).then(function(json) {
+                    me.items = me._extractPath(json, remotePathData);
+                    me._setTotalItems(me._extractPath(json, remotePathCount));
+                }).catch(function(error) {
+                    console.error('error loading data', error)
+                });
+            }
+
+            _serialize(obj, prefix) {
+                var str = [], p;
+                for(p in obj) {
+                    if (obj.hasOwnProperty(p)) {
+                        var k = prefix ? prefix + "[" + p + "]" : p, v = obj[p];
+                        str.push((v !== null && typeof v === "object") ?
+                            this._serialize(v, k) :
+                            encodeURIComponent(k) + "=" + encodeURIComponent(v));
+                    }
+                }
+                return str.join("&");
+            }
+
+            _extractPath(obj, path) {
+                path = path.split('.');
+                let component;
+                while(component = path.shift()) {
+                    obj = obj[component];
+                }
+                return obj;
+            }
+
+            _sizeColumnsByHeaders() {
+                let dom = Polymer.dom(this.root);
+                var headers = dom.querySelectorAll('th[data-index]');
+                for(let i = 0, c = headers.length; i < c; i++) {
+                    let index = headers[i].getAttribute('data-index');
+                    if(!index) {
+                        continue;
+                    }
+                    let width = parseInt(headers[i].style.width) - 19.5;
+                    if(isNaN(width)) {
+                        return;
+                    }
+                    let styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
+                    let columnRows = dom.querySelectorAll('.c' + index);
+                    for(let j = 1, d = columnRows.length; j < d; j++) {
+                        columnRows[j].setAttribute('style', styleString);
+                    }
+                }
             }
 
 
@@ -530,6 +973,14 @@
              */
             _isColumnVisibile(column) {
                 return !column.hidden;
+            }
+
+            _isSortedBy(column, sort) {
+                if(sort.hasOwnProperty('field') && sort.field === column.field) {
+                    return sort.order;
+                }
+
+                return null;
             }
 
             /**
@@ -574,6 +1025,21 @@
              */
             _isItemSelected(item, selectedItems) {
                 return selectedItems.base.indexOf(item) > -1;
+            }
+
+            _getItemsFrom(page, itemsPerPage) {
+                return (page - 1) * itemsPerPage + 1;
+            }
+            _getItemsTo(page, itemsPerPage, totalItems) {
+                return Math.min(page * itemsPerPage, totalItems);
+            }
+
+            _canPageBackward(page) {
+                return page > 1;
+            }
+
+            _canPageForward(page, itemsPerPage, totalItems) {
+                return this._getItemsTo(page, itemsPerPage, totalItems) < totalItems;
             }
         }
 
