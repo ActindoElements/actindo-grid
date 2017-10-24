@@ -27,7 +27,7 @@
 
             static get observers() {
                 return [
-                    'renderValue(row, column)'
+                    'renderValue(row.*, column.*)'
                 ];
             }
 
@@ -38,34 +38,44 @@
              * @param {{field: String, type: {}}} column
              */
             renderValue(row, column) {
-                let root = Polymer.dom(this.root);
-                root.innerHTML = '';
+                this.debounce = this.debounce || 0;
+                window.clearTimeout(this.debounce);
 
-                let node;
-                let value = row[column.field];
+                let me = this;
+//                this.debounce = window.setTimeout(function() {
+                    //console.log('rendering', row, column);
+                    let root = Polymer.dom(me.root);
 
-                if(typeof column.render === 'function')
-                {
-                    node = column.render(value, this.row)
-                }
-                else
-                {
-                    switch(column.type) {
-                        case Number:
-                        case Date:
-                            node = document.createTextNode(value.toLocaleString());
-                            break;
-                        case Boolean:
-                            node = document.createElement('iron-icon');
-                            node.icon = value ? 'check' : 'clear';
-                            break;
-                        case String:
-                        default:
-                            node = document.createTextNode(value);
+                    row = row.base;
+                    column = column.base;
+
+                    let node;
+                    let value = Polymer.Path.get(row, column.field);
+
+                    if(typeof column.render === 'function')
+                    {
+                        node = column.render(value, row);
                     }
-                }
+                    else
+                    {
+                        switch(column.type) {
+                            case Number:
+                            case Date:
+                                node = document.createTextNode(value.toLocaleString());
+                                break;
+                            case Boolean:
+                                node = document.createElement('iron-icon');
+                                node.icon = value ? 'check' : 'clear';
+                                break;
+                            case String:
+                            default:
+                                node = document.createTextNode(value);
+                        }
+                    }
 
-                root.appendChild(node);
+                    root.innerHTML = '';
+                    root.appendChild(node);
+//                }, 5);
             }
         }
 

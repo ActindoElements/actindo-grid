@@ -32,6 +32,9 @@
                 overflow: hidden;
                 width: 100%;
             }
+            :host[hidden] {
+                display: none;
+            }
 
             table {
                 border-collapse: collapse;
@@ -119,6 +122,10 @@
                 width: 32px;
             }
 
+            .filler {
+                width: auto;
+            }
+
             #toggleAll {
                 position: relative;
                 left: -1px;
@@ -195,6 +202,9 @@
                 max-height: 4.15em;
                 min-height: 4.15em;
             }
+            #paging[hidden] {
+                display: none;
+            }
                 #paging > div {
                     opacity: 0.54;
                 }
@@ -223,6 +233,7 @@
                                 <th class="checkbox">
                                     <div class="th checkbox">
                                         <paper-checkbox id="toggleAll" partial$="[[_partiallySelected]]" checked="[[_everythingSelected]]" hidden="[[!_stringEquals(selectionMode, 'multi')]]" on-checked-changed="_toggleAllSelection"></paper-checkbox>
+                                        &nbsp;
                                     </div>
                                 </th>
                             </template>
@@ -237,17 +248,17 @@
                                     [[item.label]]
                                 </th>
                             </template>
-                            <th class="filler" style="width: auto;"></th>
+                            <th class="filler"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <template is="dom-repeat" items="[[_items]]" as="row">
+                        <template is="dom-repeat" items="[[items]]" as="row">
                             <tr on-tap="_onRowTap">
                                 <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
                                     <td class="checkbox"><paper-checkbox checked="[[_isItemSelected(row, selectedItems.*)]]"></paper-checkbox></td>
                                 </template>
                                 <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
-                                    <td class$="c[[index]]"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                                    <td class$="c[[index]]" style$="[[_getColumnWidth(index)]]"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
                                 </template>
                                 <td></td>
                             </tr>
@@ -447,6 +458,15 @@
                     },
 
                     /**
+                     * if selectionMode=single, this property contains the selected item if one is selected
+                     */
+                    selectedItem: {
+                        type: Object,
+                        notify: true,
+                        observer: 'onSelectedItemChanged'
+                    },
+
+                    /**
                      * contains all the currently selected items
                      */
                     selectedItems: {
@@ -468,14 +488,6 @@
                      * internal property that holds the processed columns
                      */
                     _columns: {
-                        type: Array,
-                        value: []
-                    },
-
-                    /**
-                     * internal property that holds the actually shown data rows
-                     */
-                    _items: {
                         type: Array,
                         value: []
                     },
@@ -635,14 +647,21 @@
                 });
                 document.addEventListener('mousemove', function(e) {
                     if(me.resizingColumns && me.resizingColumns.length) {
-                        let width = Math.max(me.resizingColumnOffset + e.pageX - 19.5, 24); // -19.5 is the width of the columns left/right padding
+                        let paddedWidth = Math.max(me.resizingColumnOffset + e.pageX, 32);
+                        let width = paddedWidth - 19.5; // -19.5 is the width of the columns left/right padding
                         let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
+                        let styleTextPadded = 'width: ' + paddedWidth + 'px; min-width: ' + paddedWidth + 'px; max-width: ' + paddedWidth + 'px;';
                         for(let i = 0, c = me.resizingColumns.length; i < c; i++)
                         {
-                            me.resizingColumns[i].setAttribute('style', styleText);
+                            if(me.resizingColumns[i].tagName === 'TH') {
+                                me.resizingColumns[i].setAttribute('style', styleTextPadded);
+                            }
+                            else {
+                                me.resizingColumns[i].setAttribute('style', styleText);
+                            }
                             if(me.resizingColumns[i].resizeChild) {
                                 width += 19.5;
-                                me.resizingColumns[i].resizeChild.setAttribute('style', 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;');
+                                me.resizingColumns[i].resizeChild.setAttribute('style', styleTextPadded);
                             }
                         }
                     }
@@ -758,17 +777,27 @@
                 if(rowSelectedIndex > -1)
                 {
                     this.splice('selectedItems', rowSelectedIndex, 1);
+                    this.set('selectedItem', null);
                 }
                 else
                 {
                     if(this.selectionMode === 'single') {
                         this.set('selectedItems', [this.items[index]]);
+                        this.set('selectedItem', this.items[index]);
                     }
                     else
                     {
                         this.push('selectedItems', this.items[index]);
                     }
                 }
+            }
+
+            onSelectedItemChanged(newVal) {
+                if(this.selectionMode !== 'single') {
+                    return;
+                }
+
+                this.set('selectedItems', [newVal]);
             }
 
             /**
@@ -782,12 +811,17 @@
                 }
                 else
                 {
-                    let selected = [];
-                    for(let i = 0, c = this.items.length; i < c; i++)
-                    {
-                        selected.push(this.items[i]);
+                    if(!this.items) {
+                        this.set('selectedItems', []);
                     }
-                    this.set('selectedItems', selected);
+                    else {
+                        let selected = [];
+                        for(let i = 0, c = this.items.length; i < c; i++)
+                        {
+                            selected.push(this.items[i]);
+                        }
+                        this.set('selectedItems', selected);
+                    }
                 }
             }
 
@@ -796,35 +830,42 @@
              * propagate the change.
              * Unfortunately a copy of th original item has to be created to make polymer aware of this change.
              *
-             * @param {{path: String, base: []}} items
+             * @param {{path: String, base: []}} change
              * @private
              */
-            _onItemsChanged(items) {
-                let resizeColumns = false;
-                if(this._items.length < items.base.length) {
-                    resizeColumns = true;
-                }
+            _onItemsChanged(change) {
+                var rowsWereAdded = false;
 
-                this._items = items.base;
-
-                let index = parseInt(items.path.split('.')[1]);
-                if(!isNaN(index))
+                if(change.path === 'items.splices')
                 {
-                    let item = this.splice('_items', index, 1)[0];
-
-                    let copy = {};
-                    for(let key in item) {
-                        copy[key] = item[key];
-                    }
-                    this.splice('_items', index, 0, copy);
+                    change.value.indexSplices.forEach(function(operation) {
+                        rowsWereAdded = rowsWereAdded || operation.addedCount > 0;
+                    });
                 }
 
-                if(resizeColumns) {
-                    let me = this;
+                let me = this;
+                if(rowsWereAdded || (change.path === 'items' && change.value && change.value.length > 0)) {
                     window.setTimeout(function() {
                         me._sizeColumnsByHeaders();
                     }, 0);
                 }
+
+                // update selectedItems: check if the items that were selected are still the grid
+                this.__selectionDebounce = this.__selectionDebounce | 0;
+                window.clearTimeout(this.__selectionDebounce);
+                this.__selectionDebounce = window.setTimeout(function() {
+                    let newSelectedItems = [];
+                    me.selectedItems.forEach(function(item) {
+                        if(me.items.indexOf(item) !== -1) {
+                            newSelectedItems.push(item);
+                        }
+                    });
+                    if(me.selectedItem && newSelectedItems.indexOf(me.selectedItem) === -1) {
+                        // selectedItem is no longer in the array of selected items (and therefor not in the grid, remove it)
+                        me.set('selectedItem', null);
+                    }
+                    me.set('selectedItems', newSelectedItems);
+                }, 5);
             }
 
             /**
@@ -901,6 +942,10 @@
              * @private
              */
             _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query) {
+                if(!remote) {
+                    return;
+                }
+
                 let me = this;
                 let request = {};
 
@@ -933,10 +978,10 @@
                 }).then(function(response) {
                     return response.json();
                 }).then(function(json) {
-                    me.items = me._extractPath(json, remotePathData);
-                    me._setTotalItems(me._extractPath(json, remotePathCount));
+                    me.items = Polymer.Path.get(json, remotePathData);
+                    me._setTotalItems(Polymer.Path.get(json, remotePathCount));
                 }).catch(function(error) {
-                    console.error('error loading data', error)
+                    console.error('error loading data', error);
                 });
             }
 
@@ -966,24 +1011,6 @@
                     }
                 }
                 return str.join("&");
-            }
-
-            /**
-             * extracts an objects value from a given path "polymer style"
-             * usage: let val = _extractPath({foo: {bar: 'baz'}}, 'foo.bar') => 'baz'
-             *
-             * @param {{}} obj the object to extract a path from
-             * @param {String} the path to extract, parts separated with "." (colon)
-             * @returns mixed, object content at given path
-             * @private
-             */
-            _extractPath(obj, path) {
-                path = path.split('.');
-                let component;
-                while(component = path.shift()) {
-                    obj = obj[component];
-                }
-                return obj;
             }
 
             /**
@@ -1136,6 +1163,15 @@
                 }
 
                 return false;
+            }
+
+            _getColumnWidth(index) {
+                var header = Polymer.dom(this.root).querySelector('th.c' + index);
+                if(!header) {
+                    return '';
+                }
+                let width = parseInt(header.style.width) - 19.5;
+                return 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
             }
         }
 

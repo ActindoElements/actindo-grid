@@ -1,4 +1,4 @@
-## <actindo-grid>
+## &lt;actindo-grid&gt;
 
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 Open `index.html` for the full element documentation
