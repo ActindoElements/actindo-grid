@@ -22,7 +22,6 @@
 
 -->
 <dom-module id="actindo-grid">
-<dom-module id="actindo-grid">
     <template>
         <style>
             :host {
@@ -79,7 +78,9 @@
                         transition: transform 150ms, opacity 150ms;
                     }
                 td {
+                    opacity: 1;
                     padding: 0.95em 0.75em;
+                    transition: opacity 150ms;
                 }
 
                 th, td {
@@ -93,6 +94,51 @@
                     tbody tr:first-of-type td {
                         border: 0;
                     }
+                tr td.checkbox {
+                    position: relative;
+                }
+                tr td.checkbox iron-icon {
+                    left: 1em;
+                    opacity: 0;
+                    position: absolute;
+                    top: 0.7em;
+                    transition: opacity 150ms;
+                }
+                tr td.checkbox paper-checkbox {
+                    background-color: rgba(0, 0, 0, 0);
+                    border-radius: 0;
+                    height: 18px;
+                    position: relative;
+                    transform: scale(1, 1);
+                    transition: background-color 150ms, border-radius 150ms, transform 150ms;
+                    width: 18px;
+                }
+                tr[selected] {
+                    background-color: var(--actindo-light-grey);
+                }
+                tr:hover {
+                    background-color: var(--actindo-primary-light);
+                }
+                tr[disabled],
+                tr[locked] td {
+                    background-color: transparent;
+                    cursor: auto;
+                    opacity: 0.34;
+                }
+                tr[locked] td:first-child {
+                    opacity: 1;
+                }
+                tr[locked] td.checkbox paper-checkbox {
+                    transform: scale(0.5, 0.5);
+                }
+                tr[locked] td.checkbox iron-icon {
+                    opacity: 1;
+                }
+                tr[finished] td.checkbox paper-checkbox {
+                    background-color: var(--actindo-primary);
+                    border-radius: 50%;
+                    text-indent: -5em;
+                }
 
             div.th {
                 box-sizing: border-box;
@@ -253,9 +299,16 @@
                     </thead>
                     <tbody>
                         <template is="dom-repeat" items="[[items]]" as="row">
-                            <tr on-tap="_onRowTap">
+                            <tr on-tap="_onRowTap"
+                                disabled$="[[_propertyEvaluatesTrue(disabledField, row.*)]]"
+                                selected$="[[_isItemSelected(row, selectedItems.*)]]"
+                                finished$="[[_propertyEvaluatesTrue(finishedField, row.*)]]"
+                                locked$="[[_propertyEvaluatesTrue(lockedField, row.*)]]">
                                 <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
-                                    <td class="checkbox"><paper-checkbox checked="[[_isItemSelected(row, selectedItems.*)]]"></paper-checkbox></td>
+                                    <td class="checkbox">
+                                        <paper-checkbox checked="[[_isItemSelected(row, selectedItems.*)]]"></paper-checkbox>
+                                        <iron-icon icon="lock"></iron-icon>
+                                    </td>
                                 </template>
                                 <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
                                     <td class$="c[[index]]" style$="[[_getColumnWidth(index)]]"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
@@ -316,6 +369,23 @@
                     },
 
                     /**
+                     * if an item has a key with this name and contains a value that evaluates to true, that row is disabled
+                     */
+                    disabledField: {
+                        type: String,
+                        value: '_disabled'
+                    },
+
+                    /**
+                     * if an item has a key with this name and contains a value that evaluates to true, that row is marked as finished.
+                     * This only works with a selection mode enabled since the marker replaces the checkbox
+                     */
+                    finishedField: {
+                        type: String,
+                        value: '_finished'
+                    },
+
+                    /**
                      * the current page number
                      */
                     page: {
@@ -371,6 +441,14 @@
                     itemsPerPage: {
                         type: Number,
                         value: 25
+                    },
+
+                    /**
+                     * if an item has a key with this name and contains a value that evaluates to true, that row is marked as locked.
+                     */
+                    lockedField: {
+                        type: String,
+                        value: '_locked'
                     },
 
                     /**
@@ -773,6 +851,11 @@
                 let index = e.model.index;
                 let row = this.items[index];
 
+                if(this._propertyEvaluatesTrue(this.disabledField, this.items[index])) {
+                    // field is disabled, no interaction possible
+                    return;
+                }
+
                 let rowSelectedIndex = this.selectedItems.indexOf(row);
                 if(rowSelectedIndex > -1)
                 {
@@ -792,6 +875,11 @@
                 }
             }
 
+            /**
+             * called when the selected item changes (selection mode = single). Updates the selectedItems property
+             *
+             * @param {{}} newVal the newly selected item
+             */
             onSelectedItemChanged(newVal) {
                 if(this.selectionMode !== 'single') {
                     return;
@@ -850,13 +938,21 @@
                     }, 0);
                 }
 
-                // update selectedItems: check if the items that were selected are still the grid
+                // update selectedItems: check if the items that were selected are still the grid and are not disabled or locked
                 this.__selectionDebounce = this.__selectionDebounce | 0;
                 window.clearTimeout(this.__selectionDebounce);
                 this.__selectionDebounce = window.setTimeout(function() {
                     let newSelectedItems = [];
                     me.selectedItems.forEach(function(item) {
                         if(me.items.indexOf(item) !== -1) {
+                            if(me._propertyEvaluatesTrue(me.lockedField, item)) {
+                                // item is locked, no longer selected
+                                return;
+                            }
+                            if(me._propertyEvaluatesTrue(me.disabledField, item)) {
+                                // item is disabled, no longer selected
+                                return;
+                            }
                             newSelectedItems.push(item);
                         }
                     });
@@ -1145,6 +1241,24 @@
             }
 
             /**
+             * determines if the given field evaluates to true in the given item.
+             *
+             * @param {String} field
+             * @param {{}} item
+             */
+            _propertyEvaluatesTrue(field, item) {
+                if(item.hasOwnProperty('base')) {
+                    item = item.base;
+                }
+
+                if(item.hasOwnProperty(field)) {
+                    return Boolean(item[field]);
+                }
+
+                return false;
+            }
+
+            /**
              * checks if the given string equals one or more given strings. The first given parameter is the value to
              * look for, it is compared with oll other given params and if one of them matches, true is returned; otherwise
              * false
@@ -1165,6 +1279,13 @@
                 return false;
             }
 
+            /**
+             * helper to determine the width of newly rendered cells
+             *
+             * @param {Number} index the index of the column
+             * @returns {String} a css string defining the width
+             * @private
+             */
             _getColumnWidth(index) {
                 var header = Polymer.dom(this.root).querySelector('th.c' + index);
                 if(!header) {

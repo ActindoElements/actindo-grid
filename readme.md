@@ -12,7 +12,6 @@ sorting, paging, ...
 <dom-module id="your-element">
     <template>
         <actindo-grid id="grid"
-                      data="[[data]]"
                       remote="/your-endpoint"
                       items-per-page="25"
                       selection-mode="multi"
@@ -68,7 +67,7 @@ While features are limited, you can still use the grid with local data only.
 <dom-module id="your-element">
     <template>
         <actindo-grid id="grid"
-                      data="[[data]]"
+                      items="[[data]]"
                       column-configuration="[[columns]]">
         </actindo-grid>
     </template>
@@ -122,15 +121,16 @@ While features are limited, you can still use the grid with local data only.
 
 ### custom renderer 
 Often, you will require custom data rendering for certain columns. This can be achived by passing a render
-callback function to the column you wish to manually render
+callback function to the column you wish to render manually. It is called with 2 parameters, the first is the 
+value of the configured field, the second the entire object.
 ```
 {
     label: 'Active',
     field: 'active',
     type: Boolean,
-    render: function(row, column) { // has to return a DOMElement
+    render: function(value, row) { // has to return a DOMElement
         let element = document.createElement('paper-toggle-button');
-        element.checked = row[column.field];
+        element.checked = value;
         
         return element;
     }

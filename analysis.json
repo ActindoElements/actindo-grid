@@ -590,7 +590,7 @@
       "tagname": "actindo-grid-search"
     },
     {
-      "description": "",
+      "description": "`<actindo-grid>` implements a highly reusable data grid to display your data.\n\n### Features\n\n- column configuration as property, therefore dynamic column changes are propagated through data binding\n- global search bar (hidden if no column is configured to be `searchable`)\n- filter panel (hidden if no column is configured to be `filterable`)\n- sorting (by every column that is configured to be `sortable`)\n- pagination as long as a `remote` is specified to fetch data from\n- remote loading of data, including sorting, paging, searching, filtering\n- static data display (disables pagination)\n- custom cell formatting through `render` callbacks\n- hidden columns that can be shown manually",
       "summary": "",
       "path": "actindo-grid.html",
       "properties": [
@@ -601,11 +601,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 312,
+              "line": 365,
               "column": 20
             },
             "end": {
-              "line": 315,
+              "line": 368,
               "column": 21
             }
           },
@@ -615,17 +615,57 @@
           "defaultValue": "[]"
         },
         {
+          "name": "disabledField",
+          "type": "string",
+          "description": "if an item has a key with this name and contains a value that evaluates to true, that row is disabled",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 373,
+              "column": 20
+            },
+            "end": {
+              "line": 376,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"_disabled\""
+        },
+        {
+          "name": "finishedField",
+          "type": "string",
+          "description": "if an item has a key with this name and contains a value that evaluates to true, that row is marked as finished.\nThis only works with a selection mode enabled since the marker replaces the checkbox",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 382,
+              "column": 20
+            },
+            "end": {
+              "line": 385,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"_finished\""
+        },
+        {
           "name": "page",
           "type": "number",
           "description": "the current page number",
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 320,
+              "line": 390,
               "column": 20
             },
             "end": {
-              "line": 325,
+              "line": 395,
               "column": 21
             }
           },
@@ -644,11 +684,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 331,
+              "line": 401,
               "column": 20
             },
             "end": {
-              "line": 335,
+              "line": 405,
               "column": 21
             }
           },
@@ -666,11 +706,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 340,
+              "line": 410,
               "column": 20
             },
             "end": {
-              "line": 345,
+              "line": 415,
               "column": 21
             }
           },
@@ -689,11 +729,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 350,
+              "line": 420,
               "column": 20
             },
             "end": {
-              "line": 355,
+              "line": 425,
               "column": 21
             }
           },
@@ -712,11 +752,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 361,
+              "line": 431,
               "column": 20
             },
             "end": {
-              "line": 365,
+              "line": 435,
               "column": 21
             }
           },
@@ -734,11 +774,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 370,
+              "line": 440,
               "column": 20
             },
             "end": {
-              "line": 373,
+              "line": 443,
               "column": 21
             }
           },
@@ -748,17 +788,37 @@
           "defaultValue": "25"
         },
         {
+          "name": "lockedField",
+          "type": "string",
+          "description": "if an item has a key with this name and contains a value that evaluates to true, that row is marked as locked.",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 448,
+              "column": 20
+            },
+            "end": {
+              "line": 451,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "\"_locked\""
+        },
+        {
           "name": "remote",
           "type": "string",
           "description": "the url to load items from. Alternatively you can use the property `items` to manually add data to the grid,\nhowever that disables the possibility to search, filter, or sort",
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 379,
+              "line": 457,
               "column": 20
             },
             "end": {
-              "line": 382,
+              "line": 460,
               "column": 21
             }
           },
@@ -774,11 +834,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 387,
+              "line": 465,
               "column": 20
             },
             "end": {
-              "line": 390,
+              "line": 468,
               "column": 21
             }
           },
@@ -794,11 +854,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 395,
+              "line": 473,
               "column": 20
             },
             "end": {
-              "line": 398,
+              "line": 476,
               "column": 21
             }
           },
@@ -814,11 +874,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 403,
+              "line": 481,
               "column": 20
             },
             "end": {
-              "line": 406,
+              "line": 484,
               "column": 21
             }
           },
@@ -834,11 +894,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 411,
+              "line": 489,
               "column": 20
             },
             "end": {
-              "line": 414,
+              "line": 492,
               "column": 21
             }
           },
@@ -854,11 +914,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 419,
+              "line": 497,
               "column": 20
             },
             "end": {
-              "line": 422,
+              "line": 500,
               "column": 21
             }
           },
@@ -874,11 +934,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 427,
+              "line": 505,
               "column": 20
             },
             "end": {
-              "line": 430,
+              "line": 508,
               "column": 21
             }
           },
@@ -894,11 +954,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 435,
+              "line": 513,
               "column": 20
             },
             "end": {
-              "line": 438,
+              "line": 516,
               "column": 21
             }
           },
@@ -914,11 +974,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 444,
+              "line": 522,
               "column": 20
             },
             "end": {
-              "line": 447,
+              "line": 525,
               "column": 21
             }
           },
@@ -934,11 +994,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 455,
+              "line": 533,
               "column": 20
             },
             "end": {
-              "line": 457,
+              "line": 535,
               "column": 21
             }
           },
@@ -953,11 +1013,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 462,
+              "line": 540,
               "column": 20
             },
             "end": {
-              "line": 466,
+              "line": 544,
               "column": 21
             }
           },
@@ -975,11 +1035,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 471,
+              "line": 549,
               "column": 20
             },
             "end": {
-              "line": 475,
+              "line": 553,
               "column": 21
             }
           },
@@ -997,11 +1057,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 481,
+              "line": 559,
               "column": 20
             },
             "end": {
-              "line": 484,
+              "line": 562,
               "column": 21
             }
           },
@@ -1017,11 +1077,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 489,
+              "line": 567,
               "column": 20
             },
             "end": {
-              "line": 492,
+              "line": 570,
               "column": 21
             }
           },
@@ -1037,11 +1097,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 497,
+              "line": 575,
               "column": 20
             },
             "end": {
-              "line": 499,
+              "line": 577,
               "column": 21
             }
           },
@@ -1056,11 +1116,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 504,
+              "line": 582,
               "column": 20
             },
             "end": {
-              "line": 507,
+              "line": 585,
               "column": 21
             }
           },
@@ -1076,11 +1136,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 512,
+              "line": 590,
               "column": 20
             },
             "end": {
-              "line": 515,
+              "line": 593,
               "column": 21
             }
           },
@@ -1097,11 +1157,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 528,
+              "line": 606,
               "column": 12
             },
             "end": {
-              "line": 530,
+              "line": 608,
               "column": 13
             }
           },
@@ -1114,11 +1174,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 535,
+              "line": 613,
               "column": 12
             },
             "end": {
-              "line": 537,
+              "line": 615,
               "column": 13
             }
           },
@@ -1131,11 +1191,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 542,
+              "line": 620,
               "column": 12
             },
             "end": {
-              "line": 544,
+              "line": 622,
               "column": 13
             }
           },
@@ -1148,11 +1208,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 549,
+              "line": 627,
               "column": 12
             },
             "end": {
-              "line": 551,
+              "line": 629,
               "column": 13
             }
           },
@@ -1165,11 +1225,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 556,
+              "line": 634,
               "column": 12
             },
             "end": {
-              "line": 572,
+              "line": 650,
               "column": 13
             }
           },
@@ -1182,11 +1242,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 589,
+              "line": 667,
               "column": 12
             },
             "end": {
-              "line": 596,
+              "line": 674,
               "column": 13
             }
           },
@@ -1199,11 +1259,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 622,
+              "line": 700,
               "column": 12
             },
             "end": {
-              "line": 701,
+              "line": 779,
               "column": 13
             }
           },
@@ -1216,11 +1276,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 713,
+              "line": 791,
               "column": 12
             },
             "end": {
-              "line": 751,
+              "line": 829,
               "column": 13
             }
           },
@@ -1237,11 +1297,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 757,
+              "line": 835,
               "column": 12
             },
             "end": {
-              "line": 759,
+              "line": 837,
               "column": 13
             }
           },
@@ -1254,11 +1314,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 766,
+              "line": 844,
               "column": 12
             },
             "end": {
-              "line": 792,
+              "line": 875,
               "column": 13
             }
           },
@@ -1271,22 +1331,24 @@
         },
         {
           "name": "onSelectedItemChanged",
-          "description": "",
+          "description": "called when the selected item changes (selection mode = single). Updates the selectedItems property",
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 794,
+              "line": 882,
               "column": 12
             },
             "end": {
-              "line": 800,
+              "line": 888,
               "column": 13
             }
           },
           "metadata": {},
           "params": [
             {
-              "name": "newVal"
+              "name": "newVal",
+              "type": "{}",
+              "description": "the newly selected item"
             }
           ]
         },
@@ -1296,11 +1358,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 806,
+              "line": 894,
               "column": 12
             },
             "end": {
-              "line": 825,
+              "line": 913,
               "column": 13
             }
           },
@@ -1313,11 +1375,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 835,
+              "line": 923,
               "column": 12
             },
             "end": {
-              "line": 868,
+              "line": 964,
               "column": 13
             }
           },
@@ -1335,11 +1397,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 876,
+              "line": 972,
               "column": 12
             },
             "end": {
-              "line": 881,
+              "line": 977,
               "column": 13
             }
           },
@@ -1357,11 +1419,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 887,
+              "line": 983,
               "column": 12
             },
             "end": {
-              "line": 891,
+              "line": 987,
               "column": 13
             }
           },
@@ -1374,11 +1436,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 900,
+              "line": 996,
               "column": 12
             },
             "end": {
-              "line": 936,
+              "line": 1032,
               "column": 13
             }
           },
@@ -1396,11 +1458,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 943,
+              "line": 1039,
               "column": 12
             },
             "end": {
-              "line": 985,
+              "line": 1081,
               "column": 13
             }
           },
@@ -1453,11 +1515,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1002,
+              "line": 1098,
               "column": 12
             },
             "end": {
-              "line": 1013,
+              "line": 1109,
               "column": 13
             }
           },
@@ -1484,11 +1546,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1021,
+              "line": 1117,
               "column": 12
             },
             "end": {
-              "line": 1039,
+              "line": 1135,
               "column": 13
             }
           },
@@ -1501,11 +1563,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1056,
+              "line": 1152,
               "column": 12
             },
             "end": {
-              "line": 1058,
+              "line": 1154,
               "column": 13
             }
           },
@@ -1527,11 +1589,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1069,
+              "line": 1165,
               "column": 12
             },
             "end": {
-              "line": 1071,
+              "line": 1167,
               "column": 13
             }
           },
@@ -1563,11 +1625,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1081,
+              "line": 1177,
               "column": 12
             },
             "end": {
-              "line": 1083,
+              "line": 1179,
               "column": 13
             }
           },
@@ -1594,11 +1656,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1092,
+              "line": 1188,
               "column": 12
             },
             "end": {
-              "line": 1094,
+              "line": 1190,
               "column": 13
             }
           },
@@ -1625,11 +1687,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1103,
+              "line": 1199,
               "column": 12
             },
             "end": {
-              "line": 1105,
+              "line": 1201,
               "column": 13
             }
           },
@@ -1649,11 +1711,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1114,
+              "line": 1210,
               "column": 12
             },
             "end": {
-              "line": 1116,
+              "line": 1212,
               "column": 13
             }
           },
@@ -1674,11 +1736,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1126,
+              "line": 1222,
               "column": 12
             },
             "end": {
-              "line": 1128,
+              "line": 1224,
               "column": 13
             }
           },
@@ -1705,11 +1767,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1138,
+              "line": 1234,
               "column": 12
             },
             "end": {
-              "line": 1144,
+              "line": 1240,
               "column": 13
             }
           },
@@ -1731,16 +1793,42 @@
           }
         },
         {
+          "name": "_propertyEvaluatesTrue",
+          "description": "determines if the given field evaluates to true in the given item.",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 1248,
+              "column": 12
+            },
+            "end": {
+              "line": 1258,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "field",
+              "type": "String"
+            },
+            {
+              "name": "item",
+              "type": "{}"
+            }
+          ]
+        },
+        {
           "name": "_stringEquals",
           "description": "checks if the given string equals one or more given strings. The first given parameter is the value to\nlook for, it is compared with oll other given params and if one of them matches, true is returned; otherwise\nfalse",
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1154,
+              "line": 1268,
               "column": 12
             },
             "end": {
-              "line": 1165,
+              "line": 1279,
               "column": 13
             }
           },
@@ -1752,24 +1840,30 @@
         },
         {
           "name": "_getColumnWidth",
-          "description": "",
-          "privacy": "protected",
+          "description": "helper to determine the width of newly rendered cells",
+          "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1167,
+              "line": 1288,
               "column": 12
             },
             "end": {
-              "line": 1174,
+              "line": 1295,
               "column": 13
             }
           },
           "metadata": {},
           "params": [
             {
-              "name": "index"
+              "name": "index",
+              "type": "Number",
+              "description": "the index of the column"
             }
-          ]
+          ],
+          "return": {
+            "type": "String",
+            "desc": "a css string defining the width"
+          }
         }
       ],
       "staticMethods": [],
@@ -1777,11 +1871,11 @@
       "metadata": {},
       "sourceRange": {
         "start": {
-          "line": 281,
+          "line": 334,
           "column": 8
         },
         "end": {
-          "line": 1175,
+          "line": 1296,
           "column": 9
         }
       },
@@ -1794,11 +1888,11 @@
           "description": "contains the columns and their configuration.\n* label: the name of this column, used in the header\n* field: data index where this columns value is located\n* type: the data type of this column, can be any valid javascript type\n* identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode\n* hidden: if this column is hidden by default and needs to be enabled manually\n* searchable: if this field is searched through the global search field. Defaults to false\n* sortable: if the grid can by sorted by this field. Defaults to false\n* filterable: if the grid can be filtered by this columns values\n* resizable: if this column is resizable\n* render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed",
           "sourceRange": {
             "start": {
-              "line": 312,
+              "line": 365,
               "column": 20
             },
             "end": {
-              "line": 315,
+              "line": 368,
               "column": 21
             }
           },
@@ -1806,15 +1900,47 @@
           "type": "[{label: string, field: string, type: mixed, identifying: bool, hidden: bool, searchable: bool, sortable: bool, filterable: bool, resizable: bool, render: function}]"
         },
         {
+          "name": "disabled-field",
+          "description": "if an item has a key with this name and contains a value that evaluates to true, that row is disabled",
+          "sourceRange": {
+            "start": {
+              "line": 373,
+              "column": 20
+            },
+            "end": {
+              "line": 376,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "finished-field",
+          "description": "if an item has a key with this name and contains a value that evaluates to true, that row is marked as finished.\nThis only works with a selection mode enabled since the marker replaces the checkbox",
+          "sourceRange": {
+            "start": {
+              "line": 382,
+              "column": 20
+            },
+            "end": {
+              "line": 385,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
           "name": "page",
           "description": "the current page number",
           "sourceRange": {
             "start": {
-              "line": 320,
+              "line": 390,
               "column": 20
             },
             "end": {
-              "line": 325,
+              "line": 395,
               "column": 21
             }
           },
@@ -1826,11 +1952,11 @@
           "description": "contains the current sorting criteria, the key \"field\" contains the field name, the field \"order\" a boolean: true is ASC, false is DESC\n{field: String, order: Boolean}",
           "sourceRange": {
             "start": {
-              "line": 331,
+              "line": 401,
               "column": 20
             },
             "end": {
-              "line": 335,
+              "line": 405,
               "column": 21
             }
           },
@@ -1842,11 +1968,11 @@
           "description": "contains the current search query",
           "sourceRange": {
             "start": {
-              "line": 340,
+              "line": 410,
               "column": 20
             },
             "end": {
-              "line": 345,
+              "line": 415,
               "column": 21
             }
           },
@@ -1858,11 +1984,11 @@
           "description": "stores the number of total items (over all pages)",
           "sourceRange": {
             "start": {
-              "line": 350,
+              "line": 420,
               "column": 20
             },
             "end": {
-              "line": 355,
+              "line": 425,
               "column": 21
             }
           },
@@ -1874,11 +2000,11 @@
           "description": "contains all items that are currently in the grid. You can set this property to manually\nhandle the content of the grid in case you don't want to use the remote loading",
           "sourceRange": {
             "start": {
-              "line": 361,
+              "line": 431,
               "column": 20
             },
             "end": {
-              "line": 365,
+              "line": 435,
               "column": 21
             }
           },
@@ -1890,11 +2016,11 @@
           "description": "how mny items to show per page",
           "sourceRange": {
             "start": {
-              "line": 370,
+              "line": 440,
               "column": 20
             },
             "end": {
-              "line": 373,
+              "line": 443,
               "column": 21
             }
           },
@@ -1902,15 +2028,31 @@
           "type": "number"
         },
         {
+          "name": "locked-field",
+          "description": "if an item has a key with this name and contains a value that evaluates to true, that row is marked as locked.",
+          "sourceRange": {
+            "start": {
+              "line": 448,
+              "column": 20
+            },
+            "end": {
+              "line": 451,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
           "name": "remote",
           "description": "the url to load items from. Alternatively you can use the property `items` to manually add data to the grid,\nhowever that disables the possibility to search, filter, or sort",
           "sourceRange": {
             "start": {
-              "line": 379,
+              "line": 457,
               "column": 20
             },
             "end": {
-              "line": 382,
+              "line": 460,
               "column": 21
             }
           },
@@ -1922,11 +2064,11 @@
           "description": "where the items array is located in the remote response.",
           "sourceRange": {
             "start": {
-              "line": 387,
+              "line": 465,
               "column": 20
             },
             "end": {
-              "line": 390,
+              "line": 468,
               "column": 21
             }
           },
@@ -1938,11 +2080,11 @@
           "description": "where the total count of items is located in the remote response.",
           "sourceRange": {
             "start": {
-              "line": 395,
+              "line": 473,
               "column": 20
             },
             "end": {
-              "line": 398,
+              "line": 476,
               "column": 21
             }
           },
@@ -1954,11 +2096,11 @@
           "description": "this url param is added to the `remote` url containing the user selected filters",
           "sourceRange": {
             "start": {
-              "line": 403,
+              "line": 481,
               "column": 20
             },
             "end": {
-              "line": 406,
+              "line": 484,
               "column": 21
             }
           },
@@ -1970,11 +2112,11 @@
           "description": "this url param is added to the `remote` url containing the number of items to be loaded",
           "sourceRange": {
             "start": {
-              "line": 411,
+              "line": 489,
               "column": 20
             },
             "end": {
-              "line": 414,
+              "line": 492,
               "column": 21
             }
           },
@@ -1986,11 +2128,11 @@
           "description": "this url param is added to the `remote` url containing the requested page",
           "sourceRange": {
             "start": {
-              "line": 419,
+              "line": 497,
               "column": 20
             },
             "end": {
-              "line": 422,
+              "line": 500,
               "column": 21
             }
           },
@@ -2002,11 +2144,11 @@
           "description": "this url param is added to the `remote` url containing the search phrase the user entered",
           "sourceRange": {
             "start": {
-              "line": 427,
+              "line": 505,
               "column": 20
             },
             "end": {
-              "line": 430,
+              "line": 508,
               "column": 21
             }
           },
@@ -2018,11 +2160,11 @@
           "description": "this url param is added to the `remote` url containing the fields that should be searched for `query`",
           "sourceRange": {
             "start": {
-              "line": 435,
+              "line": 513,
               "column": 20
             },
             "end": {
-              "line": 438,
+              "line": 516,
               "column": 21
             }
           },
@@ -2034,11 +2176,11 @@
           "description": "this url parameter is added to the `remote` url containing the user selected sorting. Set this\nto null to sort the data locally",
           "sourceRange": {
             "start": {
-              "line": 444,
+              "line": 522,
               "column": 20
             },
             "end": {
-              "line": 447,
+              "line": 525,
               "column": 21
             }
           },
@@ -2050,11 +2192,11 @@
           "description": "how rows can be selected. \"multi\" to allow the selection of n elements, \"single\" to allow the\nselection of only a single element (selecting a new one will deselect the previously selected one).\nAny other value will disable the selection model entirely.\nIf a selection mode is enabled, a checkbox is added to the start of each row",
           "sourceRange": {
             "start": {
-              "line": 455,
+              "line": 533,
               "column": 20
             },
             "end": {
-              "line": 457,
+              "line": 535,
               "column": 21
             }
           },
@@ -2066,11 +2208,11 @@
           "description": "if selectionMode=single, this property contains the selected item if one is selected",
           "sourceRange": {
             "start": {
-              "line": 462,
+              "line": 540,
               "column": 20
             },
             "end": {
-              "line": 466,
+              "line": 544,
               "column": 21
             }
           },
@@ -2082,11 +2224,11 @@
           "description": "contains all the currently selected items",
           "sourceRange": {
             "start": {
-              "line": 471,
+              "line": 549,
               "column": 20
             },
             "end": {
-              "line": 475,
+              "line": 553,
               "column": 21
             }
           },
@@ -2098,11 +2240,11 @@
           "description": "if this is enabled and a selection mode is active, tapping a row will not select it. Rows can then\nonly be selected by explicitely checking their checkboxes",
           "sourceRange": {
             "start": {
-              "line": 481,
+              "line": 559,
               "column": 20
             },
             "end": {
-              "line": 484,
+              "line": 562,
               "column": 21
             }
           },
@@ -2158,7 +2300,23 @@
         "cssVariables": [],
         "selectors": []
       },
-      "slots": [],
+      "slots": [
+        {
+          "description": "",
+          "name": "toolbar",
+          "range": {
+            "file": "actindo-grid.html",
+            "start": {
+              "line": 264,
+              "column": 16
+            },
+            "end": {
+              "line": 264,
+              "column": 44
+            }
+          }
+        }
+      ],
       "tagname": "actindo-grid"
     }
   ]
