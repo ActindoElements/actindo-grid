@@ -267,7 +267,7 @@
             <div id="actions">
                 <actindo-grid-search query="{{query}}" hidden$="[[!remote]]"></actindo-grid-search>
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="refresh"></paper-icon-button>
-                <actindo-grid-column-configurator columns="{{_columns}}"></actindo-grid-column-configurator>
+                <actindo-grid-column-configurator columns="{{_columns}}" hidden="[[hideColumnConfiguration]]"></actindo-grid-column-configurator>
             </div>
         </div>
         <div id="fixed">
@@ -423,6 +423,14 @@
                         value: 0,
                         notify: true,
                         readOnly: true
+                    },
+
+                    /**
+                     * if this is true, the column selection switch is hidden and the user can not enable/disable or rearrange columns
+                     */
+                    hideColumnConfiguration: {
+                        type: Boolean,
+                        value: false
                     },
 
                     /**
@@ -855,6 +863,14 @@
                     // field is disabled, no interaction possible
                     return;
                 }
+                if(this._propertyEvaluatesTrue(this.lockedField, this.items[index])) {
+                    // field is locked, no interaction possible
+                    return;
+                }
+                if(this._propertyEvaluatesTrue(this.finishedField, this.items[index])) {
+                    // field is finished, no interaction possible
+                    return;
+                }
 
                 let rowSelectedIndex = this.selectedItems.indexOf(row);
                 if(rowSelectedIndex > -1)
@@ -951,6 +967,10 @@
                             }
                             if(me._propertyEvaluatesTrue(me.disabledField, item)) {
                                 // item is disabled, no longer selected
+                                return;
+                            }
+                            if(me._propertyEvaluatesTrue(me.finishedField, item)) {
+                                // item is finished, no longer selected
                                 return;
                             }
                             newSelectedItems.push(item);
