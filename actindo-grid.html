@@ -906,7 +906,12 @@
                     return;
                 }
 
-                this.set('selectedItems', [newVal]);
+                if(newVal) {
+                    this.set('selectedItems', [newVal]);
+                }
+                else {
+                    this.set('selectedItems', []);
+                }
             }
 
             /**
