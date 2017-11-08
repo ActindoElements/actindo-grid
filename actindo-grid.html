@@ -485,6 +485,14 @@
                     },
 
                     /**
+                     * additional url params to be added to the remote url
+                     */
+                    remoteParams: {
+                        type: Object,
+                        value: {}
+                    },
+
+                    /**
                      * this url param is added to the `remote` url containing the user selected filters
                      */
                     remoteParamFilter: {
@@ -645,6 +653,7 @@
                     this.remote,
                     this.remotePathData,
                     this.remotePathCount,
+                    this.remoteParams,
                     this.remoteParamFilter,
                     this.remoteParamLimit,
                     this.remoteParamOffset,
@@ -669,7 +678,7 @@
                     '_consolidateColumns(columnConfiguration.*)',
                     '_onItemsChanged(items.*)',
                     '_onSelectionChanged(selectedItems.*)',
-                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query)'
+                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query)'
                 ];
             }
 
@@ -867,10 +876,6 @@
                     // field is locked, no interaction possible
                     return;
                 }
-                if(this._propertyEvaluatesTrue(this.finishedField, this.items[index])) {
-                    // field is finished, no interaction possible
-                    return;
-                }
 
                 let rowSelectedIndex = this.selectedItems.indexOf(row);
                 if(rowSelectedIndex > -1)
@@ -969,10 +974,6 @@
                                 // item is disabled, no longer selected
                                 return;
                             }
-                            if(me._propertyEvaluatesTrue(me.finishedField, item)) {
-                                // item is finished, no longer selected
-                                return;
-                            }
                             newSelectedItems.push(item);
                         }
                     });
@@ -1057,13 +1058,13 @@
              *
              * @private
              */
-            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query) {
+            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query) {
                 if(!remote) {
                     return;
                 }
 
                 let me = this;
-                let request = {};
+                let request = remoteParams;
 
                 // pagination
                 request[remoteParamLimit] = itemsPerPage;
