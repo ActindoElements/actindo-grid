@@ -1687,6 +1687,9 @@
               "name": "itemsPerPage",
               "type": "Number",
               "description": "how many items per page should be shown"
+            },
+            {
+              "name": "totalItems"
             }
           ],
           "return": {
@@ -1805,16 +1808,45 @@
           }
         },
         {
+          "name": "_isSearchHidden",
+          "description": "checks if the grid search should be hidden. This is the case when no remote is configured\nor if no column is marked as searchable",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1261,
+              "column": 12
+            },
+            "end": {
+              "line": 1274,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "remote",
+              "type": "String"
+            },
+            {
+              "name": "columns",
+              "type": "{}"
+            }
+          ],
+          "return": {
+            "type": "boolean"
+          }
+        },
+        {
           "name": "_isSortedBy",
           "description": "checks if the grid is currently sorted by the given column",
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1260,
+              "line": 1284,
               "column": 12
             },
             "end": {
-              "line": 1266,
+              "line": 1290,
               "column": 13
             }
           },
@@ -1841,11 +1873,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 1274,
+              "line": 1298,
               "column": 12
             },
             "end": {
-              "line": 1284,
+              "line": 1308,
               "column": 13
             }
           },
@@ -1867,11 +1899,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1294,
+              "line": 1318,
               "column": 12
             },
             "end": {
-              "line": 1305,
+              "line": 1329,
               "column": 13
             }
           },
@@ -1887,11 +1919,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1314,
+              "line": 1338,
               "column": 12
             },
             "end": {
-              "line": 1321,
+              "line": 1345,
               "column": 13
             }
           },
@@ -1918,7 +1950,7 @@
           "column": 8
         },
         "end": {
-          "line": 1322,
+          "line": 1346,
           "column": 9
         }
       },

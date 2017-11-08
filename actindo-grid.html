@@ -265,7 +265,7 @@
                 <slot name="toolbar"></slot>
             </div>
             <div id="actions">
-                <actindo-grid-search query="{{query}}" hidden$="[[!remote]]"></actindo-grid-search>
+                <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="refresh"></paper-icon-button>
                 <actindo-grid-column-configurator columns="{{_columns}}" hidden="[[hideColumnConfiguration]]"></actindo-grid-column-configurator>
             </div>
@@ -323,7 +323,7 @@
 
         <div id="paging" hidden="[[!remote]]">
             <div>
-                [[_getItemsFrom(page, itemsPerPage)]]-[[_getItemsTo(page, itemsPerPage, totalItems)]] of [[totalItems]]
+                [[_getItemsFrom(page, itemsPerPage, totalItems)]]-[[_getItemsTo(page, itemsPerPage, totalItems)]] of [[totalItems]]
                 <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
                 <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
                 <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
@@ -1201,8 +1201,8 @@
              * @returns {Number}
              * @private
              */
-            _getItemsFrom(page, itemsPerPage) {
-                return (page - 1) * itemsPerPage + 1;
+            _getItemsFrom(page, itemsPerPage, totalItems) {
+                return Math.min(totalItems, (page - 1) * itemsPerPage + 1);
             }
 
             /**
@@ -1248,6 +1248,30 @@
              */
             _isItemSelected(item, selectedItems) {
                 return selectedItems.base.indexOf(item) > -1;
+            }
+
+            /**
+             * checks if the grid search should be hidden. This is the case when no remote is configured
+             * or if no column is marked as searchable
+             *
+             * @param {String} remote
+             * @param {{}} columns
+             * @returns {boolean}
+             * @private
+             */
+            _isSearchHidden(remote, columns) {
+                if(!remote) {
+                    return true;
+                }
+                if(columns.hasOwnProperty('base') && Array.isArray(columns.base)) {
+                    for(let i = 0, c = columns.base.length; i < c; i++) {
+                        if(columns.base[i].searchable) {
+                            return false;
+                        }
+                    }
+                }
+
+                return true;
             }
             
             /**
