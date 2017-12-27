@@ -365,7 +365,9 @@
                      */
                     columnConfiguration: {
                         type: Array,
-                        value: []
+                        value: function() {
+                        	return [];
+                        }
                     },
 
                     /**
@@ -401,7 +403,9 @@
                      */
                     sort: {
                         type: Object,
-                        value: {},
+                        value: function() {
+                        	return {};
+                        },
                         notify: true
                     },
 
@@ -439,7 +443,9 @@
                      */
                     items: {
                         type: Array,
-                        value: [],
+                        value: function() {
+                        	return [];
+                        },
                         notify: true
                     },
                     
@@ -489,7 +495,9 @@
                      */
                     remoteParams: {
                         type: Object,
-                        value: {}
+                        value: function() {
+                        	return {};
+                        }
                     },
 
                     /**
@@ -565,7 +573,9 @@
                      */
                     selectedItems: {
                         type: Array,
-                        value: [],
+                        value: function() {
+                        	return [];
+                        },
                         notify: true
                     },
                     
@@ -583,7 +593,9 @@
                      */
                     _columns: {
                         type: Array,
-                        value: []
+                        value: function() {
+                        	return [];
+                        }
                     },
 
                     /**
