@@ -61,7 +61,7 @@
                         switch(column.type) {
                             case Number:
                             case Date:
-                                node = document.createTextNode(value.toLocaleString());
+                                node = value ? document.createTextNode(value.toLocaleString()) : document.createTextNode('');
                                 break;
                             case Boolean:
                                 node = document.createElement('iron-icon');

@@ -174,7 +174,7 @@
 
             #toggleAll {
                 position: relative;
-                left: -1px;
+                left: 6px;
             }
                 #toggleAll:after {
                     background: #000;
@@ -220,10 +220,22 @@
 
             #toolbar {
                 align-items: center;
+                /*background: linear-gradient(-90deg, #fff 0%, var(--actindo-primary), var(--actindo-primary), var(--actindo-primary), var(--actindo-primary)) no-repeat;*/
+                background: transparent;
+                /*background-position: 200% 50%;*/
+                /*background-size: 200% 100%;*/
+                color: inherit;
                 display: flex;
                 max-height: 4.7em;
                 min-height: 4.7em;
                 justify-content: space-between;
+                padding: 0 1em;
+                transition: background 150ms, color 150ms;
+            }
+            #toolbar.actions-true {
+                /*background-position: 50% 50%;*/
+                background: var(--actindo-primary);
+                color: #fff;
             }
 
             .sizer {
@@ -260,11 +272,18 @@
             }
         </style>
 
-        <div id="toolbar">
-            <div>
+        <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
+            <div hidden$="[[!selectedItems.length]]">[[selectedItems.length]] gewählt</div>
+            <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]">
                 <slot name="toolbar"></slot>
             </div>
-            <div id="actions">
+            <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 1)]]">
+                <slot name="singleActions"></slot>
+            </div>
+            <div hidden$="[[!_arrayLengthGT(selectedItems.*, 1)]]">
+                <slot name="multiActions"></slot>
+            </div>
+            <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
                 <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="refresh"></paper-icon-button>
                 <actindo-grid-column-configurator columns="{{_columns}}" hidden="[[hideColumnConfiguration]]"></actindo-grid-column-configurator>
@@ -1180,6 +1199,24 @@
             /*
              * template helpers
              */
+
+            _arrayLengthEquals(items, equals) {
+                if(items.hasOwnProperty('base') && Array.isArray(items.base))
+                {
+                    items = items.base;
+                }
+
+                return items.length === equals;
+            }
+
+            _arrayLengthGT(items, gt) {
+                if(items.hasOwnProperty('base') && Array.isArray(items.base))
+                {
+                    items = items.base;
+                }
+
+                return items.length > gt;
+            }
 
             /**
              * checks if the user can page backwards

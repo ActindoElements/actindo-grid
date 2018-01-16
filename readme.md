@@ -39,7 +39,7 @@ sorting, paging, ...
                                 label: 'Name',
                                 field: 'name',
                                 type: String,
-                                resiable: true,
+                                resizable: true,
                                 searchable: true,
                                 sortable: true
                             },
