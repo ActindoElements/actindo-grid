@@ -379,6 +379,7 @@
                      * * filterable: if the grid can be filtered by this columns values
                      * * resizable: if this column is resizable
                      * * render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed
+                     * * nullMessage: Text shown if field is null; if nothing specified it will display empty string
                      *
                      * @type {[{
                      *     label: string,
@@ -390,7 +391,8 @@
                      *     sortable: bool,
                      *     filterable: bool,
                      *     resizable: bool,
-                     *     render: function
+                     *     render: function,
+                     *     nullMessage: string
                      * }]}
                      */
                     columnConfiguration: {
