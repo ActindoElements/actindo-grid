@@ -270,6 +270,12 @@
             paper-icon-button[hidden] {
                 display: none;
             }
+            .empty-message
+            {
+                @apply(--font-subheader);
+                margin: 2em 0 0 2em;
+                opacity: 0.72;
+            }
         </style>
 
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
@@ -337,18 +343,23 @@
                         </template>
                     </tbody>
                 </table>
+                <template is="dom-if" if="[[!items.length]]">
+                    <div class="empty-message">[[emptyMessage]]</div>
+                </template>
             </div>
         </div>
 
-        <div id="paging" hidden="[[!remote]]">
-            <div>
-                [[_getItemsFrom(page, itemsPerPage, totalItems)]]-[[_getItemsTo(page, itemsPerPage, totalItems)]] of [[totalItems]]
-                <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
-                <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
-                <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
-                <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
+        <template is="dom-if" if="[[!pagingDisabled]]">
+            <div id="paging" hidden="[[!remote]]">
+                <div>
+                    [[_getItemsFrom(page, itemsPerPage, totalItems)]]-[[_getItemsTo(page, itemsPerPage, totalItems)]] of [[totalItems]]
+                    <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
+                    <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
+                    <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
+                    <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
+                </div>
             </div>
-        </div>
+        </template>
     </template>
     <script>
         class ActindoGrid extends Polymer.Element {
@@ -387,6 +398,14 @@
                         value: function() {
                         	return [];
                         }
+                    },
+
+                    /**
+                     * if grid has no items this message will be shown
+                     */
+                    emptyMessage: {
+                        type: String,
+                        value: ""
                     },
 
                     /**
@@ -566,6 +585,15 @@
                     remoteParamSort: {
                         type: String,
                         value: 'sort'
+                    },
+
+
+                    /**
+                     * set to true if results should not be paged
+                     */
+                    pagingDisabled: {
+                        type: Boolean,
+                        value: false
                     },
 
                     /**
@@ -1102,9 +1130,13 @@
                 let me = this;
                 let request = remoteParams;
 
-                // pagination
-                request[remoteParamLimit] = itemsPerPage;
-                request[remoteParamOffset] = (page - 1) * itemsPerPage;
+                if( !this.pagingDisabled )
+                {
+                    // pagination
+                    request[remoteParamLimit] = itemsPerPage;
+                    request[remoteParamOffset] = (page - 1) * itemsPerPage;
+                }
+
 
                 // sorting
                 if(sort.hasOwnProperty('field')) {

@@ -69,7 +69,22 @@
                                 break;
                             case String:
                             default:
-                                node = document.createTextNode(value);
+                                if( value === null )
+                                {
+                                    if( column.nullMessage )
+                                    {
+                                        node = document.createTextNode( column.nullMessage );
+                                    }
+                                    else
+                                    {
+                                        node = document.createTextNode( "" );
+                                    }
+                                }
+                                else
+                                {
+                                    node = document.createTextNode(value);
+                                }
+
                         }
                     }
 
