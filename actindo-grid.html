@@ -1,3 +1,4 @@
+<link rel="import" href="../../bower_components/paper-spinner/paper-spinner-light.html">
 <link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
@@ -204,6 +205,26 @@
                 cursor: auto;
             }
 
+            table tbody
+            {
+                position: relative;
+            }
+
+            .loading
+            {
+                position: absolute;
+                top: 0;
+                left:0;
+                right: 0;
+                bottom: 0;
+                background-color: white;
+                opacity: 0.72;
+                display: flex;
+                align-items: center;
+                z-index: 1;
+                justify-content: center;
+            }
+
             #fixed {
                 display: flex;
                 overflow-x: auto;
@@ -259,6 +280,7 @@
                 justify-content: flex-end;
                 max-height: 4.15em;
                 min-height: 4.15em;
+                position: relative;
             }
             #paging[hidden] {
                 display: none;
@@ -275,6 +297,13 @@
                 @apply(--font-subheader);
                 margin: 2em 0 0 2em;
                 opacity: 0.72;
+            }
+
+            paper-spinner-lite
+            {
+                --paper-spinner-color: var(--actindo-primary);
+                width: 50px;
+                height: 50px;
             }
         </style>
 
@@ -341,10 +370,17 @@
                                 <td></td>
                             </tr>
                         </template>
+                        <template is="dom-if" if="[[_xhr]]">
+                            <div class="loading">
+                                <paper-spinner-lite active></paper-spinner-lite>
+                            </div>
+                        </template>
                     </tbody>
                 </table>
-                <template is="dom-if" if="[[!items.length]]">
-                    <div class="empty-message">[[emptyMessage]]</div>
+                <template is="dom-if" if="[[!_xhr]]">
+                    <template is="dom-if" if="[[!items.length]]">
+                        <div class="empty-message">[[emptyMessage]]</div>
+                    </template>
                 </template>
             </div>
         </div>
@@ -355,6 +391,11 @@
                     [[_getItemsFrom(page, itemsPerPage, totalItems)]]-[[_getItemsTo(page, itemsPerPage, totalItems)]] of [[totalItems]]
                     <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
                     <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
+                    <select value="{{page::change}}">
+                        <template is="dom-repeat" items="[[_pages]]">
+                            <option value="[[item]]">[[item]]</option>
+                        </template>
+                    </select>
                     <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
                     <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
                 </div>
@@ -668,7 +709,23 @@
                     _partiallySelected: {
                         type: Boolean,
                         value: false
+                    },
+
+                    /**
+                     * current xhr request
+                     */
+                    _xhr: {
+                        type: Object
+                    },
+
+                    /**
+                     * List of pages used for dom-repeat in dropdown to change current page
+                     */
+                    _pages: {
+                        type: Array,
+                        value: function(){return [];}
                     }
+
                 };
             }
 
@@ -1049,6 +1106,16 @@
                     }
                     me.set('selectedItems', newSelectedItems);
                 }, 5);
+                if( this.itemsPerPage > 0 && this.totalItems && this.remote )
+                {
+                    let pages = [];
+                    for(let i=1;i<=Math.ceil(this.totalItems / this.itemsPerPage);i++)
+                    {
+                        pages.push(i);
+                    }
+                    this.set("_pages", pages);
+                }
+
             }
 
             /**
@@ -1158,18 +1225,30 @@
                     }
                 }
 
-                return fetch(remote, {
-                    method: 'POST',
-                    credentials: 'same-origin',
-                    body: me._serialize(request)
-                }).then(function(response) {
-                    return response.json();
-                }).then(function(json) {
-                    me.items = Polymer.Path.get(json, remotePathData);
-                    me._setTotalItems(Polymer.Path.get(json, remotePathCount));
-                }).catch(function(error) {
-                    console.error('error loading data', error);
-                });
+                if( this._xhr )
+                {
+                    this._xhr.abort();
+                }
+
+                this._xhr = new XMLHttpRequest();
+                this._xhr.open("POST", remote, true);
+                this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                this._xhr.onreadystatechange = function() {
+                    if(me._xhr.readyState === XMLHttpRequest.DONE) {
+                        if( me._xhr.status === 200 )
+                        {
+                            let data = JSON.parse(me._xhr.responseText);
+                            me._setTotalItems(Polymer.Path.get(data, remotePathCount));
+                            me.items = Polymer.Path.get(data, remotePathData);
+                        }
+                        else if( me._xhr.status !== 0 )
+                        {
+                            console.error(me.xhr.response);
+                        }
+                        me._xhr = null;
+                    }
+                };
+                this._xhr.send(me._serialize(request));
             }
 
 
