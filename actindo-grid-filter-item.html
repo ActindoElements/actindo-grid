@@ -1,0 +1,132 @@
+<link rel="import" href="actindo-grid-filter-tag.html">
+<link rel="import" href="actindo-grid-filter-edit.html">
+<link rel="import" href="actindo-grid-filter-helper.html">
+
+<dom-module id="actindo-grid-filter-item">
+    <template>
+        <style>
+            .container
+            {
+                position: relative;
+                margin-right: 15px;
+            }
+        </style>
+        <div class="container">
+            <actindo-grid-filter-tag
+                active="{{active}}"
+                on-remove="_remove"
+                no-self-remove
+            >
+                <div on-click="_openDialog" slot="content">[[label]]</div>
+            </actindo-grid-filter-tag>
+
+            <actindo-grid-filter-edit
+                editing
+                active="[[active]]"
+                filter="[[filter]]"
+                columns="[[columns]]"
+                custom-filter="[[customFilter]]"
+                on-save="_save"
+                options="[[options]]"
+                id="dialog">
+            </actindo-grid-filter-edit>
+        </div>
+    </template>
+    <script>
+
+        class ActindoGridFilterItem extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-item'; }
+
+            static get properties() {
+                return {
+
+                    _firstLoad: {
+                        type: Boolean,
+                        value: true,
+                    },
+
+                    _filter: {
+                        type: Object,
+                    },
+                    columns: {
+                        type: Array,
+                        value: []
+                    },
+
+                    customFilter: {
+                        type: Object,
+                    },
+
+                    active: {
+                        type: Boolean,
+                        observer: '_onActiveChanged'
+                    },
+
+                    filter: {
+                        type: Object,
+                        observer: '_onFilterChanged'
+                    },
+
+                    label: {
+                        type: String,
+                        computed: '_getLabel(_filter)'
+                    }
+                };
+            }
+
+            _openDialog()
+            {
+                this.$.dialog.open();
+            }
+
+            _onFilterChanged(filter)
+            {
+                this._filter = filter;
+                this.active = filter.active;
+            }
+
+            _onActiveChanged(active)
+            {
+                if (this._firstLoad)
+                {
+                    this._firstLoad = false;
+                    return;
+                }
+                this.set('filter.active', active);
+                this.dispatchEvent( new CustomEvent("edit", {detail: this.filter}));
+            }
+
+            _save(event)
+            {
+                this.set('_filter', Object.assign({}, event.detail));
+
+                Object.assign(this.filter, event.detail);
+                this.dispatchEvent( new CustomEvent("edit", {detail: this.filter}));
+            }
+
+            _remove()
+            {
+                this.dispatchEvent( new CustomEvent("remove", {detail: this.filter}));
+            }
+
+            _getLabel(filter)
+            {
+                const column = this.columns.find(item => item.field === filter.property);
+                const operator = column.operators.find(item => item.value === filter.operator);
+                let value = filter.value;
+                if (typeof filter.value === 'object')
+                {
+                    value = '';
+                    for (let v in filter.value)
+                    {
+                        value += `${v}: ${filter.value[v]} `;
+                    }
+                }
+                return `${column.label} ${operator.name} ${value}`;
+            }
+        }
+
+        customElements.define(ActindoGridFilterItem.is, ActindoGridFilterItem);
+
+    </script>
+</dom-module>
