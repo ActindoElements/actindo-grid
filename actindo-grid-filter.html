@@ -108,13 +108,12 @@
         <div class="container" id="container">
             <div class="content">
                 <div class="filter">
-                    <template is="dom-repeat" items="{{filter}}" as="item">
+                    <template is="dom-repeat" items="{{filterList}}" as="item">
                         <actindo-grid-filter-item
                             on-remove="_removeFilter"
                             on-edit="_editFilter"
                             custom-filter="[[customFilter]]"
                             columns="[[columns]]"
-                            options="[[options]]"
                             filter="{{item}}">
                         </actindo-grid-filter-item>
                     </template>
@@ -127,7 +126,6 @@
                         <actindo-grid-filter-edit
                             columns="[[columns]]"
                             on-save="_createNewFilter"
-                            options="[[options]]"
                             id="dialog">
                         </actindo-grid-filter-edit>
                     </div>
@@ -155,7 +153,7 @@
 
             static get properties() {
                 return {
-                    filter: {
+                    filterList: {
                         type: Array,
                         notify: true,
                         value: []
@@ -182,7 +180,7 @@
 
             deleteMultiple()
             {
-                this.set('filter', []);
+                this.set('filterList', []);
             }
 
             _openDialog()
@@ -199,17 +197,17 @@
 
             _createNewFilter(event)
             {
-                this.push('filter', event.detail);
+                this.push('filterList', event.detail);
             }
             _removeFilter(event)
             {
-                const idx = this.filter.indexOf(event.detail);
-                this.splice('filter', idx, 1);
+                const idx = this.filterList.indexOf(event.detail);
+                this.splice('filterList', idx, 1);
             }
             _editFilter(event)
             {
-                const idx = this.filter.indexOf(event.detail);
-                this.notifyPath('filter.' + idx);
+                const idx = this.filterList.indexOf(event.detail);
+                this.notifyPath('filterList.' + idx);
             }
         }
 

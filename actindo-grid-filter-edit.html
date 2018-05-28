@@ -166,14 +166,14 @@
             {
                 return new Promise(resolve => {
                     const column = this._selectedColumn;
-                    const component = Polymer.Path.get(column, this.options.customFilterComponentPath);
-                    const importPath = Polymer.Path.get(column, this.options.customFilterImportPath);
-                    if (!component)
+
+                    if (!column.customFilter)
                     {
                         const node = column.renderDefaultFilter(column.defaultFilterProperties);
                         resolve(node);
                         return;
                     }
+                    const {importPath, component} = column.customFilter;
 
                     Polymer.importHref(importPath, (element) => {
                         const node = document.createElement(component);

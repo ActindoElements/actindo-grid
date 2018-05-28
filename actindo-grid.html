@@ -327,9 +327,8 @@
         </div>
         <template is="dom-if" if="[[_filterColumns.length]]">
             <actindo-grid-filter
-                filter="{{filter}}"  
+                filter-list="{{filterList}}"
                 columns="{{_filterColumns}}" 
-                options="[[options]]"
                 debounce="{{filterDebounce}}"
             >
             </actindo-grid-filter>
@@ -454,10 +453,6 @@
                         }
                     },
 
-                    options: {
-                        type: Object
-                    },
-
                     /**
                      * if grid has no items this message will be shown
                      */
@@ -505,7 +500,7 @@
                         notify: true
                     },
 
-                    filter: {
+                    filterList: {
                         type: Array,
                         value: function() {
                             return [];
@@ -820,7 +815,7 @@
                     this.page,
                     this.sort,
                     this.query,
-                    this.filter
+                    this.filterList
                 );
             }
 
@@ -836,7 +831,7 @@
                     '_onItemsChanged(items.*)',
                     '_onSelectionChanged(selectedItems.*)',
                     '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query)',
-                    '_onFilterChanged(filter.*)'
+                    '_onFilterChanged(filterList.*)'
                 ];
             }
 
@@ -1195,17 +1190,17 @@
             {
 
                 const column = Object.assign({}, item);
-                column.operators = ActindoGridFilterHelper.operatorList[column.type.name];
-                const component = Polymer.Path.get(column, this.options.customFilterComponentPath);
-                if (component)
-                {
 
-                    let customOperators = Polymer.Path.get(column, this.options.customFilterOperatorsPath);
-                    if (!customOperators)
-                    {
-                        customOperators = ActindoGridFilterHelper.operatorList.default;
-                    }
-                    column.operators = customOperators;
+                column.operators = ActindoGridFilterHelper.operatorList[column.type.name] || [];
+
+                if (column.customFilter)
+                {
+                    column.operators = column.customFilter.operators || [];
+                }
+
+                if (column.operators.length === 0)
+                {
+                    column.operators = ActindoGridFilterHelper.operatorList.default;
                 }
 
                 return column;
@@ -1374,7 +1369,7 @@
                            this.page,
                            this.sort,
                            this.query,
-                           this.filter
+                           this.filterList
                        );
                    }
                );
