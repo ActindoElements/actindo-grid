@@ -1,0 +1,48 @@
+<dom-module id="actindo-grid-filter-between-input">
+
+    <template>
+        <style>
+        </style>
+        <paper-input
+            error-message="You must enter a Number"
+            auto-validate
+            label="From"
+            value="{{value.from}}"
+            pattern="^-?[0-9]\d*(\.\d+)?$"
+            allowed-pattern="[0-9\-\.]">
+        </paper-input>
+        <paper-input
+            error-message="You must enter a Number"
+            auto-validate
+            label="To"
+            value="{{value.to}}"
+            pattern="^-?[0-9]\d*(\.\d+)?$"
+            allowed-pattern="[0-9\-\.]">
+        </paper-input>
+        </div>
+
+    </template>
+
+    <script>
+        class ActindoGridFilterBetweenInput extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-between-input'; }
+
+            static get properties() {
+                return {
+                    value: {
+                        type: Object,
+                        notify: true,
+                        value: function() {
+                            return {
+                                from: null,
+                                to: null
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        customElements.define(ActindoGridFilterBetweenInput.is, ActindoGridFilterBetweenInput);
+    </script>
+</dom-module>

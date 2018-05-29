@@ -3,28 +3,10 @@
         <style>
             :host
             {
-                --paper-checkbox-unchecked-color: rgba(255,255,255,0.8);
-            }
-            .checked-false
-            {
                 --paper-checkbox-unchecked-color: rgba(255,255,255,0.4);
-
-            }
-            .checked-true
-            {
                 --paper-checkbox-checkmark-color: var(--actindo-secondary);
                 --paper-checkbox-checked-color: rgba(255,255,255,0.8);
             }
-            .container
-            {
-                position: relative;
-                margin-right: 15px;
-            }
-
-            .container {
-                display: inline;
-            }
-
             .container
             {
                 vertical-align: top;
@@ -79,9 +61,6 @@
             {
                 opacity: 0.4;
             }
-
-
-
         </style>
         <div class$="container checked-[[active]]" on-remove="_remove">
             <template is="dom-if" if="[[!noCheckBox]]">
@@ -106,18 +85,33 @@
 
             static get properties() {
                 return {
+                    /**
+                     * set to true if the filter is active
+                     */
                     active: {
                         type: Boolean,
                         notify: true
                     },
+
+                    /**
+                     * if this is true, the checkbox on the left will be hidden
+                     */
                     noCheckBox: {
                         type: Boolean,
                         value: false
                     },
+
+                    /**
+                     * if this is true, the close icon on the right will be hidden
+                     */
                     noRemoveButton: {
                         type: Boolean,
                         value: false
                     },
+
+                    /**
+                     * if this is true, the item will not self-destroyed, the only an "remove" event will be fired
+                     */
                     noSelfRemove: {
                         type: Boolean,
                         value: false
@@ -125,6 +119,9 @@
                 };
             }
 
+            /**
+             *  Call when user click on the close icon
+             */
             _remove()
             {
                 const evt = new CustomEvent("remove", { cancelable: true })

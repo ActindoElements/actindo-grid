@@ -91,25 +91,45 @@
 
             static get properties() {
                 return {
+                    /**
+                     * Whether is editing or not
+                     */
                     editing: {
                         type: Boolean,
                         value: false,
                     },
+                    /**
+                     * The status of the filter
+                     */
                     active: {
                         type: Boolean,
                         value: true
                     },
+                    /**
+                     * contains the filter criteria, the key "property" contains the column value,
+                     * the field "operator" contains operator value(=,>,like,etc...), the field "value" contains the value need to be filtered
+                     * {property: String, operator: string, value: mixed}
+                     */
+                    filter: {
+                        type: Object
+                    },
+                    /**
+                     * contains the column value
+                     */
                     property: {
                         type: String,
                     },
+                    /**
+                     * contains the operator value
+                     */
                     operator: {
                         type: String,
                         observer: '_onOperatorChanged'
                     },
+                    /**
+                     * contains the filter value
+                     */
                     value: {},
-                    filter: {
-                        type: Object
-                    },
                     _operators: {
                         type: Array,
                         value: []
@@ -169,7 +189,7 @@
 
                     if (!column.customFilter)
                     {
-                        const node = column.renderDefaultFilter(column.defaultFilterProperties);
+                        const node = column.renderDefaultFilter(column.defaultFilterProperties, operator);
                         resolve(node);
                         return;
                     }

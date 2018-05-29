@@ -2,6 +2,10 @@
     (function() {
         const relationalOperators = [
             {
+                name: 'between',
+                value: 'bt'
+            },
+            {
                name: 'less',
                value: '<'
             },
@@ -43,7 +47,8 @@
             ]
         };
         ActindoGridFilterHelper = {
-            operatorList: operatorList
+            operatorList: operatorList,
+            BetweenOperator: 'bt'
         };
     })();
 </script>

@@ -7,6 +7,7 @@
 <link rel="import" href="actindo-grid-search.html">
 <link rel="import" href="actindo-grid-filter-helper.html">
 <link rel="import" href="actindo-grid-filter.html">
+<link rel="import" href="actindo-grid-filter-between-input.html">
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 
@@ -430,6 +431,7 @@
                      * * filterable: if the grid can be filtered by this columns values
                      * * resizable: if this column is resizable
                      * * render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed
+                     * * renderDefaultFilter: return a DOMElement element to be displayed
                      * * nullMessage: Text shown if field is null; if nothing specified it will display empty string
                      *
                      * @type {[{
@@ -443,6 +445,7 @@
                      *     filterable: bool,
                      *     resizable: bool,
                      *     render: function,
+                     *     renderDefaultFilter: function,
                      *     nullMessage: string
                      * }]}
                      */
@@ -500,6 +503,18 @@
                         notify: true
                     },
 
+                    /**
+                     * contains the list of filter of the grid.
+                     * * property: the name of the column
+                     * * operator: the value of the operator such as (=, like,..)
+                     * * value: the value need to be filtered
+                     *
+                     * @type {[{
+                     *     property: string,
+                     *     operator: string,
+                     *     value: mixed
+                     * }]}
+                     */
                     filterList: {
                         type: Array,
                         value: function() {
@@ -861,8 +876,17 @@
                     filterable: false,
                     resizable: true,
                     render: null,
-                    renderDefaultFilter: function(properties = {}) {
-                        const element = document.createElement('paper-input');
+                    renderDefaultFilter: function(properties = {}, operator) {
+                        let element;
+                        switch(operator)
+                        {
+                            case ActindoGridFilterHelper.BetweenOperator:
+                                element = document.createElement('actindo-grid-filter-between-input');
+                                break;
+                            default:
+                                element = document.createElement('paper-input');
+                                break;
+                        }
                         element.label = 'Value';
                         Object.assign(element, properties);
                         return element;
