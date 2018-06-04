@@ -1,0 +1,292 @@
+<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="actindo-grid-filter-helper.html">
+<dom-module id="actindo-grid-filter-edit">
+    <template>
+        <style>
+            :host
+            {
+                --header-container-style: {
+                    position: absolute;
+                    top: -999px;
+                }
+            }
+            paper-dialog
+            {
+                @apply(--paper-material-elevation-2);
+                min-width: 25em;
+                min-height: 22em;
+                margin-left: 4px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                height: 100%;
+
+            }
+            #inputFilter
+            {
+                margin: 0 12px;
+            }
+
+            actindo-basic-panel
+            {
+                padding: 0;
+                margin-bottom: 0;
+                margin-top: 0;
+            }
+            paper-dialog .header
+            {
+                display: flex;
+                margin-right: 24px;
+                flex-direction: column;
+            }
+            .header .toolbar
+            {
+                display: flex;
+            }
+            .header actindo-combobox
+            {
+               margin-right: 0.6em;
+               width: 50%;
+            }
+        </style>
+        <paper-dialog id="alignedDialog">
+            <actindo-basic-panel on-save="_save" on-cancel="_cancel" save-label="[[saveLabel]]" no-back-icon>
+                <div class="header" slot="content">
+                    <div class="toolbar">
+                        <template is="dom-if" if="[[columns.length]]">
+                            <actindo-combobox
+                                label="Select filter"
+                                items="[[columns]]"
+                                display-field="label"
+                                value-field="field"
+                                selected-item="{{_selectedColumn}}"
+                                value="{{property}}"
+                                disabled="[[editing]]"
+                            >
+                            </actindo-combobox>
+                        </template>
+                        <template is="dom-if" if="[[_selectedColumn.type]]">
+                            <actindo-combobox
+                                label="Operator"
+                                items="[[_operators]]"
+                                display-field="name"
+                                value-field="value"
+                                value="{{operator}}"
+                            >
+                            </actindo-combobox>
+                        </template>
+                    </div>
+                    <div hidden="[[!operator]]">
+                        <div id="inputFilter"></div>
+                    </div>
+                </div>
+            </actindo-basic-panel>
+        </paper-dialog>
+    </template>
+
+    <script>
+
+        class ActindoGridFilterEdit extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-edit'; }
+
+            static get properties() {
+                return {
+                    /**
+                     * Whether is editing or not
+                     */
+                    editing: {
+                        type: Boolean,
+                        value: false,
+                    },
+                    /**
+                     * The status of the filter
+                     */
+                    active: {
+                        type: Boolean,
+                        value: true
+                    },
+                    /**
+                     * contains the filter criteria, the key "property" contains the column value,
+                     * the field "operator" contains operator value(=,>,like,etc...), the field "value" contains the value need to be filtered
+                     * {property: String, operator: string, value: mixed}
+                     */
+                    filter: {
+                        type: Object
+                    },
+                    /**
+                     * contains the column value
+                     */
+                    property: {
+                        type: String,
+                    },
+                    /**
+                     * contains the operator value
+                     */
+                    operator: {
+                        type: String,
+                        observer: '_onOperatorChanged'
+                    },
+                    /**
+                     * contains the filter value
+                     */
+                    value: {},
+                    _valueHistory: {
+                        type: Object,
+                        value: function() {
+                            return {}
+                        }
+                    },
+                    _operators: {
+                        type: Array,
+                        value: []
+                    },
+                    _selectedColumn: {
+                        type: Object,
+                        observer: '_onSelectedColumnChanged'
+                    },
+                    _saveLabel: {
+                        type: String,
+                        computed: '_getSaveLabel(filter)'
+                    }
+                };
+            }
+
+            _onSelectedColumnChanged(column)
+            {
+                if (!column.type)
+                {
+                    return;
+                }
+
+                this.setProperties({
+                    _operators: column.operators,
+                });
+            }
+
+            _onOperatorChanged(opt)
+            {
+                if (!opt)
+                {
+                    return;
+                }
+                const inputFilter = this.$.inputFilter;
+                let {firstChild} = inputFilter;
+
+                const column = this._selectedColumn;
+                this.getInputComponent(column, opt).then(node => {
+                    // Check if in edit mode and first load
+                    if (!firstChild && this.editing)
+                    {
+                        node.value = this.value;
+                    }
+
+                    if (firstChild)
+                    {
+                        this._valueHistory[firstChild.tagName] = firstChild.value;
+                    }
+                    // keep if the new input component name is not changed
+                    firstChild = firstChild || {};
+                    if (firstChild.tagName === node.tagName)
+                    {
+                        return;
+                    }
+                    if (this._valueHistory[node.tagName])
+                    {
+                        node.value = this._valueHistory[node.tagName];
+                    }
+                    inputFilter.innerHTML = '';
+                    node.addEventListener("value-changed", this._onValueChanged.bind(this));
+                    inputFilter.appendChild(node);
+                });
+            }
+
+            getInputComponent(column, operator)
+            {
+                return new Promise(resolve => {
+                    if (!column.customFilter)
+                    {
+                        const node = column.renderDefaultFilter(column.defaultFilterProperties, operator);
+                        resolve(node);
+                        return;
+                    }
+                    const {importPath, component} = column.customFilter;
+
+                    Polymer.importHref(importPath, (element) => {
+                        const node = document.createElement(component);
+                        node.element = element.element;
+                        resolve(node);
+                   });
+                });
+
+            }
+
+            _onValueChanged(event)
+            {
+                if (event.detail.path)
+                {
+                    this.set(event.detail.path, event.detail.value);
+                    return;
+                }
+                this.set('value', event.detail.value);
+            }
+
+            _getSaveLabel(filter)
+            {
+                if (this.editing)
+                {
+                    return 'Apply';
+                }
+                return 'Add';
+            }
+
+            _save()
+            {
+                let {property, operator, value} = this;
+
+                if (!value) {
+                    return;
+                }
+
+                this.dispatchEvent( new CustomEvent("save", {detail: {
+                    property: property,
+                    operator: operator,
+                    value: value,
+                    active: this.active
+                } }));
+
+                if (!this.editing)
+                {
+                    const inputFilter = this.shadowRoot.querySelector('#inputFilter');
+                    inputFilter.removeChild(inputFilter.firstChild);
+                }
+                this.$.alignedDialog.close()
+            }
+
+            _cancel()
+            {
+                this.$.alignedDialog.close()
+            }
+
+            open()
+            {
+                this.reset();
+                this.$.alignedDialog.open();
+            }
+
+            reset()
+            {
+                const filter = JSON.parse(JSON.stringify(this.filter || {}));
+
+                this.setProperties({
+                    property: filter.property,
+                    operator: filter.operator,
+                    value: filter.value
+                });
+
+            }
+        }
+
+        customElements.define(ActindoGridFilterEdit.is, ActindoGridFilterEdit);
+
+    </script>
+</dom-module>

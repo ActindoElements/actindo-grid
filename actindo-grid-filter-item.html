@@ -1,0 +1,155 @@
+<link rel="import" href="actindo-grid-filter-tag.html">
+<link rel="import" href="actindo-grid-filter-edit.html">
+<link rel="import" href="actindo-grid-filter-helper.html">
+
+<dom-module id="actindo-grid-filter-item">
+    <template>
+        <style>
+            .container
+            {
+                position: relative;
+                margin-right: 15px;
+            }
+            paper-button
+            {
+                text-transform: initial;
+                color: inherit;
+            }
+        </style>
+        <div class="container">
+            <actindo-grid-filter-tag
+                active="{{active}}"
+                on-remove="_remove"
+                no-self-remove
+            >
+                <paper-button on-click="_showEditDialog" slot="content">[[_label]]</paper-button>
+            </actindo-grid-filter-tag>
+
+            <actindo-grid-filter-edit
+                editing
+                active="[[active]]"
+                filter="[[filter]]"
+                columns="[[columns]]"
+                on-save="_save"
+                id="edit">
+            </actindo-grid-filter-edit>
+        </div>
+    </template>
+    <script>
+
+        class ActindoGridFilterItem extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-item'; }
+
+            static get properties() {
+                return {
+                    /**
+                     * contains all the columns has filterable property equal to true
+                     */
+                    columns: {
+                        type: Array,
+                        value: []
+                    },
+                    /**
+                     * The status of the filter
+                     */
+                    active: {
+                        type: Boolean,
+                        observer: '_onActiveChanged'
+                    },
+                    /**
+                     * contains the current filter criteria, the key "property" contains the column value,
+                     * the field "operator" contains operator value(=,>,like,etc...), the field "value" contains the value need to be filtered
+                     * {property: String, operator: string, value: mixed}
+                     */
+                    filter: {
+                        type: Object,
+                        observer: '_onFilterChanged'
+                    },
+                    _label: {
+                        type: String
+                    },
+                    _firstLoad: {
+                        type: Boolean,
+                        value: true
+                    },
+                    _filter: {
+                        type: Object
+                    }
+                };
+            }
+
+            static get observers() {
+                return [
+                    '_getLabel(_filter)'
+                ]
+            }
+
+            _showEditDialog()
+            {
+                this.$.edit.open();
+            }
+
+            _onFilterChanged(filter)
+            {
+                this._filter = filter;
+                this.active = filter.active;
+            }
+
+            _onActiveChanged(active)
+            {
+                if (this._firstLoad)
+                {
+                    this._firstLoad = false;
+                    return;
+                }
+                this.set('filter.active', active);
+            }
+
+            _save(event)
+            {
+                this.set('_filter', Object.assign({}, event.detail));
+
+                Object.assign(this.filter, event.detail);
+                this.dispatchEvent( new CustomEvent("edit", {detail: this.filter}));
+            }
+
+            _remove()
+            {
+                this.dispatchEvent( new CustomEvent("remove", {detail: this.filter}));
+            }
+
+            _getDisplayValue(node, filter)
+            {
+                if (typeof node.getDisplayValue === 'function')
+                {
+                    return node.getDisplayValue(filter.value);
+                }
+                let value = filter.value;
+                if (typeof filter.value === 'object')
+                {
+                    value = '';
+                    for (let v in filter.value)
+                    {
+                        value += `${v}: ${filter.value[v]} `;
+                    }
+                }
+                return value;
+            }
+
+            _getLabel(filter)
+            {
+                const column = this.columns.find(item => item.field === filter.property);
+                const operator = column.operators.find(item => item.value === filter.operator);
+                this.$.edit.getInputComponent(column, filter.operator).then(node => {
+                    const value = this._getDisplayValue(node, this.filter);
+                    this._label = `${column.label} ${operator.name} ${value}`;
+                });
+
+
+            }
+        }
+
+        customElements.define(ActindoGridFilterItem.is, ActindoGridFilterItem);
+
+    </script>
+</dom-module>

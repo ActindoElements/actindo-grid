@@ -1,0 +1,59 @@
+<script>
+    (function() {
+        const relationalOperators = [
+            {
+                name: 'between',
+                value: 'bt'
+            },
+            {
+               name: 'less',
+               value: '<'
+            },
+            {
+               name: 'greater',
+               value: '>'
+            },
+            {
+               name: 'equal',
+               value: '='
+            },
+            {
+              name: 'less or equal',
+              value: '<='
+            },
+            {
+               name: 'greater or equal',
+               value: '>='
+            },
+            {
+               name: 'not equal to',
+               value: '!='
+            }
+        ];
+        const numberOperator = relationalOperators;
+        const operatorList =  {
+            String: [
+                {
+                    name: 'like',
+                    value: 'like'
+                },
+                {
+                    name: 'equal',
+                    value: '='
+                }
+            ],
+            Number: numberOperator,
+            Date: relationalOperators,
+            default: [
+                {
+                   name: 'matches',
+                   value: 'matches'
+                }
+            ]
+        };
+        ActindoGridFilterHelper = {
+            operatorList: operatorList,
+            BetweenOperator: 'bt'
+        };
+    })();
+</script>

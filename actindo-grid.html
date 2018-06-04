@@ -5,7 +5,9 @@
 <link rel="import" href="actindo-grid-cell-content.html">
 <link rel="import" href="actindo-grid-column-configurator.html">
 <link rel="import" href="actindo-grid-search.html">
-
+<link rel="import" href="actindo-grid-filter-helper.html">
+<link rel="import" href="actindo-grid-filter.html">
+<link rel="import" href="actindo-grid-filter-between-input.html">
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 
@@ -324,6 +326,15 @@
                 <actindo-grid-column-configurator columns="{{_columns}}" hidden="[[hideColumnConfiguration]]"></actindo-grid-column-configurator>
             </div>
         </div>
+        <template is="dom-if" if="[[_filterColumns.length]]">
+            <actindo-grid-filter
+                filter-list="{{filterList}}"
+                columns="{{_filterColumns}}" 
+                debounce="{{filterDebounce}}"
+            >
+            </actindo-grid-filter>
+        </template>
+
         <div id="fixed">
             <div id="grid">
                 <table class$="disable-tap-row-select-[[disableTapRowToSelect]]" id="table">
@@ -420,6 +431,7 @@
                      * * filterable: if the grid can be filtered by this columns values
                      * * resizable: if this column is resizable
                      * * render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed
+                     * * renderDefaultFilter: return a DOMElement element to be displayed
                      * * nullMessage: Text shown if field is null; if nothing specified it will display empty string
                      *
                      * @type {[{
@@ -433,6 +445,7 @@
                      *     filterable: bool,
                      *     resizable: bool,
                      *     render: function,
+                     *     renderDefaultFilter: function,
                      *     nullMessage: string
                      * }]}
                      */
@@ -491,6 +504,25 @@
                     },
 
                     /**
+                     * contains the list of filter of the grid.
+                     * * property: the name of the column
+                     * * operator: the value of the operator such as (=, like,..)
+                     * * value: the value need to be filtered
+                     *
+                     * @type {[{
+                     *     property: string,
+                     *     operator: string,
+                     *     value: mixed
+                     * }]}
+                     */
+                    filterList: {
+                        type: Array,
+                        value: function() {
+                            return [];
+                        }
+                    },
+
+                    /**
                      * contains the current search query
                      */
                     query: {
@@ -516,6 +548,14 @@
                     hideColumnConfiguration: {
                         type: Boolean,
                         value: false
+                    },
+
+                    /**
+                     * if this is true, the request will be debounced when the filter is changed
+                     */
+                    filterDebounce: {
+                        type: Boolean,
+                        value: true
                     },
 
                     /**
@@ -689,6 +729,14 @@
                     },
 
                     /**
+                     * holds the colmumn has filterable is true
+                     */
+                    _filterColumns: {
+                        type: Array,
+                        value: []
+                    },
+
+                    /**
                      * holds the colmumn that is marked as identifying
                      */
                     _identifyingColumn: {
@@ -781,7 +829,8 @@
                     this.itemsPerPage,
                     this.page,
                     this.sort,
-                    this.query
+                    this.query,
+                    this.filterList
                 );
             }
 
@@ -796,7 +845,8 @@
                     '_consolidateColumns(columnConfiguration.*)',
                     '_onItemsChanged(items.*)',
                     '_onSelectionChanged(selectedItems.*)',
-                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query)'
+                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList)',
+                    '_onFilterChanged(filterList.*)'
                 ];
             }
 
@@ -825,7 +875,22 @@
                     sortable: false,
                     filterable: false,
                     resizable: true,
-                    render: null
+                    render: null,
+                    renderDefaultFilter: function(properties = {}, operator) {
+                        let element;
+                        switch(operator)
+                        {
+                            case ActindoGridFilterHelper.BetweenOperator:
+                                element = document.createElement('actindo-grid-filter-between-input');
+                                break;
+                            default:
+                                element = document.createElement('paper-input');
+                                break;
+                        }
+                        element.label = 'Value';
+                        Object.assign(element, properties);
+                        return element;
+                    }
                 };
             }
 
@@ -1142,6 +1207,30 @@
             }
 
             /**
+             * attach operator property to column object
+             * @private
+             */
+            _attachOperatorToColumn(item)
+            {
+
+                const column = Object.assign({}, item);
+
+                column.operators = ActindoGridFilterHelper.operatorList[column.type.name] || [];
+
+                if (column.customFilter)
+                {
+                    column.operators = column.customFilter.operators || [];
+                }
+
+                if (column.operators.length === 0)
+                {
+                    column.operators = ActindoGridFilterHelper.operatorList.default;
+                }
+
+                return column;
+            }
+
+            /**
              * called when the columnConfiguration changes. Process the columns and copy them to the internal
              * _columns property.
              *
@@ -1152,6 +1241,8 @@
                 let configuration = columnConfiguration.base;
 
                 let columns = [];
+
+                let filterColumns = [] ;
 
                 this._identifyingColumn = null;
 
@@ -1175,6 +1266,12 @@
                         }
                     }
 
+                    if (item.filterable)
+                    {
+                        const column = this._attachOperatorToColumn(item);
+                        filterColumns.push(column);
+                    }
+
                     columns.push(item);
                 }
 
@@ -1184,17 +1281,12 @@
                 }
 
                 this._columns = columns;
+                this._filterColumns = filterColumns;
             }
 
-            /**
-             * called on explicit refresh or if any of the parameter changes that require a reload from the remote
-             *
-             * @private
-             */
-            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query) {
-                if(!remote) {
-                    return;
-                }
+            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filter)
+            {
+
 
                 let me = this;
                 let request = remoteParams;
@@ -1211,6 +1303,16 @@
                 if(sort.hasOwnProperty('field')) {
                     request[remoteParamSort] = [];
                     request[remoteParamSort].push({field: sort.field, order: sort.order ? 'ASC' : 'DESC'});
+                }
+
+                request[remoteParamFilter] = [];
+                if(filter.length > 0) {
+                    filter.forEach(item => {
+                        if (item.active)
+                        {
+                            request[remoteParamFilter].push(item)
+                        }
+                    });
                 }
 
                 // searching
@@ -1249,6 +1351,72 @@
                     }
                 };
                 this._xhr.send(me._serialize(request));
+            }
+
+            _onFilterChanged(filterList)
+            {
+                // Ignore filterList.length event
+                if (filterList.path === 'filterList.length')
+                {
+                    return;
+                }
+                // Ignore if all the splice item are inactive
+                if (filterList.value.indexSplices)
+                {
+                    const {removed} = filterList.value.indexSplices[0];
+                    const activeFilter = removed.find(item => item.active === true);
+                    if (removed.length > 0 && !activeFilter)
+                    {
+                        return;
+                    }
+                }
+                if (this.page === 1)
+                {
+                    this.refresh();
+                    return;
+                }
+                this.firstPage();
+            }
+            /**
+             * called on explicit refresh or if any of the parameter changes that require a reload from the remote
+             *
+             * @private
+             */
+            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList = []) {
+                if(!remote) {
+                   return;
+                }
+                if (!this.filterDebounce)
+                {
+                    this._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList);
+                    return;
+                }
+                this._loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList);
+            }
+
+            _loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList) {
+               this._debouncer = Polymer.Debouncer.debounce(this._debouncer,
+                  Polymer.Async.timeOut.after(500),
+                   () => {
+                       this._load(
+                           remote,
+                           remotePathData,
+                           remotePathCount,
+                           remoteParams,
+                           remoteParamFilter,
+                           remoteParamLimit,
+                           remoteParamOffset,
+                           remoteParamSearch,
+                           remoteParamSearchFields,
+                           remoteParamSort,
+                           itemsPerPage,
+                           page,
+                           sort,
+                           query,
+                           filterList
+                       );
+                   }
+               );
             }
 
 

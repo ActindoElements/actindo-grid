@@ -1,0 +1,146 @@
+<dom-module id="actindo-grid-filter-tag">
+    <template>
+        <style>
+            :host
+            {
+                --paper-checkbox-unchecked-color: rgba(255,255,255,0.4);
+                --paper-checkbox-checkmark-color: var(--actindo-secondary);
+                --paper-checkbox-checked-color: rgba(255,255,255,0.8);
+            }
+
+            .container
+            {
+                vertical-align: top;
+                outline: none;
+                cursor: default;
+                margin: 8px 0;
+                overflow: visible;
+                border-radius: 16px;
+                background-color: rgba(255,255,255,0.4);
+                position: relative;
+                color: rgb(255,255,255);
+                box-sizing: border-box;
+                height: 32px;
+                display: flex;
+                align-items: center;
+                @apply(--filter-tag-container);
+            }
+            .container.checked-false
+            {
+                color: rgba(255,255,255, 0.4);
+                background-color: rgba(255,255,255,0.2);
+            }
+            .container paper-checkbox
+            {
+                margin-left: 10px;
+            }
+            .container .icon
+            {
+                border-radius: 100% 0 0 100%;
+                border-right: 2px solid var(--actindo-secondary);
+                height: 100%;
+                display: flex;
+                align-items: center;
+            }
+            .container .content
+            {
+                padding-left: 10px;
+                font-size: var(--paper-font-body2_-_font-size);
+                font-weight: var(--paper-font-body2_-_font-weight);
+                @apply(--filter-tag-content);
+            }
+
+            .checked-true .remove-icon
+            {
+                opacity: 0.6;
+            }
+
+            .checked-false .remove-icon
+            {
+                opacity: 0.4;
+            }
+        </style>
+        <div class$="container checked-[[active]]" on-remove="_remove">
+            <template is="dom-if" if="[[!noCheckBox]]">
+                <div class="icon" slot="icon">
+                    <paper-checkbox checked="{{active}}" ></paper-checkbox>
+                </div>
+            </template>
+            <div class="content">
+                <slot name="content"></slot>
+            </div>
+
+            <template is="dom-if" if="[[!noRemoveButton]]">
+                <paper-icon-button on-click="_remove" class="remove-icon" icon="icons:cancel"></paper-icon-button>
+            </template>
+        </div>
+    </template>
+
+    <script>
+
+        class ActindoGridFilterTag extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-tag'; }
+
+            static get properties() {
+                return {
+                    /**
+                     * set to true if the filter is active
+                     */
+                    active: {
+                        type: Boolean,
+                        notify: true
+                    },
+
+                    /**
+                     * if this is true, the checkbox on the left will be hidden
+                     */
+                    noCheckBox: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * if this is true, the close icon on the right will be hidden
+                     */
+                    noRemoveButton: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * if this is true, the item will not self-destroyed, the only an "remove" event will be fired
+                     */
+                    noSelfRemove: {
+                        type: Boolean,
+                        value: false
+                    }
+                };
+            }
+
+            /**
+             *  Call when user click on the close icon
+             */
+            _remove()
+            {
+                const evt = new CustomEvent("remove", { cancelable: true })
+                this.dispatchEvent(evt)
+
+                // Dispatch event only so ignore
+                if (this.noSelfRemove)
+                {
+                    return;
+                }
+
+                // Do not have parent node so ignore
+                if (!this.parentNode) {
+                    return
+                }
+
+                return this.parentNode.removeChild(this);
+            }
+        }
+
+        customElements.define(ActindoGridFilterTag.is, ActindoGridFilterTag);
+
+    </script>
+</dom-module>

@@ -90,7 +90,7 @@
       },
       "privacy": "public",
       "superclass": "Polymer.Element",
-      "name": "ActindoGridCellContent2",
+      "name": "ActindoGridCellContent",
       "attributes": [
         {
           "name": "row",
@@ -131,7 +131,7 @@
         "selectors": []
       },
       "slots": [],
-      "tagname": "actindo-grid-cell-content2"
+      "tagname": "actindo-grid-cell-content"
     },
     {
       "description": "",
@@ -145,11 +145,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 44,
+              "line": 52,
               "column": 20
             },
             "end": {
-              "line": 47,
+              "line": 55,
               "column": 21
             }
           },
@@ -166,11 +166,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 52,
+              "line": 60,
               "column": 20
             },
             "end": {
-              "line": 55,
+              "line": 63,
               "column": 21
             }
           },
@@ -187,11 +187,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 65,
+              "line": 73,
               "column": 12
             },
             "end": {
-              "line": 79,
+              "line": 87,
               "column": 13
             }
           },
@@ -204,11 +204,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 84,
+              "line": 92,
               "column": 12
             },
             "end": {
-              "line": 86,
+              "line": 94,
               "column": 13
             }
           },
@@ -221,11 +221,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 94,
+              "line": 102,
               "column": 12
             },
             "end": {
-              "line": 103,
+              "line": 105,
               "column": 13
             }
           },
@@ -242,11 +242,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 111,
+              "line": 113,
               "column": 12
             },
             "end": {
-              "line": 115,
+              "line": 117,
               "column": 13
             }
           },
@@ -263,28 +263,28 @@
       "metadata": {},
       "sourceRange": {
         "start": {
-          "line": 36,
+          "line": 44,
           "column": 8
         },
         "end": {
-          "line": 116,
+          "line": 118,
           "column": 9
         }
       },
       "privacy": "public",
       "superclass": "Polymer.Element",
-      "name": "ActindoGridColumnConfigurator2",
+      "name": "ActindoGridColumnConfigurator",
       "attributes": [
         {
           "name": "columns",
           "description": "contains all available columns from the actindo-grid",
           "sourceRange": {
             "start": {
-              "line": 44,
+              "line": 52,
               "column": 20
             },
             "end": {
-              "line": 47,
+              "line": 55,
               "column": 21
             }
           },
@@ -305,7 +305,7 @@
         "selectors": []
       },
       "slots": [],
-      "tagname": "actindo-grid-column-configurator2"
+      "tagname": "actindo-grid-column-configurator"
     },
     {
       "description": "",
@@ -507,7 +507,7 @@
       },
       "privacy": "public",
       "superclass": "Polymer.Element",
-      "name": "ActindoGridSearch2",
+      "name": "ActindoGridSearch",
       "attributes": [
         {
           "name": "collapsed",
@@ -587,25 +587,1417 @@
         "selectors": []
       },
       "slots": [],
-      "tagname": "actindo-grid-search2"
+      "tagname": "actindo-grid-search"
     },
     {
       "description": "",
+      "summary": "",
+      "path": "actindo-grid-filter-tag.html",
+      "properties": [
+        {
+          "name": "active",
+          "type": "boolean",
+          "description": "set to true if the filter is active",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 90,
+              "column": 20
+            },
+            "end": {
+              "line": 93,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          }
+        },
+        {
+          "name": "noCheckBox",
+          "type": "boolean",
+          "description": "if this is true, the checkbox on the left will be hidden",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 98,
+              "column": 20
+            },
+            "end": {
+              "line": 101,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "noRemoveButton",
+          "type": "boolean",
+          "description": "if this is true, the close icon on the right will be hidden",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 106,
+              "column": 20
+            },
+            "end": {
+              "line": 109,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "noSelfRemove",
+          "type": "boolean",
+          "description": "if this is true, the item will not self-destroyed, the only an \"remove\" event will be fired",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 114,
+              "column": 20
+            },
+            "end": {
+              "line": 117,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        }
+      ],
+      "methods": [
+        {
+          "name": "_remove",
+          "description": "Call when user click on the close icon",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 124,
+              "column": 12
+            },
+            "end": {
+              "line": 141,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 82,
+          "column": 8
+        },
+        "end": {
+          "line": 142,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "Polymer.Element",
+      "name": "ActindoGridFilterTag",
+      "attributes": [
+        {
+          "name": "active",
+          "description": "set to true if the filter is active",
+          "sourceRange": {
+            "start": {
+              "line": 90,
+              "column": 20
+            },
+            "end": {
+              "line": 93,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "no-check-box",
+          "description": "if this is true, the checkbox on the left will be hidden",
+          "sourceRange": {
+            "start": {
+              "line": 98,
+              "column": 20
+            },
+            "end": {
+              "line": 101,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "no-remove-button",
+          "description": "if this is true, the close icon on the right will be hidden",
+          "sourceRange": {
+            "start": {
+              "line": 106,
+              "column": 20
+            },
+            "end": {
+              "line": 109,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "no-self-remove",
+          "description": "if this is true, the item will not self-destroyed, the only an \"remove\" event will be fired",
+          "sourceRange": {
+            "start": {
+              "line": 114,
+              "column": 20
+            },
+            "end": {
+              "line": 117,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        }
+      ],
+      "events": [
+        {
+          "type": "CustomEvent",
+          "name": "active-changed",
+          "description": "Fired when the `active` property changes.",
+          "metadata": {}
+        }
+      ],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [
+        {
+          "description": "",
+          "name": "content",
+          "range": {
+            "file": "actindo-grid-filter-tag.html",
+            "start": {
+              "line": 71,
+              "column": 16
+            },
+            "end": {
+              "line": 71,
+              "column": 44
+            }
+          }
+        }
+      ],
+      "tagname": "actindo-grid-filter-tag"
+    },
+    {
+      "description": "",
+      "summary": "",
+      "path": "actindo-grid-filter-edit.html",
+      "properties": [
+        {
+          "name": "editing",
+          "type": "boolean",
+          "description": "Whether is editing or not",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 96,
+              "column": 20
+            },
+            "end": {
+              "line": 99,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "false"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "description": "The status of the filter",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 103,
+              "column": 20
+            },
+            "end": {
+              "line": 106,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "true"
+        },
+        {
+          "name": "filter",
+          "type": "Object",
+          "description": "contains the filter criteria, the key \"property\" contains the column value,\nthe field \"operator\" contains operator value(=,>,like,etc...), the field \"value\" contains the value need to be filtered\n{property: String, operator: string, value: mixed}",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 112,
+              "column": 20
+            },
+            "end": {
+              "line": 114,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "property",
+          "type": "string",
+          "description": "contains the column value",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 118,
+              "column": 20
+            },
+            "end": {
+              "line": 120,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "operator",
+          "type": "string",
+          "description": "contains the operator value",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 124,
+              "column": 20
+            },
+            "end": {
+              "line": 127,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "observer": "\"_onOperatorChanged\""
+            }
+          }
+        },
+        {
+          "name": "value",
+          "type": "?",
+          "description": "contains the filter value",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 131,
+              "column": 20
+            },
+            "end": {
+              "line": 131,
+              "column": 29
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "_operators",
+          "type": "Array",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 132,
+              "column": 20
+            },
+            "end": {
+              "line": 135,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "_loaded",
+          "type": "boolean",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 136,
+              "column": 20
+            },
+            "end": {
+              "line": 139,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "true"
+        },
+        {
+          "name": "_selectedColumn",
+          "type": "Object",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 140,
+              "column": 20
+            },
+            "end": {
+              "line": 143,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "observer": "\"_onSelectedColumnChanged\""
+            }
+          }
+        },
+        {
+          "name": "_saveLabel",
+          "type": "string",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 144,
+              "column": 20
+            },
+            "end": {
+              "line": 147,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "readOnly": true
+            }
+          }
+        }
+      ],
+      "methods": [
+        {
+          "name": "_onSelectedColumnChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 151,
+              "column": 12
+            },
+            "end": {
+              "line": 162,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "column"
+            }
+          ]
+        },
+        {
+          "name": "_onOperatorChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 164,
+              "column": 12
+            },
+            "end": {
+              "line": 182,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "opt"
+            }
+          ]
+        },
+        {
+          "name": "_getInputComponent",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 184,
+              "column": 12
+            },
+            "end": {
+              "line": 204,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "operator"
+            }
+          ]
+        },
+        {
+          "name": "_onValueChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 206,
+              "column": 12
+            },
+            "end": {
+              "line": 214,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "event"
+            }
+          ]
+        },
+        {
+          "name": "_getSaveLabel",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 216,
+              "column": 12
+            },
+            "end": {
+              "line": 223,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "filter"
+            }
+          ]
+        },
+        {
+          "name": "_save",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 225,
+              "column": 12
+            },
+            "end": {
+              "line": 246,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_cancel",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 248,
+              "column": 12
+            },
+            "end": {
+              "line": 251,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "open",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 253,
+              "column": 12
+            },
+            "end": {
+              "line": 257,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "reset",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 259,
+              "column": 12
+            },
+            "end": {
+              "line": 269,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 88,
+          "column": 8
+        },
+        "end": {
+          "line": 270,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "Polymer.Element",
+      "name": "ActindoGridFilterEdit",
+      "attributes": [
+        {
+          "name": "editing",
+          "description": "Whether is editing or not",
+          "sourceRange": {
+            "start": {
+              "line": 96,
+              "column": 20
+            },
+            "end": {
+              "line": 99,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "active",
+          "description": "The status of the filter",
+          "sourceRange": {
+            "start": {
+              "line": 103,
+              "column": 20
+            },
+            "end": {
+              "line": 106,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "filter",
+          "description": "contains the filter criteria, the key \"property\" contains the column value,\nthe field \"operator\" contains operator value(=,>,like,etc...), the field \"value\" contains the value need to be filtered\n{property: String, operator: string, value: mixed}",
+          "sourceRange": {
+            "start": {
+              "line": 112,
+              "column": 20
+            },
+            "end": {
+              "line": 114,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        },
+        {
+          "name": "property",
+          "description": "contains the column value",
+          "sourceRange": {
+            "start": {
+              "line": 118,
+              "column": 20
+            },
+            "end": {
+              "line": 120,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "operator",
+          "description": "contains the operator value",
+          "sourceRange": {
+            "start": {
+              "line": 124,
+              "column": 20
+            },
+            "end": {
+              "line": 127,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "string"
+        },
+        {
+          "name": "value",
+          "description": "contains the filter value",
+          "sourceRange": {
+            "start": {
+              "line": 131,
+              "column": 20
+            },
+            "end": {
+              "line": 131,
+              "column": 29
+            }
+          },
+          "metadata": {}
+        }
+      ],
+      "events": [],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "actindo-grid-filter-edit"
+    },
+    {
+      "description": "",
+      "summary": "",
+      "path": "actindo-grid-filter-item.html",
+      "properties": [
+        {
+          "name": "columns",
+          "type": "Array",
+          "description": "contains all the columns has filterable property equal to true",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 42,
+              "column": 20
+            },
+            "end": {
+              "line": 45,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "active",
+          "type": "boolean",
+          "description": "The status of the filter",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 49,
+              "column": 20
+            },
+            "end": {
+              "line": 52,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "observer": "\"_onActiveChanged\""
+            }
+          }
+        },
+        {
+          "name": "filter",
+          "type": "Object",
+          "description": "contains the current filter criteria, the key \"property\" contains the column value,\nthe field \"operator\" contains operator value(=,>,like,etc...), the field \"value\" contains the value need to be filtered\n{property: String, operator: string, value: mixed}",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 58,
+              "column": 20
+            },
+            "end": {
+              "line": 61,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "observer": "\"_onFilterChanged\""
+            }
+          }
+        },
+        {
+          "name": "_label",
+          "type": "string",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 62,
+              "column": 20
+            },
+            "end": {
+              "line": 65,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "readOnly": true
+            }
+          }
+        },
+        {
+          "name": "_firstLoad",
+          "type": "boolean",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 66,
+              "column": 20
+            },
+            "end": {
+              "line": 69,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "true"
+        },
+        {
+          "name": "_filter",
+          "type": "Object",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 70,
+              "column": 20
+            },
+            "end": {
+              "line": 72,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        }
+      ],
+      "methods": [
+        {
+          "name": "_openDialog",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 76,
+              "column": 12
+            },
+            "end": {
+              "line": 79,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_onFilterChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 81,
+              "column": 12
+            },
+            "end": {
+              "line": 85,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "filter"
+            }
+          ]
+        },
+        {
+          "name": "_onActiveChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 87,
+              "column": 12
+            },
+            "end": {
+              "line": 96,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "active"
+            }
+          ]
+        },
+        {
+          "name": "_save",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 98,
+              "column": 12
+            },
+            "end": {
+              "line": 104,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "event"
+            }
+          ]
+        },
+        {
+          "name": "_remove",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 106,
+              "column": 12
+            },
+            "end": {
+              "line": 109,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_getLabel",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 111,
+              "column": 12
+            },
+            "end": {
+              "line": 126,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "filter"
+            }
+          ]
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 34,
+          "column": 8
+        },
+        "end": {
+          "line": 127,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "Polymer.Element",
+      "name": "ActindoGridFilterItem",
+      "attributes": [
+        {
+          "name": "columns",
+          "description": "contains all the columns has filterable property equal to true",
+          "sourceRange": {
+            "start": {
+              "line": 42,
+              "column": 20
+            },
+            "end": {
+              "line": 45,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        },
+        {
+          "name": "active",
+          "description": "The status of the filter",
+          "sourceRange": {
+            "start": {
+              "line": 49,
+              "column": 20
+            },
+            "end": {
+              "line": 52,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "filter",
+          "description": "contains the current filter criteria, the key \"property\" contains the column value,\nthe field \"operator\" contains operator value(=,>,like,etc...), the field \"value\" contains the value need to be filtered\n{property: String, operator: string, value: mixed}",
+          "sourceRange": {
+            "start": {
+              "line": 58,
+              "column": 20
+            },
+            "end": {
+              "line": 61,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        }
+      ],
+      "events": [],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "actindo-grid-filter-item"
+    },
+    {
+      "description": "",
+      "summary": "",
+      "path": "actindo-grid-filter.html",
+      "properties": [
+        {
+          "name": "filterList",
+          "type": "Array",
+          "description": "contain all available filter",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 158,
+              "column": 20
+            },
+            "end": {
+              "line": 162,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "columns",
+          "type": "Array",
+          "description": "contains all the columns has filterable property equal to true",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 166,
+              "column": 20
+            },
+            "end": {
+              "line": 168,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          }
+        },
+        {
+          "name": "debounce",
+          "type": "boolean",
+          "description": "if this is true, the request will be debounced when the filter is changed",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 172,
+              "column": 20
+            },
+            "end": {
+              "line": 176,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          },
+          "defaultValue": "true"
+        }
+      ],
+      "methods": [
+        {
+          "name": "_onSettingClick",
+          "description": "Toggle the setting panel",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 182,
+              "column": 12
+            },
+            "end": {
+              "line": 185,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_deleteMultiple",
+          "description": "Remove all available filter",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 189,
+              "column": 12
+            },
+            "end": {
+              "line": 192,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_showAddDialog",
+          "description": "Show the add dialog to create a filter",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 196,
+              "column": 12
+            },
+            "end": {
+              "line": 206,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
+        },
+        {
+          "name": "_createNewFilter",
+          "description": "Append a filter to the filter list",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 210,
+              "column": 12
+            },
+            "end": {
+              "line": 213,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "event"
+            }
+          ]
+        },
+        {
+          "name": "_removeFilter",
+          "description": "Remove a filter from filter list",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 217,
+              "column": 12
+            },
+            "end": {
+              "line": 221,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "event"
+            }
+          ]
+        },
+        {
+          "name": "_editFilter",
+          "description": "Edit a filter of filter list",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 225,
+              "column": 12
+            },
+            "end": {
+              "line": 229,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "event"
+            }
+          ]
+        }
+      ],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 149,
+          "column": 8
+        },
+        "end": {
+          "line": 230,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "Polymer.Element",
+      "name": "ActindoGridFilter",
+      "attributes": [
+        {
+          "name": "filter-list",
+          "description": "contain all available filter",
+          "sourceRange": {
+            "start": {
+              "line": 158,
+              "column": 20
+            },
+            "end": {
+              "line": 162,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        },
+        {
+          "name": "columns",
+          "description": "contains all the columns has filterable property equal to true",
+          "sourceRange": {
+            "start": {
+              "line": 166,
+              "column": 20
+            },
+            "end": {
+              "line": 168,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Array"
+        },
+        {
+          "name": "debounce",
+          "description": "if this is true, the request will be debounced when the filter is changed",
+          "sourceRange": {
+            "start": {
+              "line": 172,
+              "column": 20
+            },
+            "end": {
+              "line": 176,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        }
+      ],
+      "events": [
+        {
+          "type": "CustomEvent",
+          "name": "filter-list-changed",
+          "description": "Fired when the `filterList` property changes.",
+          "metadata": {}
+        },
+        {
+          "type": "CustomEvent",
+          "name": "debounce-changed",
+          "description": "Fired when the `debounce` property changes.",
+          "metadata": {}
+        }
+      ],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "actindo-grid-filter"
+    },
+    {
+      "description": "",
+      "summary": "",
+      "path": "actindo-grid-filter-between-input.html",
+      "properties": [
+        {
+          "name": "value",
+          "type": "Object",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 31,
+              "column": 20
+            },
+            "end": {
+              "line": 40,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {
+              "notify": true
+            }
+          }
+        }
+      ],
+      "methods": [],
+      "staticMethods": [],
+      "demos": [],
+      "metadata": {},
+      "sourceRange": {
+        "start": {
+          "line": 26,
+          "column": 8
+        },
+        "end": {
+          "line": 43,
+          "column": 9
+        }
+      },
+      "privacy": "public",
+      "superclass": "Polymer.Element",
+      "name": "ActindoGridFilterBetweenInput",
+      "attributes": [
+        {
+          "name": "value",
+          "description": "",
+          "sourceRange": {
+            "start": {
+              "line": 31,
+              "column": 20
+            },
+            "end": {
+              "line": 40,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "Object"
+        }
+      ],
+      "events": [
+        {
+          "type": "CustomEvent",
+          "name": "value-changed",
+          "description": "Fired when the `value` property changes.",
+          "metadata": {}
+        }
+      ],
+      "styling": {
+        "cssVariables": [],
+        "selectors": []
+      },
+      "slots": [],
+      "tagname": "actindo-grid-filter-between-input"
+    },
+    {
+      "description": "`<actindo-grid>` implements a highly reusable data grid to display your data.\n\n### Features\n\n- column configuration as property, therefore dynamic column changes are propagated through data binding\n- global search bar (hidden if no column is configured to be `searchable`)\n- filter panel (hidden if no column is configured to be `filterable`)\n- sorting (by every column that is configured to be `sortable`)\n- pagination as long as a `remote` is specified to fetch data from\n- remote loading of data, including sorting, paging, searching, filtering\n- static data display (disables pagination)\n- custom cell formatting through `render` callbacks\n- hidden columns that can be shown manually",
       "summary": "",
       "path": "actindo-grid.html",
       "properties": [
         {
           "name": "columnConfiguration",
-          "type": "[{label: string, field: string, type: mixed, identifying: bool, hidden: bool, searchable: bool, sortable: bool, filterable: bool, resizable: bool, render: function, nullMessage: string}]",
-          "description": "contains the columns and their configuration.\n* label: the name of this column, used in the header\n* field: data index where this columns value is located\n* type: the data type of this column, can be any valid javascript type\n* identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode\n* hidden: if this column is hidden by default and needs to be enabled manually\n* searchable: if this field is searched through the global search field. Defaults to false\n* sortable: if the grid can by sorted by this field. Defaults to false\n* filterable: if the grid can be filtered by this columns values\n* resizable: if this column is resizable\n* render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed\n* nullMessage: Text shown if field is null; if nothing specified it will display empty string",
+          "type": "[{label: string, field: string, type: mixed, identifying: bool, hidden: bool, searchable: bool, sortable: bool, filterable: bool, resizable: bool, render: function, renderDefaultFilter: function, nullMessage: string}]",
+          "description": "contains the columns and their configuration.\n* label: the name of this column, used in the header\n* field: data index where this columns value is located\n* type: the data type of this column, can be any valid javascript type\n* identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode\n* hidden: if this column is hidden by default and needs to be enabled manually\n* searchable: if this field is searched through the global search field. Defaults to false\n* sortable: if the grid can by sorted by this field. Defaults to false\n* filterable: if the grid can be filtered by this columns values\n* resizable: if this column is resizable\n* render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed\n* renderDefaultFilter: return a DOMElement element to be displayed\n* nullMessage: Text shown if field is null; if nothing specified it will display empty string",
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 438,
+              "line": 451,
               "column": 20
             },
             "end": {
-              "line": 443,
+              "line": 456,
               "column": 21
             }
           },
@@ -621,11 +2013,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 448,
+              "line": 461,
               "column": 20
             },
             "end": {
-              "line": 451,
+              "line": 464,
               "column": 21
             }
           },
@@ -641,11 +2033,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 456,
+              "line": 469,
               "column": 20
             },
             "end": {
-              "line": 459,
+              "line": 472,
               "column": 21
             }
           },
@@ -661,11 +2053,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 465,
+              "line": 478,
               "column": 20
             },
             "end": {
-              "line": 468,
+              "line": 481,
               "column": 21
             }
           },
@@ -681,11 +2073,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 473,
+              "line": 486,
               "column": 20
             },
             "end": {
-              "line": 478,
+              "line": 491,
               "column": 21
             }
           },
@@ -704,11 +2096,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 484,
+              "line": 497,
               "column": 20
             },
             "end": {
-              "line": 490,
+              "line": 503,
               "column": 21
             }
           },
@@ -720,17 +2112,37 @@
           "defaultValue": "{}"
         },
         {
+          "name": "filterList",
+          "type": "[{property: string, operator: string, value: mixed}]",
+          "description": "contains the list of filter of the grid.\n* property: the name of the column\n* operator: the value of the operator such as (=, like,..)\n* value: the value need to be filtered",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 517,
+              "column": 20
+            },
+            "end": {
+              "line": 522,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "[]"
+        },
+        {
           "name": "query",
           "type": "string",
           "description": "contains the current search query",
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 495,
+              "line": 527,
               "column": 20
             },
             "end": {
-              "line": 500,
+              "line": 532,
               "column": 21
             }
           },
@@ -749,11 +2161,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 505,
+              "line": 537,
               "column": 20
             },
             "end": {
-              "line": 510,
+              "line": 542,
               "column": 21
             }
           },
@@ -772,11 +2184,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 515,
+              "line": 547,
               "column": 20
             },
             "end": {
-              "line": 518,
+              "line": 550,
               "column": 21
             }
           },
@@ -786,17 +2198,37 @@
           "defaultValue": "false"
         },
         {
+          "name": "filterDebounce",
+          "type": "boolean",
+          "description": "if this is true, the request will be debounced when the filter is changed",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 555,
+              "column": 20
+            },
+            "end": {
+              "line": 558,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "true"
+        },
+        {
           "name": "items",
           "type": "Array",
           "description": "contains all items that are currently in the grid. You can set this property to manually\nhandle the content of the grid in case you don't want to use the remote loading",
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 524,
+              "line": 564,
               "column": 20
             },
             "end": {
-              "line": 530,
+              "line": 570,
               "column": 21
             }
           },
@@ -814,11 +2246,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 535,
+              "line": 575,
               "column": 20
             },
             "end": {
-              "line": 538,
+              "line": 578,
               "column": 21
             }
           },
@@ -834,11 +2266,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 543,
+              "line": 583,
               "column": 20
             },
             "end": {
-              "line": 546,
+              "line": 586,
               "column": 21
             }
           },
@@ -854,11 +2286,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 552,
+              "line": 592,
               "column": 20
             },
             "end": {
-              "line": 555,
+              "line": 595,
               "column": 21
             }
           },
@@ -874,11 +2306,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 560,
+              "line": 600,
               "column": 20
             },
             "end": {
-              "line": 563,
+              "line": 603,
               "column": 21
             }
           },
@@ -894,11 +2326,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 568,
+              "line": 608,
               "column": 20
             },
             "end": {
-              "line": 571,
+              "line": 611,
               "column": 21
             }
           },
@@ -914,11 +2346,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 576,
+              "line": 616,
               "column": 20
             },
             "end": {
-              "line": 581,
+              "line": 621,
               "column": 21
             }
           },
@@ -934,11 +2366,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 586,
+              "line": 626,
               "column": 20
             },
             "end": {
-              "line": 589,
+              "line": 629,
               "column": 21
             }
           },
@@ -954,11 +2386,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 594,
+              "line": 634,
               "column": 20
             },
             "end": {
-              "line": 597,
+              "line": 637,
               "column": 21
             }
           },
@@ -974,11 +2406,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 602,
+              "line": 642,
               "column": 20
             },
             "end": {
-              "line": 605,
+              "line": 645,
               "column": 21
             }
           },
@@ -994,11 +2426,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 610,
+              "line": 650,
               "column": 20
             },
             "end": {
-              "line": 613,
+              "line": 653,
               "column": 21
             }
           },
@@ -1014,11 +2446,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 618,
+              "line": 658,
               "column": 20
             },
             "end": {
-              "line": 621,
+              "line": 661,
               "column": 21
             }
           },
@@ -1034,11 +2466,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 627,
+              "line": 667,
               "column": 20
             },
             "end": {
-              "line": 630,
+              "line": 670,
               "column": 21
             }
           },
@@ -1054,11 +2486,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 636,
+              "line": 676,
               "column": 20
             },
             "end": {
-              "line": 639,
+              "line": 679,
               "column": 21
             }
           },
@@ -1074,11 +2506,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 647,
+              "line": 687,
               "column": 20
             },
             "end": {
-              "line": 649,
+              "line": 689,
               "column": 21
             }
           },
@@ -1093,11 +2525,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 654,
+              "line": 694,
               "column": 20
             },
             "end": {
-              "line": 658,
+              "line": 698,
               "column": 21
             }
           },
@@ -1115,11 +2547,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 663,
+              "line": 703,
               "column": 20
             },
             "end": {
-              "line": 669,
+              "line": 709,
               "column": 21
             }
           },
@@ -1137,11 +2569,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 675,
+              "line": 715,
               "column": 20
             },
             "end": {
-              "line": 678,
+              "line": 718,
               "column": 21
             }
           },
@@ -1157,11 +2589,31 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 683,
+              "line": 723,
               "column": 20
             },
             "end": {
-              "line": 688,
+              "line": 728,
+              "column": 21
+            }
+          },
+          "metadata": {
+            "polymer": {}
+          },
+          "defaultValue": "[]"
+        },
+        {
+          "name": "_filterColumns",
+          "type": "Array",
+          "description": "holds the colmumn has filterable is true",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 733,
+              "column": 20
+            },
+            "end": {
+              "line": 736,
               "column": 21
             }
           },
@@ -1177,11 +2629,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 693,
+              "line": 741,
               "column": 20
             },
             "end": {
-              "line": 695,
+              "line": 743,
               "column": 21
             }
           },
@@ -1196,11 +2648,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 700,
+              "line": 748,
               "column": 20
             },
             "end": {
-              "line": 703,
+              "line": 751,
               "column": 21
             }
           },
@@ -1216,11 +2668,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 708,
+              "line": 756,
               "column": 20
             },
             "end": {
-              "line": 711,
+              "line": 759,
               "column": 21
             }
           },
@@ -1236,11 +2688,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 716,
+              "line": 764,
               "column": 20
             },
             "end": {
-              "line": 718,
+              "line": 766,
               "column": 21
             }
           },
@@ -1255,11 +2707,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 723,
+              "line": 771,
               "column": 20
             },
             "end": {
-              "line": 726,
+              "line": 774,
               "column": 21
             }
           },
@@ -1276,11 +2728,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 740,
+              "line": 788,
               "column": 12
             },
             "end": {
-              "line": 742,
+              "line": 790,
               "column": 13
             }
           },
@@ -1293,11 +2745,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 747,
+              "line": 795,
               "column": 12
             },
             "end": {
-              "line": 749,
+              "line": 797,
               "column": 13
             }
           },
@@ -1310,11 +2762,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 754,
+              "line": 802,
               "column": 12
             },
             "end": {
-              "line": 756,
+              "line": 804,
               "column": 13
             }
           },
@@ -1327,11 +2779,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 761,
+              "line": 809,
               "column": 12
             },
             "end": {
-              "line": 763,
+              "line": 811,
               "column": 13
             }
           },
@@ -1344,11 +2796,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 768,
+              "line": 816,
               "column": 12
             },
             "end": {
-              "line": 785,
+              "line": 834,
               "column": 13
             }
           },
@@ -1361,11 +2813,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 802,
+              "line": 852,
               "column": 12
             },
             "end": {
-              "line": 809,
+              "line": 859,
               "column": 13
             }
           },
@@ -1378,11 +2830,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 835,
+              "line": 900,
               "column": 12
             },
             "end": {
-              "line": 914,
+              "line": 979,
               "column": 13
             }
           },
@@ -1395,11 +2847,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 926,
+              "line": 991,
               "column": 12
             },
             "end": {
-              "line": 964,
+              "line": 1029,
               "column": 13
             }
           },
@@ -1416,11 +2868,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 970,
+              "line": 1035,
               "column": 12
             },
             "end": {
-              "line": 972,
+              "line": 1037,
               "column": 13
             }
           },
@@ -1433,11 +2885,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 979,
+              "line": 1044,
               "column": 12
             },
             "end": {
-              "line": 1014,
+              "line": 1079,
               "column": 13
             }
           },
@@ -1454,11 +2906,11 @@
           "privacy": "public",
           "sourceRange": {
             "start": {
-              "line": 1021,
+              "line": 1086,
               "column": 12
             },
             "end": {
-              "line": 1032,
+              "line": 1097,
               "column": 13
             }
           },
@@ -1477,11 +2929,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1038,
+              "line": 1103,
               "column": 12
             },
             "end": {
-              "line": 1057,
+              "line": 1122,
               "column": 13
             }
           },
@@ -1494,11 +2946,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1067,
+              "line": 1132,
               "column": 12
             },
             "end": {
-              "line": 1118,
+              "line": 1183,
               "column": 13
             }
           },
@@ -1516,11 +2968,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1126,
+              "line": 1191,
               "column": 12
             },
             "end": {
-              "line": 1131,
+              "line": 1196,
               "column": 13
             }
           },
@@ -1538,11 +2990,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1137,
+              "line": 1202,
               "column": 12
             },
             "end": {
-              "line": 1141,
+              "line": 1206,
               "column": 13
             }
           },
@@ -1550,16 +3002,37 @@
           "params": []
         },
         {
+          "name": "_attachOperatorToColumn",
+          "description": "attach operator property to column object",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1212,
+              "column": 12
+            },
+            "end": {
+              "line": 1230,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "item"
+            }
+          ]
+        },
+        {
           "name": "_consolidateColumns",
           "description": "called when the columnConfiguration changes. Process the columns and copy them to the internal\n_columns property.",
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1150,
+              "line": 1239,
               "column": 12
             },
             "end": {
-              "line": 1186,
+              "line": 1284,
               "column": 13
             }
           },
@@ -1572,16 +3045,16 @@
           ]
         },
         {
-          "name": "_onRemoteChanged",
-          "description": "called on explicit refresh or if any of the parameter changes that require a reload from the remote",
-          "privacy": "private",
+          "name": "_load",
+          "description": "",
+          "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 1193,
+              "line": 1286,
               "column": 12
             },
             "end": {
-              "line": 1251,
+              "line": 1353,
               "column": 13
             }
           },
@@ -1628,8 +3101,112 @@
             },
             {
               "name": "query"
+            },
+            {
+              "name": "filter"
             }
           ]
+        },
+        {
+          "name": "_onFilterChanged",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 1355,
+              "column": 12
+            },
+            "end": {
+              "line": 1363,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "filterList"
+            }
+          ]
+        },
+        {
+          "name": "_onRemoteChanged",
+          "description": "called on explicit refresh or if any of the parameter changes that require a reload from the remote",
+          "privacy": "private",
+          "sourceRange": {
+            "start": {
+              "line": 1369,
+              "column": 12
+            },
+            "end": {
+              "line": 1374,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "remote"
+            },
+            {
+              "name": "remotePathData"
+            },
+            {
+              "name": "remotePathCount"
+            },
+            {
+              "name": "remoteParams"
+            },
+            {
+              "name": "remoteParamFilter"
+            },
+            {
+              "name": "remoteParamLimit"
+            },
+            {
+              "name": "remoteParamOffset"
+            },
+            {
+              "name": "remoteParamSearch"
+            },
+            {
+              "name": "remoteParamSearchFields"
+            },
+            {
+              "name": "remoteParamSort"
+            },
+            {
+              "name": "itemsPerPage"
+            },
+            {
+              "name": "page"
+            },
+            {
+              "name": "sort"
+            },
+            {
+              "name": "query"
+            },
+            {
+              "name": "filter = []"
+            }
+          ]
+        },
+        {
+          "name": "refreshWithDebounce",
+          "description": "",
+          "privacy": "public",
+          "sourceRange": {
+            "start": {
+              "line": 1376,
+              "column": 12
+            },
+            "end": {
+              "line": 1399,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": []
         },
         {
           "name": "_serialize",
@@ -1637,11 +3214,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1268,
+              "line": 1416,
               "column": 12
             },
             "end": {
-              "line": 1279,
+              "line": 1427,
               "column": 13
             }
           },
@@ -1668,11 +3245,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1287,
+              "line": 1435,
               "column": 12
             },
             "end": {
-              "line": 1305,
+              "line": 1453,
               "column": 13
             }
           },
@@ -1685,11 +3262,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 1315,
+              "line": 1463,
               "column": 12
             },
             "end": {
-              "line": 1322,
+              "line": 1470,
               "column": 13
             }
           },
@@ -1709,11 +3286,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 1324,
+              "line": 1472,
               "column": 12
             },
             "end": {
-              "line": 1331,
+              "line": 1479,
               "column": 13
             }
           },
@@ -1733,11 +3310,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1340,
+              "line": 1488,
               "column": 12
             },
             "end": {
-              "line": 1342,
+              "line": 1490,
               "column": 13
             }
           },
@@ -1759,11 +3336,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1353,
+              "line": 1501,
               "column": 12
             },
             "end": {
-              "line": 1355,
+              "line": 1503,
               "column": 13
             }
           },
@@ -1795,11 +3372,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1365,
+              "line": 1513,
               "column": 12
             },
             "end": {
-              "line": 1367,
+              "line": 1515,
               "column": 13
             }
           },
@@ -1829,11 +3406,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1376,
+              "line": 1524,
               "column": 12
             },
             "end": {
-              "line": 1378,
+              "line": 1526,
               "column": 13
             }
           },
@@ -1860,11 +3437,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1387,
+              "line": 1535,
               "column": 12
             },
             "end": {
-              "line": 1389,
+              "line": 1537,
               "column": 13
             }
           },
@@ -1884,11 +3461,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1398,
+              "line": 1546,
               "column": 12
             },
             "end": {
-              "line": 1400,
+              "line": 1548,
               "column": 13
             }
           },
@@ -1909,11 +3486,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1410,
+              "line": 1558,
               "column": 12
             },
             "end": {
-              "line": 1412,
+              "line": 1560,
               "column": 13
             }
           },
@@ -1940,11 +3517,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1423,
+              "line": 1571,
               "column": 12
             },
             "end": {
-              "line": 1436,
+              "line": 1584,
               "column": 13
             }
           },
@@ -1969,11 +3546,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1446,
+              "line": 1594,
               "column": 12
             },
             "end": {
-              "line": 1452,
+              "line": 1600,
               "column": 13
             }
           },
@@ -2000,11 +3577,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 1460,
+              "line": 1608,
               "column": 12
             },
             "end": {
-              "line": 1470,
+              "line": 1618,
               "column": 13
             }
           },
@@ -2026,11 +3603,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1480,
+              "line": 1628,
               "column": 12
             },
             "end": {
-              "line": 1491,
+              "line": 1639,
               "column": 13
             }
           },
@@ -2046,11 +3623,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 1500,
+              "line": 1648,
               "column": 12
             },
             "end": {
-              "line": 1507,
+              "line": 1655,
               "column": 13
             }
           },
@@ -2073,44 +3650,44 @@
       "metadata": {},
       "sourceRange": {
         "start": {
-          "line": 405,
+          "line": 416,
           "column": 8
         },
         "end": {
-          "line": 1508,
+          "line": 1656,
           "column": 9
         }
       },
       "privacy": "public",
       "superclass": "Polymer.Element",
-      "name": "ActindoGrid2",
+      "name": "ActindoGrid",
       "attributes": [
         {
           "name": "column-configuration",
-          "description": "contains the columns and their configuration.\n* label: the name of this column, used in the header\n* field: data index where this columns value is located\n* type: the data type of this column, can be any valid javascript type\n* identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode\n* hidden: if this column is hidden by default and needs to be enabled manually\n* searchable: if this field is searched through the global search field. Defaults to false\n* sortable: if the grid can by sorted by this field. Defaults to false\n* filterable: if the grid can be filtered by this columns values\n* resizable: if this column is resizable\n* render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed\n* nullMessage: Text shown if field is null; if nothing specified it will display empty string",
+          "description": "contains the columns and their configuration.\n* label: the name of this column, used in the header\n* field: data index where this columns value is located\n* type: the data type of this column, can be any valid javascript type\n* identifying: if this column contains a unique key that identifies the single rows. _One_ column must have this if you want to use a selection mode\n* hidden: if this column is hidden by default and needs to be enabled manually\n* searchable: if this field is searched through the global search field. Defaults to false\n* sortable: if the grid can by sorted by this field. Defaults to false\n* filterable: if the grid can be filtered by this columns values\n* resizable: if this column is resizable\n* render: Optional callback that is given the columns value for each row and has to return a DOMElement to be displayed\n* renderDefaultFilter: return a DOMElement element to be displayed\n* nullMessage: Text shown if field is null; if nothing specified it will display empty string",
           "sourceRange": {
             "start": {
-              "line": 438,
+              "line": 451,
               "column": 20
             },
             "end": {
-              "line": 443,
+              "line": 456,
               "column": 21
             }
           },
           "metadata": {},
-          "type": "[{label: string, field: string, type: mixed, identifying: bool, hidden: bool, searchable: bool, sortable: bool, filterable: bool, resizable: bool, render: function, nullMessage: string}]"
+          "type": "[{label: string, field: string, type: mixed, identifying: bool, hidden: bool, searchable: bool, sortable: bool, filterable: bool, resizable: bool, render: function, renderDefaultFilter: function, nullMessage: string}]"
         },
         {
           "name": "empty-message",
           "description": "if grid has no items this message will be shown",
           "sourceRange": {
             "start": {
-              "line": 448,
+              "line": 461,
               "column": 20
             },
             "end": {
-              "line": 451,
+              "line": 464,
               "column": 21
             }
           },
@@ -2122,11 +3699,11 @@
           "description": "if an item has a key with this name and contains a value that evaluates to true, that row is disabled",
           "sourceRange": {
             "start": {
-              "line": 456,
+              "line": 469,
               "column": 20
             },
             "end": {
-              "line": 459,
+              "line": 472,
               "column": 21
             }
           },
@@ -2138,11 +3715,11 @@
           "description": "if an item has a key with this name and contains a value that evaluates to true, that row is marked as finished.\nThis only works with a selection mode enabled since the marker replaces the checkbox",
           "sourceRange": {
             "start": {
-              "line": 465,
+              "line": 478,
               "column": 20
             },
             "end": {
-              "line": 468,
+              "line": 481,
               "column": 21
             }
           },
@@ -2154,11 +3731,11 @@
           "description": "the current page number",
           "sourceRange": {
             "start": {
-              "line": 473,
+              "line": 486,
               "column": 20
             },
             "end": {
-              "line": 478,
+              "line": 491,
               "column": 21
             }
           },
@@ -2170,11 +3747,11 @@
           "description": "contains the current sorting criteria, the key \"field\" contains the field name, the field \"order\" a boolean: true is ASC, false is DESC\n{field: String, order: Boolean}",
           "sourceRange": {
             "start": {
-              "line": 484,
+              "line": 497,
               "column": 20
             },
             "end": {
-              "line": 490,
+              "line": 503,
               "column": 21
             }
           },
@@ -2182,15 +3759,31 @@
           "type": "Object"
         },
         {
+          "name": "filter-list",
+          "description": "contains the list of filter of the grid.\n* property: the name of the column\n* operator: the value of the operator such as (=, like,..)\n* value: the value need to be filtered",
+          "sourceRange": {
+            "start": {
+              "line": 517,
+              "column": 20
+            },
+            "end": {
+              "line": 522,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "[{property: string, operator: string, value: mixed}]"
+        },
+        {
           "name": "query",
           "description": "contains the current search query",
           "sourceRange": {
             "start": {
-              "line": 495,
+              "line": 527,
               "column": 20
             },
             "end": {
-              "line": 500,
+              "line": 532,
               "column": 21
             }
           },
@@ -2202,11 +3795,11 @@
           "description": "stores the number of total items (over all pages)",
           "sourceRange": {
             "start": {
-              "line": 505,
+              "line": 537,
               "column": 20
             },
             "end": {
-              "line": 510,
+              "line": 542,
               "column": 21
             }
           },
@@ -2218,11 +3811,27 @@
           "description": "if this is true, the column selection switch is hidden and the user can not enable/disable or rearrange columns",
           "sourceRange": {
             "start": {
-              "line": 515,
+              "line": 547,
               "column": 20
             },
             "end": {
-              "line": 518,
+              "line": 550,
+              "column": 21
+            }
+          },
+          "metadata": {},
+          "type": "boolean"
+        },
+        {
+          "name": "filter-debounce",
+          "description": "if this is true, the request will be debounced when the filter is changed",
+          "sourceRange": {
+            "start": {
+              "line": 555,
+              "column": 20
+            },
+            "end": {
+              "line": 558,
               "column": 21
             }
           },
@@ -2234,11 +3843,11 @@
           "description": "contains all items that are currently in the grid. You can set this property to manually\nhandle the content of the grid in case you don't want to use the remote loading",
           "sourceRange": {
             "start": {
-              "line": 524,
+              "line": 564,
               "column": 20
             },
             "end": {
-              "line": 530,
+              "line": 570,
               "column": 21
             }
           },
@@ -2250,11 +3859,11 @@
           "description": "how mny items to show per page",
           "sourceRange": {
             "start": {
-              "line": 535,
+              "line": 575,
               "column": 20
             },
             "end": {
-              "line": 538,
+              "line": 578,
               "column": 21
             }
           },
@@ -2266,11 +3875,11 @@
           "description": "if an item has a key with this name and contains a value that evaluates to true, that row is marked as locked.",
           "sourceRange": {
             "start": {
-              "line": 543,
+              "line": 583,
               "column": 20
             },
             "end": {
-              "line": 546,
+              "line": 586,
               "column": 21
             }
           },
@@ -2282,11 +3891,11 @@
           "description": "the url to load items from. Alternatively you can use the property `items` to manually add data to the grid,\nhowever that disables the possibility to search, filter, or sort",
           "sourceRange": {
             "start": {
-              "line": 552,
+              "line": 592,
               "column": 20
             },
             "end": {
-              "line": 555,
+              "line": 595,
               "column": 21
             }
           },
@@ -2298,11 +3907,11 @@
           "description": "where the items array is located in the remote response.",
           "sourceRange": {
             "start": {
-              "line": 560,
+              "line": 600,
               "column": 20
             },
             "end": {
-              "line": 563,
+              "line": 603,
               "column": 21
             }
           },
@@ -2314,11 +3923,11 @@
           "description": "where the total count of items is located in the remote response.",
           "sourceRange": {
             "start": {
-              "line": 568,
+              "line": 608,
               "column": 20
             },
             "end": {
-              "line": 571,
+              "line": 611,
               "column": 21
             }
           },
@@ -2330,11 +3939,11 @@
           "description": "additional url params to be added to the remote url",
           "sourceRange": {
             "start": {
-              "line": 576,
+              "line": 616,
               "column": 20
             },
             "end": {
-              "line": 581,
+              "line": 621,
               "column": 21
             }
           },
@@ -2346,11 +3955,11 @@
           "description": "this url param is added to the `remote` url containing the user selected filters",
           "sourceRange": {
             "start": {
-              "line": 586,
+              "line": 626,
               "column": 20
             },
             "end": {
-              "line": 589,
+              "line": 629,
               "column": 21
             }
           },
@@ -2362,11 +3971,11 @@
           "description": "this url param is added to the `remote` url containing the number of items to be loaded",
           "sourceRange": {
             "start": {
-              "line": 594,
+              "line": 634,
               "column": 20
             },
             "end": {
-              "line": 597,
+              "line": 637,
               "column": 21
             }
           },
@@ -2378,11 +3987,11 @@
           "description": "this url param is added to the `remote` url containing the requested page",
           "sourceRange": {
             "start": {
-              "line": 602,
+              "line": 642,
               "column": 20
             },
             "end": {
-              "line": 605,
+              "line": 645,
               "column": 21
             }
           },
@@ -2394,11 +4003,11 @@
           "description": "this url param is added to the `remote` url containing the search phrase the user entered",
           "sourceRange": {
             "start": {
-              "line": 610,
+              "line": 650,
               "column": 20
             },
             "end": {
-              "line": 613,
+              "line": 653,
               "column": 21
             }
           },
@@ -2410,11 +4019,11 @@
           "description": "this url param is added to the `remote` url containing the fields that should be searched for `query`",
           "sourceRange": {
             "start": {
-              "line": 618,
+              "line": 658,
               "column": 20
             },
             "end": {
-              "line": 621,
+              "line": 661,
               "column": 21
             }
           },
@@ -2426,11 +4035,11 @@
           "description": "this url parameter is added to the `remote` url containing the user selected sorting. Set this\nto null to sort the data locally",
           "sourceRange": {
             "start": {
-              "line": 627,
+              "line": 667,
               "column": 20
             },
             "end": {
-              "line": 630,
+              "line": 670,
               "column": 21
             }
           },
@@ -2442,11 +4051,11 @@
           "description": "set to true if results should not be paged",
           "sourceRange": {
             "start": {
-              "line": 636,
+              "line": 676,
               "column": 20
             },
             "end": {
-              "line": 639,
+              "line": 679,
               "column": 21
             }
           },
@@ -2458,11 +4067,11 @@
           "description": "how rows can be selected. \"multi\" to allow the selection of n elements, \"single\" to allow the\nselection of only a single element (selecting a new one will deselect the previously selected one).\nAny other value will disable the selection model entirely.\nIf a selection mode is enabled, a checkbox is added to the start of each row",
           "sourceRange": {
             "start": {
-              "line": 647,
+              "line": 687,
               "column": 20
             },
             "end": {
-              "line": 649,
+              "line": 689,
               "column": 21
             }
           },
@@ -2474,11 +4083,11 @@
           "description": "if selectionMode=single, this property contains the selected item if one is selected",
           "sourceRange": {
             "start": {
-              "line": 654,
+              "line": 694,
               "column": 20
             },
             "end": {
-              "line": 658,
+              "line": 698,
               "column": 21
             }
           },
@@ -2490,11 +4099,11 @@
           "description": "contains all the currently selected items",
           "sourceRange": {
             "start": {
-              "line": 663,
+              "line": 703,
               "column": 20
             },
             "end": {
-              "line": 669,
+              "line": 709,
               "column": 21
             }
           },
@@ -2506,11 +4115,11 @@
           "description": "if this is enabled and a selection mode is active, tapping a row will not select it. Rows can then\nonly be selected by explicitely checking their checkboxes",
           "sourceRange": {
             "start": {
-              "line": 675,
+              "line": 715,
               "column": 20
             },
             "end": {
-              "line": 678,
+              "line": 718,
               "column": 21
             }
           },
@@ -2566,8 +4175,54 @@
         "cssVariables": [],
         "selectors": []
       },
-      "slots": [],
-      "tagname": "actindo-grid2"
+      "slots": [
+        {
+          "description": "",
+          "name": "toolbar",
+          "range": {
+            "file": "actindo-grid.html",
+            "start": {
+              "line": 314,
+              "column": 16
+            },
+            "end": {
+              "line": 314,
+              "column": 44
+            }
+          }
+        },
+        {
+          "description": "",
+          "name": "singleActions",
+          "range": {
+            "file": "actindo-grid.html",
+            "start": {
+              "line": 317,
+              "column": 16
+            },
+            "end": {
+              "line": 317,
+              "column": 50
+            }
+          }
+        },
+        {
+          "description": "",
+          "name": "multiActions",
+          "range": {
+            "file": "actindo-grid.html",
+            "start": {
+              "line": 320,
+              "column": 16
+            },
+            "end": {
+              "line": 320,
+              "column": 49
+            }
+          }
+        }
+      ],
+      "tagname": "actindo-grid"
     }
   ]
 }
