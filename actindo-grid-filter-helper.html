@@ -14,8 +14,8 @@
                value: '>'
             },
             {
-                 name: 'equal',
-                 value: '='
+               name: 'equal',
+               value: '='
             },
             {
               name: 'less or equal',
@@ -30,6 +30,7 @@
                value: '!='
             }
         ];
+        const numberOperator = relationalOperators;
         const operatorList =  {
             String: [
                 {
@@ -41,7 +42,7 @@
                     value: '='
                 }
             ],
-            Number: relationalOperators,
+            Number: numberOperator,
             Date: relationalOperators,
             default: [
                 {

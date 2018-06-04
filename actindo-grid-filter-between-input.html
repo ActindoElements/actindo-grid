@@ -41,7 +41,12 @@
                     }
                 }
             }
+            getDisplayValue(value)
+            {
+                 return `${value.from} and ${value.to}`;
+            }
         }
+
 
         customElements.define(ActindoGridFilterBetweenInput.is, ActindoGridFilterBetweenInput);
     </script>

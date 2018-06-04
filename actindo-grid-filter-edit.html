@@ -14,7 +14,7 @@
             {
                 @apply(--paper-material-elevation-2);
                 min-width: 25em;
-                min-height: 18em;
+                min-height: 22em;
                 margin-left: 4px;
                 position: absolute;
                 top: 0;
@@ -130,13 +130,15 @@
                      * contains the filter value
                      */
                     value: {},
+                    _valueHistory: {
+                        type: Object,
+                        value: function() {
+                            return {}
+                        }
+                    },
                     _operators: {
                         type: Array,
                         value: []
-                    },
-                    _loaded: {
-                        type: Boolean,
-                        value: true
                     },
                     _selectedColumn: {
                         type: Object,
@@ -158,7 +160,6 @@
 
                 this.setProperties({
                     _operators: column.operators,
-                    _loaded: true
                 });
             }
 
@@ -169,24 +170,39 @@
                     return;
                 }
                 const inputFilter = this.$.inputFilter;
-                inputFilter.innerHTML = '';
+                let {firstChild} = inputFilter;
 
-                this._getInputComponent(opt).then(node => {
-                    node.addEventListener("value-changed", this._onValueChanged.bind(this));
-                    if (this.editing && this._loaded)
+                const column = this._selectedColumn;
+                this.getInputComponent(column, opt).then(node => {
+                    // Check if in edit mode and first load
+                    if (!firstChild && this.editing)
                     {
                         node.value = this.value;
-                        this._loaded = false;
                     }
+
+                    if (firstChild)
+                    {
+                        this._valueHistory[firstChild.tagName] = firstChild.value;
+                    }
+                    // keep if the new input component name is not changed
+                    firstChild = firstChild || {};
+                    if (firstChild.tagName === node.tagName)
+                    {
+                        return;
+                    }
+                    if (this._valueHistory[node.tagName])
+                    {
+                        node.value = this._valueHistory[node.tagName];
+                    }
+                    inputFilter.innerHTML = '';
+                    node.addEventListener("value-changed", this._onValueChanged.bind(this));
                     inputFilter.appendChild(node);
                 });
             }
 
-            _getInputComponent(operator)
+            getInputComponent(column, operator)
             {
                 return new Promise(resolve => {
-                    const column = this._selectedColumn;
-
                     if (!column.customFilter)
                     {
                         const node = column.renderDefaultFilter(column.defaultFilterProperties, operator);

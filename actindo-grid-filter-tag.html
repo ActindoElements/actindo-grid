@@ -7,6 +7,7 @@
                 --paper-checkbox-checkmark-color: var(--actindo-secondary);
                 --paper-checkbox-checked-color: rgba(255,255,255,0.8);
             }
+
             .container
             {
                 vertical-align: top;
@@ -43,13 +44,10 @@
             }
             .container .content
             {
-                margin-left: 10px;
+                padding-left: 10px;
                 font-size: var(--paper-font-body2_-_font-size);
                 font-weight: var(--paper-font-body2_-_font-weight);
-                line-height: var(--paper-font-body2_-_line-height);
-                text-transform: initial;
                 @apply(--filter-tag-content);
-                color: inherit;
             }
 
             .checked-true .remove-icon
@@ -68,9 +66,9 @@
                     <paper-checkbox checked="{{active}}" ></paper-checkbox>
                 </div>
             </template>
-            <paper-button class="content">
+            <div class="content">
                 <slot name="content"></slot>
-            </paper-button>
+            </div>
 
             <template is="dom-if" if="[[!noRemoveButton]]">
                 <paper-icon-button on-click="_remove" class="remove-icon" icon="icons:cancel"></paper-icon-button>

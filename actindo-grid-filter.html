@@ -65,7 +65,6 @@
                 --filter-tag-content: {
                     padding: var(--filter-tag-content_-_padding);
                     margin-left: 5px;
-                    width: 7em;
                     display: flex;
                     justify-content: space-between;
                     padding: 0 10px;
@@ -132,7 +131,7 @@
                 </div>
                 <div class="toolbar">
                     <paper-icon-button icon="icons:settings" on-click="_onSettingClick"></paper-icon-button>
-                    <template is="dom-if" if="[[filter.length]]">
+                    <template is="dom-if" if="[[filterList.length]]">
                         <paper-icon-button on-click="_deleteMultiple" icon="delete">
                         </paper-icon-button>
                     </template>
@@ -189,7 +188,7 @@
              */
             _deleteMultiple()
             {
-                this.set('filterList', []);
+                this.splice('filterList', 0, this.filterList.length);
             }
             /**
              * Show the add dialog to create a filter
@@ -225,6 +224,10 @@
              */
             _editFilter(event)
             {
+                if (!event.detail.active)
+                {
+                    return;
+                }
                 const idx = this.filterList.indexOf(event.detail);
                 this.notifyPath('filterList.' + idx);
             }

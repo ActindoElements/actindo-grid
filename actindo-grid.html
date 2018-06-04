@@ -845,7 +845,7 @@
                     '_consolidateColumns(columnConfiguration.*)',
                     '_onItemsChanged(items.*)',
                     '_onSelectionChanged(selectedItems.*)',
-                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query)',
+                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList)',
                     '_onFilterChanged(filterList.*)'
                 ];
             }
@@ -1355,45 +1355,65 @@
 
             _onFilterChanged(filterList)
             {
-                this.firstPage();
-                if (!this.filterDebounce) {
+                // Ignore filterList.length event
+                if (filterList.path === 'filterList.length')
+                {
+                    return;
+                }
+                // Ignore if all the splice item are inactive
+                if (filterList.value.indexSplices)
+                {
+                    const {removed} = filterList.value.indexSplices[0];
+                    const activeFilter = removed.find(item => item.active === true);
+                    if (removed.length > 0 && !activeFilter)
+                    {
+                        return;
+                    }
+                }
+                if (this.page === 1)
+                {
                     this.refresh();
                     return;
                 }
-                this.refreshWithDebounce();
+                this.firstPage();
             }
             /**
              * called on explicit refresh or if any of the parameter changes that require a reload from the remote
              *
              * @private
              */
-            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filter = []) {
+            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList = []) {
                 if(!remote) {
                    return;
                 }
-                this._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filter);
+                if (!this.filterDebounce)
+                {
+                    this._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList);
+                    return;
+                }
+                this._loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList);
             }
 
-            refreshWithDebounce() {
+            _loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList) {
                this._debouncer = Polymer.Debouncer.debounce(this._debouncer,
-                  Polymer.Async.timeOut.after(300),
+                  Polymer.Async.timeOut.after(500),
                    () => {
-                       this._onRemoteChanged(
-                           this.remote,
-                           this.remotePathData,
-                           this.remotePathCount,
-                           this.remoteParams,
-                           this.remoteParamFilter,
-                           this.remoteParamLimit,
-                           this.remoteParamOffset,
-                           this.remoteParamSearch,
-                           this.remoteParamSearchFields,
-                           this.remoteParamSort,
-                           this.itemsPerPage,
-                           this.page,
-                           this.sort,
-                           this.query,
-                           this.filterList
+                       this._load(
+                           remote,
+                           remotePathData,
+                           remotePathCount,
+                           remoteParams,
+                           remoteParamFilter,
+                           remoteParamLimit,
+                           remoteParamOffset,
+                           remoteParamSearch,
+                           remoteParamSearchFields,
+                           remoteParamSort,
+                           itemsPerPage,
+                           page,
+                           sort,
+                           query,
+                           filterList
                        );
                    }
                );

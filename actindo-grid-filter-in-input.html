@@ -1,0 +1,106 @@
+<link rel="import" href="actindo-grid-filter-tag.html">
+<dom-module id="actindo-grid-filter-in-input">
+    <template>
+        <style>
+            input {
+                position: relative; /* to make a stacking context */
+                outline: none;
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+                background: transparent;
+                border: none;
+                color: var(--paper-input-container-input-color, var(--primary-text-color));
+                -webkit-appearance: none;
+                text-align: inherit;
+                vertical-align: bottom;
+                /* Firefox sets a min-width on the input, which can cause layout issues */
+                min-width: 0;
+                @apply --paper-font-subhead;
+                @apply --paper-input-container-input;
+                line-height: 32px;
+            }
+            input::-webkit-outer-spin-button,
+            input::-webkit-inner-spin-button {
+                @apply --paper-input-container-input-webkit-spinner;
+            }
+            input::-webkit-clear-button {
+                @apply --paper-input-container-input-webkit-clear;
+            }
+            input::-webkit-input-placeholder {
+                color: var(--paper-input-container-color, var(--secondary-text-color));
+            }
+            input:-moz-placeholder {
+                color: var(--paper-input-container-color, var(--secondary-text-color));
+            }
+            input::-moz-placeholder {
+                color: var(--paper-input-container-color, var(--secondary-text-color));
+            }
+            input::-ms-clear {
+                @apply --paper-input-container-ms-clear;
+            }
+            input:-ms-input-placeholder {
+                color: var(--paper-input-container-color, var(--secondary-text-color));
+            }
+            .container
+            {
+                display: flex;
+            }
+            actindo-grid-filter-tag
+            {
+                --filter-tag-container: {
+                    background-color: var(--actindo-primary);
+                    margin: 0 4px 4px 0;
+                }
+            }
+
+        </style>
+        <paper-input-container>
+            <label slot="label">[[label]]</label>
+            <div slot="input" class="container">
+                <actindo-grid-filter-tag
+                    active="{{active}}"
+                    on-remove="_remove"
+                    no-self-remove
+                    no-check-box
+                >
+                    <div on-click="_showEditDialog" slot="content">hello</div>
+                </actindo-grid-filter-tag>
+                <iron-input>
+                    <input id="nativeInput" placeholder="">
+                </iron-input>
+            </div>
+
+        </paper-input-container>
+        <paper-input value="{{_value}}" label="son"></paper-input>
+    </template>
+
+    <script>
+        class ActindoGridFilterInInput extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-in-input'; }
+
+            static get properties() {
+                return {
+                    _value: {
+                        type: String,
+                        value: '',
+                        observer: '_onValueChanged'
+                    },
+                    value: {
+                        type: Array,
+                        notify: true,
+                        value: []
+                    }
+                }
+            }
+            _onValueChanged(value)
+            {
+                this.value = value.split(',');
+            }
+        }
+
+
+        customElements.define(ActindoGridFilterInInput.is, ActindoGridFilterInInput);
+    </script>
+</dom-module>

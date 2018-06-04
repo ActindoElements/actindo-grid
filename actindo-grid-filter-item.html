@@ -10,6 +10,11 @@
                 position: relative;
                 margin-right: 15px;
             }
+            paper-button
+            {
+                text-transform: initial;
+                color: inherit;
+            }
         </style>
         <div class="container">
             <actindo-grid-filter-tag
@@ -17,7 +22,7 @@
                 on-remove="_remove"
                 no-self-remove
             >
-                <div on-click="_openDialog" slot="content">[[_label]]</div>
+                <paper-button on-click="_showEditDialog" slot="content">[[_label]]</paper-button>
             </actindo-grid-filter-tag>
 
             <actindo-grid-filter-edit
@@ -26,7 +31,7 @@
                 filter="[[filter]]"
                 columns="[[columns]]"
                 on-save="_save"
-                id="dialog">
+                id="edit">
             </actindo-grid-filter-edit>
         </div>
     </template>
@@ -61,8 +66,7 @@
                         observer: '_onFilterChanged'
                     },
                     _label: {
-                        type: String,
-                        computed: '_getLabel(_filter)'
+                        type: String
                     },
                     _firstLoad: {
                         type: Boolean,
@@ -74,9 +78,15 @@
                 };
             }
 
-            _openDialog()
+            static get observers() {
+                return [
+                    '_getLabel(_filter)'
+                ]
+            }
+
+            _showEditDialog()
             {
-                this.$.dialog.open();
+                this.$.edit.open();
             }
 
             _onFilterChanged(filter)
@@ -93,7 +103,6 @@
                     return;
                 }
                 this.set('filter.active', active);
-                this.dispatchEvent( new CustomEvent("edit", {detail: this.filter}));
             }
 
             _save(event)
@@ -109,10 +118,12 @@
                 this.dispatchEvent( new CustomEvent("remove", {detail: this.filter}));
             }
 
-            _getLabel(filter)
+            _getDisplayValue(node, filter)
             {
-                const column = this.columns.find(item => item.field === filter.property);
-                const operator = column.operators.find(item => item.value === filter.operator);
+                if (typeof node.getDisplayValue === 'function')
+                {
+                    return node.getDisplayValue(filter.value);
+                }
                 let value = filter.value;
                 if (typeof filter.value === 'object')
                 {
@@ -122,8 +133,19 @@
                         value += `${v}: ${filter.value[v]} `;
                     }
                 }
+                return value;
+            }
 
-                return `${column.label} ${operator.name} ${value}`;
+            _getLabel(filter)
+            {
+                const column = this.columns.find(item => item.field === filter.property);
+                const operator = column.operators.find(item => item.value === filter.operator);
+                this.$.edit.getInputComponent(column, filter.operator).then(node => {
+                    const value = this._getDisplayValue(node, this.filter);
+                    this._label = `${column.label} ${operator.name} ${value}`;
+                });
+
+
             }
         }
 
