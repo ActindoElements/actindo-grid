@@ -22,11 +22,6 @@
                 height: 100%;
 
             }
-            #inputFilter
-            {
-                margin: 0 12px;
-            }
-
             actindo-basic-panel
             {
                 padding: 0;
@@ -159,7 +154,7 @@
                 }
 
                 this.setProperties({
-                    _operators: column.operators,
+                    _operators: column.operators
                 });
             }
 
@@ -171,15 +166,14 @@
                 }
                 const inputFilter = this.$.inputFilter;
                 let {firstChild} = inputFilter;
-
                 const column = this._selectedColumn;
                 this.getInputComponent(column, opt).then(node => {
+
                     // Check if in edit mode and first load
                     if (!firstChild && this.editing)
                     {
                         node.value = this.value;
                     }
-
                     if (firstChild)
                     {
                         this._valueHistory[firstChild.tagName] = firstChild.value;
@@ -222,6 +216,11 @@
 
             _onValueChanged(event)
             {
+                // Ignore event of array
+                if (['value.splices', 'value.length'].includes(event.detail.path))
+                {
+                    return;
+                }
                 if (event.detail.path)
                 {
                     this.set(event.detail.path, event.detail.value);
@@ -276,7 +275,7 @@
             reset()
             {
                 const filter = JSON.parse(JSON.stringify(this.filter || {}));
-
+                this.set('operator', '');
                 this.setProperties({
                     property: filter.property,
                     operator: filter.operator,

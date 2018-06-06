@@ -1,0 +1,155 @@
+<link rel="import" href="actindo-grid-filter-tag.html">
+<dom-module id="actindo-grid-filter-in-input">
+    <template>
+        <style>
+            input {
+                position: relative; /* to make a stacking context */
+                outline: none;
+                box-shadow: none;
+                padding: 0;
+                width: 100%;
+                max-width: 100%;
+                background: transparent;
+                border: none;
+                color: var(--paper-input-container-input-color, var(--primary-text-color));
+                -webkit-appearance: none;
+                text-align: inherit;
+                vertical-align: bottom;
+                min-width: 0;
+                line-height: 32px;
+                @apply(--font-body);
+            }
+
+            .container
+            {
+                display: flex;
+                flex-wrap: wrap;
+            }
+            actindo-grid-filter-tag
+            {
+                --filter-tag-container: {
+                    background-color: var(--actindo-primary);
+                    margin: 0 4px 4px 0;
+                    padding-left: 10px;
+                };
+                --filter-tag-content: {
+                    width: auto;
+                }
+            }
+            iron-input
+            {
+                flex: 1 1 auto;
+                max-width: 100%;
+            }
+
+        </style>
+        <paper-input-container always-float-label="[[_computeAlwaysFloatLabel(value.length)]]">
+            <label hidden$="[[_computeLabelVisibility(label)]]" aria-hidden="true" for="input"  slot="label">[[label]]</label>
+            <div slot="input" class="container">
+                <template is="dom-repeat" items="{{value}}" as="item">
+                    <actindo-grid-filter-tag
+                        active="{{active}}"
+                        on-remove="_remove"
+                        no-self-remove
+                        no-check-box
+                    >
+                        <div slot="content">[[item]]</div>
+                    </actindo-grid-filter-tag>
+                </template>
+                <iron-a11y-keys keys="enter backspace" on-keys-pressed="_onKeyPress">
+                    <iron-input id="input" bind-value="{{_inputValue}}">
+                        <input id="nativeInput" placeholder="">
+                    </iron-input>
+                </iron-a11y-keys>
+            </div>
+
+        </paper-input-container>
+    </template>
+
+    <script>
+        class ActindoGridFilterInInput extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-in-input'; }
+
+            static get properties() {
+                return {
+                    _inputValue: {
+                        type: String,
+                        value: ''
+                    },
+                    _value: {
+                        type: Array,
+                        value: function() {
+                            return [];
+                        }
+                    },
+                    value: {
+                        type: Array,
+                        notify: true,
+                        value: function() {
+                            return [];
+                        }
+                    },
+                    /**
+                     * Key code for Enter.
+                     *
+                     * @constant
+                     * @private
+                     */
+                    ENTER: {
+                        type: Number,
+                        value: 13
+                    },
+                }
+            }
+
+            _onKeyPress(e)
+            {
+                if(e && e.hasOwnProperty('detail') && e.detail.keyboardEvent && e.detail.keyboardEvent.keyCode === this.ENTER) {
+                    this._handleEnterEvent(e);
+                    return;
+                }
+
+                this._handleBackSpaceEvent(e);
+            }
+
+            _remove(e)
+            {
+                this.splice('value', e.model.index, 1);
+            }
+
+            _computeLabelVisibility(label)
+            {
+                 return !label;
+            }
+
+            _computeAlwaysFloatLabel(len) {
+                return len > 0
+            }
+
+            _handleEnterEvent(e)
+            {
+                if (!this._inputValue)
+                {
+                    return;
+                }
+                this.push('value', this._inputValue);
+                this.set('_inputValue', '');
+            }
+
+            _handleBackSpaceEvent(e)
+            {
+                if (this._inputValue !== '')
+                {
+                    return;
+                }
+                this.pop('value');
+            }
+
+            getDisplayValue(value)
+            {
+                return value.toString();
+            }
+        }
+        customElements.define(ActindoGridFilterInInput.is, ActindoGridFilterInInput);
+    </script>
+</dom-module>
