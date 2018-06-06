@@ -174,19 +174,11 @@
                     {
                         node.value = this.value;
                     }
-                    if (firstChild)
-                    {
-                        this._valueHistory[firstChild.tagName] = firstChild.value;
-                    }
                     // keep if the new input component name is not changed
                     firstChild = firstChild || {};
                     if (firstChild.tagName === node.tagName)
                     {
                         return;
-                    }
-                    if (this._valueHistory[node.tagName])
-                    {
-                        node.value = this._valueHistory[node.tagName];
                     }
                     inputFilter.innerHTML = '';
                     node.addEventListener("value-changed", this._onValueChanged.bind(this));
@@ -216,9 +208,14 @@
 
             _onValueChanged(event)
             {
-                // Ignore event of array
-                if (['value.splices', 'value.length'].includes(event.detail.path))
+                // Ignore length array event
+                if ('value.length' ===  event.detail.path)
                 {
+                    return;
+                }
+                if (event.detail.path === 'value.splices')
+                {
+                    this.set('value', event.detail.value.indexSplices[0].object);
                     return;
                 }
                 if (event.detail.path)
