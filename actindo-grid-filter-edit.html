@@ -22,11 +22,6 @@
                 height: 100%;
 
             }
-            #inputFilter
-            {
-                margin: 0 12px;
-            }
-
             actindo-basic-panel
             {
                 padding: 0;
@@ -159,7 +154,7 @@
                 }
 
                 this.setProperties({
-                    _operators: column.operators,
+                    _operators: column.operators
                 });
             }
 
@@ -171,28 +166,19 @@
                 }
                 const inputFilter = this.$.inputFilter;
                 let {firstChild} = inputFilter;
-
                 const column = this._selectedColumn;
                 this.getInputComponent(column, opt).then(node => {
+
                     // Check if in edit mode and first load
                     if (!firstChild && this.editing)
                     {
                         node.value = this.value;
-                    }
-
-                    if (firstChild)
-                    {
-                        this._valueHistory[firstChild.tagName] = firstChild.value;
                     }
                     // keep if the new input component name is not changed
                     firstChild = firstChild || {};
                     if (firstChild.tagName === node.tagName)
                     {
                         return;
-                    }
-                    if (this._valueHistory[node.tagName])
-                    {
-                        node.value = this._valueHistory[node.tagName];
                     }
                     inputFilter.innerHTML = '';
                     node.addEventListener("value-changed", this._onValueChanged.bind(this));
@@ -222,6 +208,16 @@
 
             _onValueChanged(event)
             {
+                // Ignore length array event
+                if ('value.length' ===  event.detail.path)
+                {
+                    return;
+                }
+                if (event.detail.path === 'value.splices')
+                {
+                    this.set('value', event.detail.value.indexSplices[0].object);
+                    return;
+                }
                 if (event.detail.path)
                 {
                     this.set(event.detail.path, event.detail.value);
@@ -276,7 +272,7 @@
             reset()
             {
                 const filter = JSON.parse(JSON.stringify(this.filter || {}));
-
+                this.set('operator', '');
                 this.setProperties({
                     property: filter.property,
                     operator: filter.operator,

@@ -8,6 +8,7 @@
 <link rel="import" href="actindo-grid-filter-helper.html">
 <link rel="import" href="actindo-grid-filter.html">
 <link rel="import" href="actindo-grid-filter-between-input.html">
+<link rel="import" href="actindo-grid-filter-in-input.html">
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 
@@ -882,6 +883,9 @@
                         {
                             case ActindoGridFilterHelper.BetweenOperator:
                                 element = document.createElement('actindo-grid-filter-between-input');
+                                break;
+                            case ActindoGridFilterHelper.InOperator:
+                                element = document.createElement('actindo-grid-filter-in-input');
                                 break;
                             default:
                                 element = document.createElement('paper-input');

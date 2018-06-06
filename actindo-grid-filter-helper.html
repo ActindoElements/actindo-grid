@@ -30,7 +30,12 @@
                value: '!='
             }
         ];
-        const numberOperator = relationalOperators;
+        const numberOperator = relationalOperators.concat([
+            {
+               name: 'in',
+               value: 'in'
+            }
+        ]);
         const operatorList =  {
             String: [
                 {
@@ -40,6 +45,10 @@
                 {
                     name: 'equal',
                     value: '='
+                },
+                {
+                   name: 'in',
+                   value: 'in'
                 }
             ],
             Number: numberOperator,
@@ -53,7 +62,8 @@
         };
         ActindoGridFilterHelper = {
             operatorList: operatorList,
-            BetweenOperator: 'bt'
+            BetweenOperator: 'bt',
+            InOperator: 'in'
         };
     })();
 </script>
