@@ -1004,8 +1004,26 @@
                         break;
                     }
                 }
-
-                column = this._columns[column.getAttribute('data-index')];
+                let realIndex = -1;
+                let countNonHidden = 0;
+                let columnCurrentIndex = Number(column.getAttribute('data-index'));
+                for(let i=0;i<this._columns.length;i++)
+                {
+                    if( !this._columns[i].hidden )
+                    {
+                        ++countNonHidden;
+                    }
+                    if( countNonHidden === columnCurrentIndex+1 )
+                    {
+                        realIndex = i;break;
+                    }
+                }
+                if( realIndex < 0 )
+                {
+                    console.warn("could not find column index");
+                    return;
+                }
+                column = this._columns[realIndex];
                 if(column)
                 {
                     let field = column.field;
