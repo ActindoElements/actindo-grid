@@ -1344,7 +1344,7 @@
                 let serializeOptionals = [];
                 this._identifyingColumn = null;
                 const columns = configurations.map((configuration) => {
-                    let column = ActindoGrid2.columnDefaults;
+                    let column = ActindoGrid.columnDefaults;
                     Object.assign(column, configuration);
 
                     if (column.filterable)
