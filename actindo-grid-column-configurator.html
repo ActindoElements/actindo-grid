@@ -115,6 +115,7 @@
                 let index = e.model.index;
                 let path = 'columns.' + index + '.hidden';
                 this.set(path, !this.get(path));
+                this.notifyPath('columns.' + index);
             }
         }
 

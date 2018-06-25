@@ -662,6 +662,11 @@
                         value: 'fields'
                     },
 
+                    remoteParamSerializeOptionals: {
+                        type: String,
+                        value: 'serializeOptionals'
+                    },
+
                     /**
                      * this url parameter is added to the `remote` url containing the user selected sorting. Set this
                      * to null to sort the data locally
@@ -773,7 +778,16 @@
                     _pages: {
                         type: Array,
                         value: function(){return [];}
-                    }
+                    },
+
+                     /**
+                      * List of the optional column. The hidden column will not be in this list
+                      */
+                     _serializeOptionals: {
+                        type: Array,
+                        value: function(){return [];}
+                     }
+
 
                 };
             }
@@ -847,7 +861,8 @@
                     '_onItemsChanged(items.*)',
                     '_onSelectionChanged(selectedItems.*)',
                     '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList)',
-                    '_onFilterChanged(filterList.*)'
+                    '_onFilterChanged(filterList.*)',
+                    '_onColumnConfigurationChanged(_columns.*)'
                 ];
             }
 
@@ -1252,6 +1267,67 @@
                 return column;
             }
 
+
+            /**
+             * call when column configuration change
+             * @private
+             */
+            _onColumnConfigurationChanged(columns)
+            {
+                const column = columns.value;
+
+                if (typeof columns.value !== 'object')
+                {
+                    return;
+                }
+
+                if (column.hidden)
+                {
+                    return;
+                }
+
+                if (this._serializeOptionals.includes(column.field))
+                {
+                    return;
+                }
+
+                this.push('_serializeOptionals', column.field);
+
+                this._loadDebounced(
+                    this.remote,
+                    this.remotePathData,
+                    this.remotePathCount,
+                    this.remoteParams,
+                    this.remoteParamFilter,
+                    this.remoteParamLimit,
+                    this.remoteParamOffset,
+                    this.remoteParamSearch,
+                    this.remoteParamSearchFields,
+                    this.remoteParamSort,
+                    this.itemsPerPage,
+                    this.page,
+                    this.sort,
+                    this.query,
+                    this.filterList
+                );
+            }
+
+            _checkIdentifyColumn(column)
+            {
+                if (!column.identifying)
+                {
+                    return;
+                }
+
+                if(this._identifyingColumn !== null)
+                {
+                    console.warn('more than one identifying columns given, ignoring this', column);
+                    return;
+                }
+
+                this._identifyingColumn = column;
+            }
+
             /**
              * called when the columnConfiguration changes. Process the columns and copy them to the internal
              * _columns property.
@@ -1260,42 +1336,29 @@
              * @private
              */
             _consolidateColumns(columnConfiguration) {
-                let configuration = columnConfiguration.base;
-
-                let columns = [];
-
-                let filterColumns = [] ;
-
+                let configurations = columnConfiguration.base;
+                let filterColumns = [];
+                let serializeOptionals = [];
                 this._identifyingColumn = null;
+                const columns = configurations.map((configuration) => {
+                    let column = ActindoGrid2.columnDefaults;
+                    Object.assign(column, configuration);
 
-                for(let i = 0, c = configuration.length; i < c; i++)
-                {
-                    let item = ActindoGrid.columnDefaults;
-
-                    for(let key in configuration[i]) {
-                        item[key] = configuration[i][key];
-                    }
-
-                    if(item.identifying)
+                    if (column.filterable)
                     {
-                        if(this._identifyingColumn !== null)
-                        {
-                            console.warn('more than one identifying columns given, ignoring this', item);
-                        }
-                        else
-                        {
-                            this._identifyingColumn = item;
-                        }
+                        const filterColumn = this._attachOperatorToColumn(column);
+                        filterColumns.push(filterColumn);
                     }
 
-                    if (item.filterable)
+                    if (column.optional && !column.hidden)
                     {
-                        const column = this._attachOperatorToColumn(item);
-                        filterColumns.push(column);
+                        serializeOptionals.push(column.field);
                     }
 
-                    columns.push(item);
-                }
+                    this._checkIdentifyColumn(column);
+
+                    return column;
+                });
 
                 if(this._identifyingColumn === null && this.selectionMode) {
                     console.warn('no identifying column given, disabling selection model', columns);
@@ -1304,6 +1367,7 @@
 
                 this._columns = columns;
                 this._filterColumns = filterColumns;
+                this._serializeOptionals = serializeOptionals;
             }
 
             _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filter)
@@ -1320,7 +1384,6 @@
                     request[remoteParamOffset] = (page - 1) * itemsPerPage;
                 }
 
-
                 // sorting
                 if(sort.hasOwnProperty('field')) {
                     request[remoteParamSort] = [];
@@ -1336,6 +1399,12 @@
                         }
                     });
                 }
+
+                const serializeOptionals = this._columns
+                                                    .filter(item => item.optional && !item.hidden)
+                                                    .map(item => item.field);
+                this.set('_serializeOptionals', serializeOptionals);
+                request[this.remoteParamSerializeOptionals] = serializeOptionals;
 
                 // searching
                 if(query.length) {
