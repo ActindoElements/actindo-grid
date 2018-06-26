@@ -1284,7 +1284,8 @@
                     return;
                 }
 
-                if (column.hidden)
+                // Do not reload if the column is hidden or not optional
+                if (!column.optional || column.hidden)
                 {
                     return;
                 }
