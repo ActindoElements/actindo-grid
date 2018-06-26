@@ -26,18 +26,40 @@
                 transition: background-color 150ms, border-radius 150ms, transform 150ms;
                 width: 18px;
             }
+            .label
+            {
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 240px;
+            }
+            .container
+            {
+                overflow-y: scroll;
+                max-height: 400px;
+                padding: 0;
+            }
+            sortable-js
+            {
+                display: flex;
+                flex-direction: column;
+            }
         </style>
         <paper-icon-button icon="view-column" on-tap="openColumnConfiguration"></paper-icon-button>
 
         <paper-dialog id="dialog" with-backdrop="true">
-            <sortable-js id="sorting" handle="iron-icon">
-                <template is="dom-repeat" items="[[_columns]]" id="repeat">
-                    <div class="column">
-                        <paper-checkbox on-tap="_toggleVisibility" checked="[[!item.hidden]]">[[item.label]]</paper-checkbox>
-                        <iron-icon icon="menu"></iron-icon>
-                    </div>
-                </template>
-            </sortable-js>
+            <div class="container">
+                <sortable-js id="sorting" handle="iron-icon">
+                    <template is="dom-repeat" items="[[_columns]]" id="repeat">
+                        <div class="column">
+                            <paper-checkbox on-tap="_toggleVisibility" checked="[[!item.hidden]]">
+                                <div class="label">[[item.label]]</div>
+                            </paper-checkbox>
+                            <iron-icon icon="menu"></iron-icon>
+                        </div>
+                    </template>
+                </sortable-js>
+            </div>
         </paper-dialog>
     </template>
 
@@ -115,6 +137,7 @@
                 let index = e.model.index;
                 let path = 'columns.' + index + '.hidden';
                 this.set(path, !this.get(path));
+                this.notifyPath('columns.' + index);
             }
         }
 
