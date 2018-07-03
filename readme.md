@@ -44,6 +44,28 @@ sorting, paging, ...
                                 sortable: true
                             },
                             {
+                                label: 'Status',
+                                field: 'name',
+                                type: Number,
+                                resizable: true,
+                                searchable: true,
+                                sortable: true,
+                                filterable: true,
+                                defaultFilterProperties: {
+                                    inputType: 'Option',
+                                    items: [
+                                        {
+                                            id: 0,
+                                            label: 'Inactive'
+                                        },
+                                        {
+                                            id: 1,
+                                            label: 'Active'
+                                        }
+                                    ]
+                                }
+                            },
+                            {
                                 label: 'active',
                                 field: 'active',
                                 type: Boolean,

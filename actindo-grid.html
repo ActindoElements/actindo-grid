@@ -895,15 +895,26 @@
                     filterable: false,
                     resizable: true,
                     render: null,
+                    defaultFilterProperties: {},
                     renderDefaultFilter: function(properties = {}, operator) {
                         let element;
-                        switch(operator)
+
+                        switch(operator.key)
                         {
-                            case ActindoGridFilterHelper.BetweenOperator:
+                            case ActindoGridFilterHelper.operators.between.key:
                                 element = document.createElement('actindo-grid-filter-between-input');
                                 break;
-                            case ActindoGridFilterHelper.InOperator:
+                            case ActindoGridFilterHelper.operators.in.key:
                                 element = document.createElement('actindo-grid-filter-in-input');
+                                break;
+                            case ActindoGridFilterHelper.operators.equal_in_option.key:
+                                const defaultProperties = {
+                                    displayField: 'label',
+                                    valueField: 'id',
+                                    items: []
+                                };
+                                element = document.createElement('actindo-combobox');
+                                Object.assign(element, defaultProperties, properties);
                                 break;
                             default:
                                 element = document.createElement('paper-input');
@@ -1255,7 +1266,9 @@
 
                 const column = Object.assign({}, item);
 
-                column.operators = ActindoGridFilterHelper.operatorList[column.type.name] || [];
+                item.defaultFilterProperties.inputType = item.defaultFilterProperties.inputType || column.type.name;
+
+                column.operators = ActindoGridFilterHelper.operatorList[item.defaultFilterProperties.inputType] || [];
 
                 if (column.customFilter)
                 {

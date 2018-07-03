@@ -1,69 +1,91 @@
 <script>
     (function() {
-        const relationalOperators = [
-            {
+        const operators = {
+            equal: {
+                name: 'equal',
+                key: 'equal',
+                value: '='
+            },
+            between: {
                 name: 'between',
+                key: 'between',
                 value: 'bt'
             },
-            {
-               name: 'less',
-               value: '<'
+            less: {
+                name: 'less',
+                key: 'less',
+                value: '<'
             },
-            {
-               name: 'greater',
-               value: '>'
+            greater: {
+                name: 'greater',
+                key: 'greater',
+                value: '>'
             },
-            {
-               name: 'equal',
-               value: '='
+            less_or_equal: {
+                name: 'less or equal',
+                key: 'less_or_equal',
+                value: '<='
             },
-            {
-              name: 'less or equal',
-              value: '<='
+            greater_or_equal: {
+                name: 'greater or equal',
+                key: 'greater_or_equal',
+                value: '>='
             },
-            {
-               name: 'greater or equal',
-               value: '>='
+            not_equal_to: {
+                name: 'not equal to',
+                key: 'not_equal_to',
+                value: '!='
             },
-            {
-               name: 'not equal to',
-               value: '!='
+            in: {
+                name: 'in',
+                key: 'in',
+                value: 'in'
+            },
+            like: {
+                name: 'like',
+                key: 'like',
+                value: 'like'
+            },
+            matches: {
+                name: 'matches',
+                key: 'matches',
+                value: 'matches'
+            },
+            equal_in_option: {
+                name: 'equal',
+                key: 'equal_in_option',
+                value: '='
             }
+        };
+        const relationalOperators = [
+            operators.between,
+            operators.less,
+            operators.greater,
+            operators.equal,
+            operators.less_or_equal,
+            operators.greater_or_equal,
+            operators.not_equal_to
         ];
-        const numberOperator = relationalOperators.concat([
-            {
-               name: 'in',
-               value: 'in'
-            }
-        ]);
+        const numberOperators = relationalOperators.concat(operators.in);
         const operatorList =  {
             String: [
-                {
-                    name: 'like',
-                    value: 'like'
-                },
-                {
-                    name: 'equal',
-                    value: '='
-                },
-                {
-                   name: 'in',
-                   value: 'in'
-                }
+                operators.like,
+                operators.equal,
+                operators.in
             ],
-            Number: numberOperator,
+            Number: numberOperators,
             Date: relationalOperators,
             default: [
-                {
-                   name: 'matches',
-                   value: 'matches'
-                }
+                operators.matches
+            ],
+            Option: [
+                operators.equal_in_option
             ]
         };
+
         ActindoGridFilterHelper = {
-            operatorList: operatorList,
-            BetweenOperator: 'bt',
-            InOperator: 'in'
+            operators: operators,
+            operatorList: operatorList
         };
     })();
 </script>
