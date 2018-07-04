@@ -6,9 +6,12 @@
 <link rel="import" href="actindo-grid-column-configurator.html">
 <link rel="import" href="actindo-grid-search.html">
 <link rel="import" href="actindo-grid-filter-helper.html">
+<link rel="import" href="actindo-grid-filter-in-option-input.html">
+<link rel="import" href="actindo-grid-filter-edit.html">
 <link rel="import" href="actindo-grid-filter.html">
 <link rel="import" href="actindo-grid-filter-between-input.html">
 <link rel="import" href="actindo-grid-filter-in-input.html">
+<link rel="import" href="actindo-grid-filter-item.html">
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 
@@ -911,13 +914,7 @@
                                 element = document.createElement('actindo-grid-filter-in-input');
                                 break;
                             case equalInOptionKey:
-                                const defaultProperties = {
-                                    displayField: 'label',
-                                    valueField: 'id',
-                                    items: []
-                                };
-                                element = document.createElement('actindo-combobox');
-                                Object.assign(element, defaultProperties, properties);
+                                element = document.createElement('actindo-grid-filter-in-option-input');
                                 break;
                             default:
                                 element = document.createElement('paper-input');
