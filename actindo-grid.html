@@ -1,17 +1,9 @@
-<link rel="import" href="../../bower_components/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
-<link rel="import" href="actindo-grid-cell-content.html">
-<link rel="import" href="actindo-grid-column-configurator.html">
-<link rel="import" href="actindo-grid-search.html">
 <link rel="import" href="actindo-grid-filter-helper.html">
 <link rel="import" href="actindo-grid-filter-in-option-input.html">
 <link rel="import" href="actindo-grid-filter-edit.html">
 <link rel="import" href="actindo-grid-filter.html">
-<link rel="import" href="actindo-grid-filter-between-input.html">
-<link rel="import" href="actindo-grid-filter-in-input.html">
 <link rel="import" href="actindo-grid-filter-item.html">
+
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 
@@ -28,7 +20,7 @@
 - hidden columns that can be shown manually
 
 -->
-<dom-module id="actindo-grid">
+<dom-module id="actindo-grid2">
     <template>
         <style>
             :host {
@@ -331,12 +323,12 @@
             </div>
         </div>
         <template is="dom-if" if="[[_filterColumns.length]]">
-            <actindo-grid-filter
+            <actindo-grid-filter2
                 filter-list="{{filterList}}"
                 columns="{{_filterColumns}}" 
                 debounce="{{filterDebounce}}"
             >
-            </actindo-grid-filter>
+            </actindo-grid-filter2>
         </template>
 
         <div id="fixed">
@@ -418,8 +410,8 @@
         </template>
     </template>
     <script>
-        class ActindoGrid extends Polymer.Element {
-            static get is() { return 'actindo-grid'; }
+        class ActindoGrid2 extends Polymer.Element {
+            static get is() { return 'actindo-grid2'; }
 
             static get properties() {
                 return {
@@ -901,9 +893,9 @@
                     defaultFilterProperties: {},
                     renderDefaultFilter: function(properties = {}, operator) {
                         let element;
-                        const betweenKey = ActindoGridFilterHelper.operators.between.key;
-                        const inKey = ActindoGridFilterHelper.operators.in.key;
-                        const equalInOptionKey = ActindoGridFilterHelper.operators.equal_in_option.key;
+                        const betweenKey = ActindoGridFilterHelper2.operators.between.key;
+                        const inKey = ActindoGridFilterHelper2.operators.in.key;
+                        const equalInOptionKey = ActindoGridFilterHelper2.operators.equal_in_option.key;
 
                         switch(operator.key)
                         {
@@ -1268,7 +1260,7 @@
 
                 item.defaultFilterProperties.inputType = item.defaultFilterProperties.inputType || column.type.name;
 
-                column.operators = ActindoGridFilterHelper.operatorList[item.defaultFilterProperties.inputType] || [];
+                column.operators = ActindoGridFilterHelper2.operatorList[item.defaultFilterProperties.inputType] || [];
 
                 if (column.customFilter)
                 {
@@ -1277,7 +1269,7 @@
 
                 if (column.operators.length === 0)
                 {
-                    column.operators = ActindoGridFilterHelper.operatorList.default;
+                    column.operators = ActindoGridFilterHelper2.operatorList.default;
                 }
 
                 return column;
@@ -1358,7 +1350,7 @@
                 let serializeOptionals = [];
                 this._identifyingColumn = null;
                 const columns = configurations.map((configuration) => {
-                    let column = ActindoGrid.columnDefaults;
+                    let column = ActindoGrid2.columnDefaults;
                     Object.assign(column, configuration);
 
                     if (column.filterable)
@@ -1784,6 +1776,6 @@
             }
         }
 
-        customElements.define(ActindoGrid.is, ActindoGrid);
+        customElements.define(ActindoGrid2.is, ActindoGrid2);
     </script>
 </dom-module>

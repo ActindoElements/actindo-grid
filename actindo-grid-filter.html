@@ -1,4 +1,4 @@
-<dom-module id="actindo-grid-filter">
+<dom-module id="actindo-grid-filter2">
     <template>
         <style>
             :host
@@ -87,12 +87,12 @@
                 padding-left: 13px;
                 width: 9em;
             }
-            actindo-grid-filter-edit
+            actindo-grid-filter-edit2
             {
                 top: 0;
                 position: absolute;
             }
-            actindo-grid-filter-edit.offset-right
+            actindo-grid-filter-edit2.offset-right
             {
                 right: 324px;
             }
@@ -101,12 +101,12 @@
             <div class="content">
                 <div class="filter">
                     <template is="dom-repeat" items="{{filterList}}" as="item">
-                        <actindo-grid-filter-item
+                        <actindo-grid-filter-item2
                             on-remove="_removeFilter"
                             on-edit="_editFilter"
                             columns="[[columns]]"
                             filter="{{item}}">
-                        </actindo-grid-filter-item>
+                        </actindo-grid-filter-item2>
                     </template>
                     <div id="add" class="add">
                         <paper-button on-click="_showAddDialog" class="button">
@@ -114,11 +114,11 @@
                             <iron-icon icon="icons:add"></iron-icon>
                         </paper-button>
 
-                        <actindo-grid-filter-edit
+                        <actindo-grid-filter-edit2
                             columns="[[columns]]"
                             on-save="_createNewFilter"
                             id="dialog">
-                        </actindo-grid-filter-edit>
+                        </actindo-grid-filter-edit2>
                     </div>
 
                 </div>
@@ -139,8 +139,8 @@
     </template>
 
     <script>
-        class ActindoGridFilter extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter'; }
+        class ActindoGridFilter2 extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter2'; }
 
             static get properties() {
                 return {
@@ -226,6 +226,6 @@
             }
         }
 
-        customElements.define(ActindoGridFilter.is, ActindoGridFilter);
+        customElements.define(ActindoGridFilter2.is, ActindoGridFilter2);
     </script>
 </dom-module>

@@ -1,4 +1,4 @@
-<dom-module id="actindo-grid-filter-item">
+<dom-module id="actindo-grid-filter-item2">
     <template>
         <style>
             .container
@@ -21,20 +21,20 @@
                 <paper-button on-click="_showEditDialog" slot="content">[[_label]]</paper-button>
             </actindo-grid-filter-tag>
 
-            <actindo-grid-filter-edit
+            <actindo-grid-filter-edit2
                 editing
                 active="[[active]]"
                 filter="[[filter]]"
                 columns="[[columns]]"
                 on-save="_save"
                 id="edit">
-            </actindo-grid-filter-edit>
+            </actindo-grid-filter-edit2>
         </div>
     </template>
     <script>
 
-        class ActindoGridFilterItem extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter-item'; }
+        class ActindoGridFilterItem2 extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-item2'; }
 
             static get properties() {
                 return {
@@ -145,7 +145,7 @@
             }
         }
 
-        customElements.define(ActindoGridFilterItem.is, ActindoGridFilterItem);
+        customElements.define(ActindoGridFilterItem2.is, ActindoGridFilterItem2);
 
     </script>
 </dom-module>
