@@ -55,11 +55,11 @@ sorting, paging, ...
                                     inputType: 'Option',
                                     items: [
                                         {
-                                            id: 0,
+                                            id: '0',
                                             label: 'Inactive'
                                         },
                                         {
-                                            id: 1,
+                                            id: '1',
                                             label: 'Active'
                                         }
                                     ]
