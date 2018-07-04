@@ -1,5 +1,4 @@
 <link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
-<link rel="import" href="actindo-grid-filter-helper.html">
 <dom-module id="actindo-grid-filter-edit">
     <template>
         <style>
@@ -146,15 +145,18 @@
                 };
             }
 
-            _onSelectedColumnChanged(column)
+            _onSelectedColumnChanged(newColumn, oldColumn)
             {
-                if (!column.type)
+                if (!newColumn.type)
                 {
                     return;
                 }
-
+                if (oldColumn.type)
+                {
+                    this.set('operator', null);
+                }
                 this.setProperties({
-                    _operators: column.operators
+                    _operators: newColumn.operators
                 });
             }
 
@@ -167,7 +169,8 @@
                 const inputFilter = this.$.inputFilter;
                 let {firstChild} = inputFilter;
                 const column = this._selectedColumn;
-                this.getInputComponent(column, opt).then(node => {
+                const operatorObj = this._operators.find(item => item.value === opt);
+                this.getInputComponent(column, operatorObj).then(node => {
 
                     // Check if in edit mode and first load
                     if (!firstChild && this.editing)
@@ -191,6 +194,7 @@
                 return new Promise(resolve => {
                     if (!column.customFilter)
                     {
+
                         const node = column.renderDefaultFilter(column.defaultFilterProperties, operator);
                         resolve(node);
                         return;
