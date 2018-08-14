@@ -13,6 +13,7 @@
 <link rel="import" href="actindo-grid-filter-in-input.html">
 <link rel="import" href="actindo-grid-filter-item.html">
 <link rel="import" href="actindo-grid-filter-tag.html">
+<link rel="import" href="actindo-grid-error.html">
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 
@@ -407,6 +408,9 @@
                                 <paper-spinner-lite active></paper-spinner-lite>
                             </div>
                         </template>
+                        <template is="dom-if" if="[[_error]]">
+                            <actindo-grid-error></actindo-grid-error>
+                        </template>
                     </tbody>
                 </table>
                 <template is="dom-if" if="[[!_xhr]]">
@@ -793,6 +797,14 @@
                      */
                     _xhr: {
                         type: Object
+                    },
+
+                    /**
+                     * property that indicates if a xhr request is failed
+                     */
+                     _error: {
+                        type: Boolean,
+                        value: false
                     },
 
                     /**
@@ -1417,7 +1429,7 @@
 
                 let me = this;
                 let request = remoteParams;
-
+                this._error = false;
                 if( !this.pagingDisabled )
                 {
                     // pagination
@@ -1426,8 +1438,8 @@
                 }
 
                 // sorting
+                request[remoteParamSort] = [];
                 if(sort.hasOwnProperty('field')) {
-                    request[remoteParamSort] = [];
                     request[remoteParamSort].push({field: sort.field, order: sort.order ? 'ASC' : 'DESC'});
                 }
 
@@ -1477,6 +1489,9 @@
                         }
                         else if( me._xhr.status !== 0 )
                         {
+
+                            me._xhr = null;
+                            me._error = true;
                             console.error(me.xhr.response);
                         }
                         me._xhr = null;
