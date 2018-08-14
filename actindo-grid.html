@@ -313,11 +313,28 @@
                 width: 50px;
                 height: 50px;
             }
+            .header-bar
+            {
+                display: flex;
+                flex-direction: row;
+                @apply(--header-bar-style);
+            }
+            .header-title
+            {
+                font-size: var(--font-title_-_font-size);
+                font-weight: var(--font-title_-_font-weight);
+                opacity: 0.7;
+                display: flex;
+                padding-right: 15px;
+                padding-top: 35px;
+                @apply(--header-title-style);
+            }
         </style>
 
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
             <div hidden$="[[!selectedItems.length]]">[[selectedItems.length]] gewählt</div>
-            <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]">
+            <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
+                <div class="header-title">[[title]]</div>
                 <slot name="toolbar"></slot>
             </div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 1)]]">
@@ -327,6 +344,7 @@
                 <slot name="multiActions"></slot>
             </div>
             <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
+                <slot name="noSelectionActions"></slot>
                 <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="refresh"></paper-icon-button>
                 <actindo-grid-column-configurator columns="{{_columns}}" hidden="[[hideColumnConfiguration]]"></actindo-grid-column-configurator>
@@ -799,13 +817,20 @@
                         value: function(){return [];}
                     },
 
-                     /**
+                    /**
                       * List of the optional column. The hidden column will not be in this list
-                      */
-                     _serializeOptionals: {
+                     */
+                    _serializeOptionals: {
                         type: Array,
                         value: function(){return [];}
-                     }
+                    },
+
+                    /**
+                      * the title will show on headline
+                     */
+                    title: {
+                        type: String,
+                    }
 
 
                 };
