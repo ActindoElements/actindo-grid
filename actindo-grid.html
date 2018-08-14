@@ -331,7 +331,7 @@
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
             <div hidden$="[[!selectedItems.length]]">[[selectedItems.length]] gewählt</div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
-                <div class="header-title">[[header]]</div>
+                <div class="header-title">[[title]]</div>
                 <slot name="toolbar"></slot>
             </div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 1)]]">
@@ -812,9 +812,9 @@
                     },
 
                     /**
-                      * internal property, the title  will show on headline
+                      * the title will show on headline
                      */
-                    header: {
+                    title: {
                         type: String,
                     }
 
