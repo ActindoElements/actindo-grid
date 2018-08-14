@@ -1,0 +1,76 @@
+<link rel="import" href="actindo-grid-icon.html">
+
+<dom-module id="actindo-grid-error">
+    <template>
+        <style>
+            .background
+            {
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: #fff url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%20128%2032%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3Cstyle%3E%0A%20%20%20%20%20%20.cls-1%20%7B%0A%20%20%20%20%20%20%20%20clip-path%3A%20url%28%23clip-_2%29%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.cls-2%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20%23f7f7f7%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%0A%20%20%20%20%3CclipPath%20id%3D%22clip-_2%22%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22128%22%20height%3D%2232%22%2F%3E%0A%20%20%20%20%3C%2FclipPath%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Cg%20id%3D%22_2%22%20data-name%3D%222%22%20class%3D%22cls-1%22%3E%0A%20%20%20%20%3Crect%20id%3D%22Rechteck_2839%22%20data-name%3D%22Rechteck%202839%22%20class%3D%22cls-2%22%20width%3D%2280%22%20height%3D%2218%22%20rx%3D%229%22%20transform%3D%22translate%287%208%29%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A) no-repeat;
+                display: flex;
+                align-items: center;
+                z-index: 1;
+                justify-content: center;
+                background-size: 7em 2.5em;
+                background-position: top 8px left 8px;
+            }
+            
+            .background::after
+            {
+                content: "";
+                position: absolute;
+                top: 60px;
+                left: 36px;
+                right: 48px;
+                bottom: 8px;
+                background: url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%20128%2032%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3Cstyle%3E%0A%20%20%20%20%20%20.cls-1%20%7B%0A%20%20%20%20%20%20%20%20clip-path%3A%20url%28%23clip-_2%29%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.cls-2%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20%23f7f7f7%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%0A%20%20%20%20%3CclipPath%20id%3D%22clip-_2%22%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%22128%22%20height%3D%2232%22%2F%3E%0A%20%20%20%20%3C%2FclipPath%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Cg%20id%3D%22_2%22%20data-name%3D%222%22%20class%3D%22cls-1%22%3E%0A%20%20%20%20%3Crect%20id%3D%22Rechteck_2839%22%20data-name%3D%22Rechteck%202839%22%20class%3D%22cls-2%22%20width%3D%2280%22%20height%3D%2218%22%20rx%3D%229%22%20transform%3D%22translate%287%208%29%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A) repeat;
+                background-size: 7em 2.5em;
+            }
+            .dot
+            {
+                content: "";
+                position: absolute;
+                top: 60px;
+                left: 8px;
+                bottom: 8px;
+                width: 2em;
+                background: url(data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20viewBox%3D%220%200%2032%2032%22%3E%0A%20%20%3Cdefs%3E%0A%20%20%20%20%3Cstyle%3E%0A%20%20%20%20%20%20.cls-1%20%7B%0A%20%20%20%20%20%20%20%20clip-path%3A%20url%28%23clip-_1%29%3B%0A%20%20%20%20%20%20%7D%0A%0A%20%20%20%20%20%20.cls-2%20%7B%0A%20%20%20%20%20%20%20%20fill%3A%20%23f7f7f7%3B%0A%20%20%20%20%20%20%7D%0A%20%20%20%20%3C%2Fstyle%3E%0A%20%20%20%20%3CclipPath%20id%3D%22clip-_1%22%3E%0A%20%20%20%20%20%20%3Crect%20width%3D%2232%22%20height%3D%2232%22%2F%3E%0A%20%20%20%20%3C%2FclipPath%3E%0A%20%20%3C%2Fdefs%3E%0A%20%20%3Cg%20id%3D%22_1%22%20data-name%3D%221%22%20class%3D%22cls-1%22%3E%0A%20%20%20%20%3Crect%20id%3D%22Rechteck_2840%22%20data-name%3D%22Rechteck%202840%22%20class%3D%22cls-2%22%20width%3D%2218%22%20height%3D%2218%22%20rx%3D%229%22%20transform%3D%22translate%287%208%29%22%2F%3E%0A%20%20%3C%2Fg%3E%0A%3C%2Fsvg%3E%0A) repeat-y;
+                background-size: 2em 2.5em;
+                z-index: 2;
+            }
+            .broken-icon
+            {
+                position: absolute;
+                top: 50%;
+                left:50%;
+                width: 44px;
+                height: 54px;
+                opacity: 0.72;
+                z-index: 1;
+            }
+        </style>
+        <div class="background">
+        </div>
+        <div class="dot">
+        </div>
+        <iron-icon class="broken-icon" icon="actindoGrid:broken-list"></iron-icon>
+    </template>
+
+    <script>
+        class ActindoGridError extends Polymer.Element {
+            static get is() { return 'actindo-grid-error'; }
+
+            static get properties() {
+                return {
+
+                }
+            }
+        }
+
+        customElements.define(ActindoGridError.is, ActindoGridError);
+    </script>
+</dom-module>
