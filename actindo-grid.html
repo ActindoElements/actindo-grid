@@ -1388,16 +1388,16 @@
              */
             _onColumnConfigurationChanged(columns)
             {
-                
                 const column = columns.value;
 
                 if (typeof columns.value !== 'object')
                 {
                     return;
                 }
-
-                let displayColumns = column.filter(item => item.hidden === false);
+                
+                let displayColumns = this._columns.filter(item => item.hidden === false);
                 this.set('_displayColumns', displayColumns);
+                
                 // Do not reload if the column is hidden or not optional
                 if (!column.optional || column.hidden)
                 {
@@ -1486,6 +1486,7 @@
                 this._columns = columns;
                 this._filterColumns = filterColumns;
                 this._serializeOptionals = serializeOptionals;
+                
             }
 
             _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filter)
