@@ -805,7 +805,15 @@
                      _serializeOptionals: {
                         type: Array,
                         value: function(){return [];}
-                     }
+                     },
+
+                     /**
+                      * List of the loaded column
+                      */
+                      _loadedColumns: {
+                        type: Array,
+                        value: function(){return [];}
+                     },
 
 
                 };
@@ -860,11 +868,13 @@
                     this.remoteParamSearch,
                     this.remoteParamSearchFields,
                     this.remoteParamSort,
+                    this.remoteParamSerializeOptionals,
                     this.itemsPerPage,
                     this.page,
                     this.sort,
                     this.query,
-                    this.filterList
+                    this.filterList,
+                    this._serializeOptionals
                 );
             }
 
@@ -879,7 +889,7 @@
                     '_consolidateColumns(columnConfiguration.*)',
                     '_onItemsChanged(items.*)',
                     '_onSelectionChanged(selectedItems.*)',
-                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList)',
+                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, _serializeOptionals.*)',
                     '_onFilterChanged(filterList.*)',
                     '_onColumnConfigurationChanged(_columns.*)'
                 ];
@@ -1311,35 +1321,28 @@
                 }
 
                 // Do not reload if the column is hidden or not optional
-                if (!column.optional || column.hidden)
+                if (!column.optional)
                 {
                     return;
                 }
 
                 if (this._serializeOptionals.includes(column.field))
                 {
+                    if (column.hidden)
+                    {
+                        const idx = this._serializeOptionals.indexOf(column.field);
+                        this._serializeOptionals.splice(idx, 1);
+                    }
+                    
+                    return;
+                }
+
+                if (this._loadedColumns.includes(column.field))
+                {
                     return;
                 }
 
                 this.push('_serializeOptionals', column.field);
-
-                this._loadDebounced(
-                    this.remote,
-                    this.remotePathData,
-                    this.remotePathCount,
-                    this.remoteParams,
-                    this.remoteParamFilter,
-                    this.remoteParamLimit,
-                    this.remoteParamOffset,
-                    this.remoteParamSearch,
-                    this.remoteParamSearchFields,
-                    this.remoteParamSort,
-                    this.itemsPerPage,
-                    this.page,
-                    this.sort,
-                    this.query,
-                    this.filterList
-                );
             }
 
             _checkIdentifyColumn(column)
@@ -1400,7 +1403,7 @@
                 this._serializeOptionals = serializeOptionals;
             }
 
-            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filter)
+            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
             {
 
 
@@ -1430,10 +1433,6 @@
                     });
                 }
 
-                const serializeOptionals = this._columns
-                                                    .filter(item => item.optional && !item.hidden)
-                                                    .map(item => item.field);
-                this.set('_serializeOptionals', serializeOptionals);
                 request[this.remoteParamSerializeOptionals] = serializeOptionals;
 
                 // searching
@@ -1506,19 +1505,22 @@
              *
              * @private
              */
-            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList = []) {
+            _onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList = [], serializeOptionals) {
                 if(!remote) {
                    return;
                 }
+                
+                this.set('_loadedColumns', [].concat(this._serializeOptionals));
+                
                 if (!this.filterDebounce)
                 {
-                    this._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList);
+                    this._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, this._serializeOptionals);
                     return;
                 }
-                this._loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList);
+                this._loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, this._serializeOptionals);
             }
 
-            _loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, itemsPerPage, page, sort, query, filterList) {
+            _loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, serializeOptionals) {
                this._debouncer = Polymer.Debouncer.debounce(this._debouncer,
                   Polymer.Async.timeOut.after(500),
                    () => {
@@ -1533,11 +1535,13 @@
                            remoteParamSearch,
                            remoteParamSearchFields,
                            remoteParamSort,
+                           remoteParamSerializeOptionals,
                            itemsPerPage,
                            page,
                            sort,
                            query,
-                           filterList
+                           filterList,
+                           serializeOptionals
                        );
                    }
                );
