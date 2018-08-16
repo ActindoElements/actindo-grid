@@ -313,6 +313,15 @@
                 width: 50px;
                 height: 50px;
             }
+            paper-fab {
+                position:absolute;
+                bottom: 16px;
+                right: 26px;
+                background-color: var(--actindo-primary);
+                color: white;
+                width: 60px;
+                height: 60px;
+            }
         </style>
 
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
@@ -403,6 +412,9 @@
                     </template>
                 </template>
             </div>
+            <template is="dom-if" if="[[showCreateButton]]">
+                <paper-fab on-click="_onCreateClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
+            </template>
         </div>
 
         <template is="dom-if" if="[[!pagingDisabled]]">
@@ -735,6 +747,16 @@
                         value: false
                     },
 
+                    showCreateButton: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    disableCreateButton: {
+                        type: Boolean,
+                        value: false
+                    },
+
                     /**
                      * internal property that holds the processed columns
                      */
@@ -806,8 +828,6 @@
                         type: Array,
                         value: function(){return [];}
                      }
-
-
                 };
             }
 
@@ -1543,7 +1563,14 @@
                );
             }
 
-
+            /**
+             * Called when create button clicked
+             *
+             * @private
+             */
+            _onCreateClick() {
+                this.dispatchEvent( new CustomEvent( "create-clicked" ) );
+            }
 
             /*
              * internal helpers
