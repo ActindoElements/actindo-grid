@@ -14,6 +14,10 @@
 <link rel="import" href="actindo-grid-filter-item.html">
 <link rel="import" href="actindo-grid-filter-tag.html">
 <link rel="import" href="actindo-grid-error.html">
+<link rel="import" href="actindo-grid-filter-configurator.html">
+<link rel="import" href="actindo-grid-filter-form.html">
+<link rel="import" href="actindo-grid-filter-columns.html">
+
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 
@@ -42,6 +46,11 @@
             }
             :host[hidden] {
                 display: none;
+            }
+
+            [hidden] 
+            {
+                display: none !important;
             }
 
             table {
@@ -313,6 +322,25 @@
                 width: 50px;
                 height: 50px;
             }
+            .header-bar
+            {
+                display: flex;
+                flex-direction: row;
+            }
+            .header-title
+            {
+                font-size: var(--font-title_-_font-size);
+                font-weight: var(--font-title_-_font-weight);
+                opacity: 0.7;
+                display: flex;
+                padding-right: 15px;
+                padding-top: 35px;
+            }
+            #actions
+            {
+                display: flex;
+                align-items: center;
+            }
         </style>
 
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
@@ -326,19 +354,37 @@
             <div hidden$="[[!_arrayLengthGT(selectedItems.*, 1)]]">
                 <slot name="multiActions"></slot>
             </div>
+            
             <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
                 <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="refresh"></paper-icon-button>
-                <actindo-grid-column-configurator columns="{{_columns}}" hidden="[[hideColumnConfiguration]]"></actindo-grid-column-configurator>
+
+                <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                    <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
+                    <span slot="content">Columns([[_displayColumns.length]])</span>
+                </actindo-grid-filter-configurator>
+
+                <template is="dom-if" if="[[_filterColumns.length]]">
+                    <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
+                        <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
+                        <span slot="content">Filter([[filterList.length]])</span>
+                    </actindo-grid-filter-configurator>
+                </template>
             </div>
+            
         </div>
-        <template is="dom-if" if="[[_filterColumns.length]]">
+        <template is="dom-if" if="[[_showFilterArea]]">
             <actindo-grid-filter
                 filter-list="{{filterList}}"
-                columns="{{_filterColumns}}" 
+                filter-columns="{{_filterColumns}}" 
                 debounce="{{filterDebounce}}"
             >
             </actindo-grid-filter>
+        </template>
+
+        <template is="dom-if" if="[[_showColumnsArea]]">
+            <actindo-grid-filter-columns columns="{{_columns}}">
+            </actindo-grid-filter-columns>
         </template>
 
         <div id="fixed">
@@ -761,6 +807,14 @@
                     },
 
                     /**
+                     * holds the colmumn has hidden is false
+                     */
+                    _displayColumns: {
+                        type: Array,
+                        value: []
+                    },
+
+                    /**
                      * property that controls the checked state of the "select all checkbox" in selectionMode=multi
                      */
                     _everythingSelected: {
@@ -805,13 +859,34 @@
                      _serializeOptionals: {
                         type: Array,
                         value: function(){return [];}
-                     }
+                    },
 
+                    /**
+                      * internal property, the title  will show on headline
+                     */
+                    header: {
+                        type: String,
+                    },
 
+                    /**
+                      * internal property, set to true if the filter area will show
+                     */
+                    _showFilterArea: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+
+                    /**
+                      * internal property, set to true if the columns area will show
+                     */
+                    _showColumnsArea: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    }
                 };
             }
-
-
 
             /*
              * public api
@@ -1303,6 +1378,7 @@
              */
             _onColumnConfigurationChanged(columns)
             {
+                
                 const column = columns.value;
 
                 if (typeof columns.value !== 'object')
@@ -1310,6 +1386,8 @@
                     return;
                 }
 
+                let displayColumns = column.filter(item => item.hidden === false);
+                this.set('_displayColumns', displayColumns);
                 // Do not reload if the column is hidden or not optional
                 if (!column.optional || column.hidden)
                 {
@@ -1797,6 +1875,24 @@
                 }
                 let width = parseInt(header.style.width) - 19.5;
                 return 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
+            }
+
+            /**
+             * when click filter icon will show or hide filter area
+             */
+            _onClickFilterIcon()
+            {
+                this.set('_showColumnsArea', false);
+                this.set('_showFilterArea', !this._showFilterArea);
+            }
+
+            /**
+             * when click column icon will show or hide columns area
+             */
+            _onClickColumnIcon()
+            {
+                this.set('_showFilterArea', false);
+                this.set('_showColumnsArea', !this._showColumnsArea);
             }
         }
 

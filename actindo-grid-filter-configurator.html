@@ -1,0 +1,86 @@
+<link rel="import" href="../../bower_components/polymer-sortablejs/polymer-sortablejs.html">
+
+<dom-module id="actindo-grid-filter-configurator">
+    <template>
+        <style>
+            .container
+            {
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+                
+            }
+
+            .container ::slotted(span) 
+            {
+                font-size: 15px;
+                margin-top: 1px;
+                -moz-user-select: none; /* Firefox */
+                -ms-user-select: none; /* Internet Explorer */
+                -khtml-user-select: none; /* KHTML browsers (e.g. Konqueror) */
+                -webkit-user-select: none; /* Chrome, Safari, and Opera */
+                -webkit-touch-callout: none; /* Disable Android and iOS callouts*/
+            }
+            .container ::slotted(paper-icon-button) 
+            {
+                
+            }
+            .active
+            {
+                color: var(--actindo-primary);
+            }
+            .arrow-icon
+            {
+                margin-top: 3px;
+            }
+            
+        </style>
+        <div class="container" id="container">
+            <slot name="content"></slot>
+            <template is="dom-if" if="[[!active]]">
+                <paper-icon-button icon="icons:arrow-drop-down" class="arrow-icon"></paper-icon-button>
+            </template>
+            <template is="dom-if" if="[[active]]">
+                <paper-icon-button icon="icons:arrow-drop-up" class="arrow-icon"></paper-icon-button>
+            </template>
+        </div>
+    </template>
+
+    <script>
+        class ActindoGridFilterConfigurator extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-configurator'; }
+
+            static get properties() {
+                return {
+                    /**
+                     * set to true if the filter is active
+                     */
+                    active: {
+                        type: Boolean,
+                        notify: true,
+                        observer: '_onActiveChanged'
+                    },
+                }
+            }
+
+            
+            ready() 
+            {
+                super.ready();
+            }
+            _onActiveChanged()
+            {
+                if(this.active)
+                {
+                    this.$.container.classList.add('active');
+                } else {
+                    this.$.container.classList.remove('active');
+                }
+            }
+        }
+
+        customElements.define(ActindoGridFilterConfigurator.is, ActindoGridFilterConfigurator);
+    </script>
+</dom-module>

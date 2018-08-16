@@ -1,87 +1,66 @@
-<link rel="import" href="../../bower_components/paper-dialog/paper-dialog.html">
-<dom-module id="actindo-grid-filter-edit">
+<dom-module id="actindo-grid-filter-form">
     <template>
         <style>
-            :host
-            {
-                --header-container-style: {
-                    position: absolute;
-                    top: -999px;
-                }
-            }
-            paper-dialog
-            {
-                @apply(--paper-material-elevation-2);
-                min-width: 25em;
-                min-height: 22em;
-                margin-left: 4px;
-                position: absolute;
-                top: 0;
-                left: 0;
-                height: 100%;
-
-            }
-            actindo-basic-panel
-            {
-                padding: 0;
-                margin-bottom: 0;
-                margin-top: 0;
-            }
-            paper-dialog .header
+            .filter-form
             {
                 display: flex;
-                margin-right: 24px;
-                flex-direction: column;
+                flex-direction: row;
+                align-items: flex-end;
             }
-            .header .toolbar
+            .btn-add
             {
-                display: flex;
+                background-color: var(--actindo-primary);
+                color: var(--actindo-light-grey-light);
+                height: 35px;
+                padding: 0px 25px;
+                margin-bottom: 7px;
+                margin-left: 10px;
             }
-            .header actindo-combobox
+            actindo-combobox
             {
-               margin-right: 0.6em;
-               width: 50%;
+                margin-right: 10px;
             }
+            
         </style>
-        <paper-dialog id="alignedDialog">
-            <actindo-basic-panel on-save="_save" on-cancel="_cancel" save-label="[[saveLabel]]" no-back-icon>
-                <div class="header" slot="content">
-                    <div class="toolbar">
-                        <template is="dom-if" if="[[columns.length]]">
-                            <actindo-combobox
-                                label="Column"
-                                items="[[columns]]"
-                                display-field="label"
-                                value-field="field"
-                                selected-item="{{_selectedColumn}}"
-                                value="{{property}}"
-                                disabled="[[editing]]"
-                            >
-                            </actindo-combobox>
-                        </template>
-                        <template is="dom-if" if="[[_selectedColumn.type]]">
-                            <actindo-combobox
-                                label="Relation"
-                                items="[[_operators]]"
-                                display-field="name"
-                                value-field="value"
-                                value="{{operator}}"
-                            >
-                            </actindo-combobox>
-                        </template>
-                    </div>
-                    <div hidden="[[!operator]]">
-                        <div id="inputFilter"></div>
-                    </div>
-                </div>
-            </actindo-basic-panel>
-        </paper-dialog>
+            
+        <div class="filter-form">
+            <template is="dom-if" if="[[columns.length]]">
+                <actindo-combobox
+                    label="Column"
+                    items="[[columns]]"
+                    display-field="label"
+                    value-field="field"
+                    selected-item="{{_selectedColumn}}"
+                    value="{{property}}"
+                    disabled="[[editing]]"
+                >
+                </actindo-combobox>
+            </template>
+            <template is="dom-if" if="[[_selectedColumn.type]]">
+                <actindo-combobox
+                    label="Relation"
+                    items="[[_operators]]"
+                    display-field="name"
+                    value-field="value"
+                    value="{{operator}}"
+                >
+                </actindo-combobox>
+            </template>
+            <div hidden="[[!operator]]">
+                <div id="inputFilter"></div>
+            </div>
+
+            <paper-button class="btn-add" on-click="_save">
+                <span>ADD FILTER</span>
+            </paper-button>
+        </div>
+        
     </template>
 
     <script>
 
-        class ActindoGridFilterEdit extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter-edit'; }
+        class ActindoGridFilterForm extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-form'; }
 
             static get properties() {
                 return {
@@ -98,6 +77,12 @@
                     active: {
                         type: Boolean,
                         value: true
+                    },
+                    /**
+                     * contains all the columns has filterable property equal to true
+                     */
+                    columns: {
+                        type: Array,
                     },
                     /**
                      * contains the filter criteria, the key "property" contains the column value,
@@ -124,23 +109,28 @@
                      * contains the filter value
                      */
                     value: {},
+                    /**
+                     * Internal property
+                     */
                     _valueHistory: {
                         type: Object,
                         value: function() {
                             return {}
                         }
                     },
+                    /**
+                     * Internal property
+                     */
                     _operators: {
                         type: Array,
                         value: []
                     },
+                    /**
+                     * Internal property
+                     */
                     _selectedColumn: {
                         type: Object,
                         observer: '_onSelectedColumnChanged'
-                    },
-                    _saveLabel: {
-                        type: String,
-                        computed: '_getSaveLabel(filter)'
                     }
                 };
             }
@@ -228,16 +218,7 @@
                     return;
                 }
                 this.set('value', event.detail.value);
-            }
-
-            _getSaveLabel(filter)
-            {
-                if (this.editing)
-                {
-                    return 'Apply';
-                }
-                return 'Add';
-            }
+            }           
 
             _save()
             {
@@ -253,24 +234,14 @@
                     value: value,
                     active: this.active
                 } }));
-
+                
                 if (!this.editing)
                 {
                     const inputFilter = this.shadowRoot.querySelector('#inputFilter');
                     inputFilter.removeChild(inputFilter.firstChild);
                 }
-                this.$.alignedDialog.close()
-            }
-
-            _cancel()
-            {
-                this.$.alignedDialog.close()
-            }
-
-            open()
-            {
                 this.reset();
-                this.$.alignedDialog.open();
+                
             }
 
             reset()
@@ -282,11 +253,9 @@
                     operator: filter.operator,
                     value: filter.value
                 });
-
             }
         }
-
-        customElements.define(ActindoGridFilterEdit.is, ActindoGridFilterEdit);
+        customElements.define(ActindoGridFilterForm.is, ActindoGridFilterForm);
 
     </script>
 </dom-module>

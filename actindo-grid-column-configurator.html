@@ -95,7 +95,6 @@
 
             ready() {
                 super.ready();
-
                 let me = this;
                 this.$.sorting.addEventListener('update', function(e) {
                     if(e.hasOwnProperty('detail') && e.detail.hasOwnProperty('newIndex') && e.detail.hasOwnProperty('oldIndex'))
