@@ -1,0 +1,224 @@
+<dom-module id="actindo-grid-filter-columns">
+    <template>
+        <style>
+            .container
+            {
+                display: flex;
+                transition: all 500ms linear;
+                background-color: var(--primary-background-color);
+                border-top: 1px solid var(--light-theme-divider-color);
+                border-bottom: 1px solid var(--light-theme-divider-color);
+                padding: 20px 30px;
+                flex-direction: column;
+            }
+    
+            .content
+            {
+                display: flex;
+                flex-wrap: wrap;
+                flex-direction: row;
+            }
+            .actions
+            {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-end;
+            }
+            .actions-left
+            {
+                display: flex;
+                flex-direction: row;
+                align-items: flex-end;
+            }
+            .actions paper-button
+            {
+                background-color: var(--actindo-primary);
+                color: var(--actindo-light-grey-light);
+                padding: 0px 25px;
+                height: 35px;
+                margin-bottom: 7px;
+                margin-left: 10px;
+            }
+            .item
+            {
+                margin-right: 5px;
+            }
+            actindo-grid-filter-tag
+            {
+                --filter-tag-container: {
+                    background-color: var(--actindo-light-grey-light);
+                    color: var(--actindo-secondary);
+                };
+                --filter-tag-remove-icon: {
+                    padding: 5px;
+                    opacity: 0.5;
+                };
+                
+            }
+           
+            .item span.index
+            {
+                opacity: 0.3;
+                margin-right: 10px;
+            }
+            
+        </style>
+        <div class="container" id="container">
+            <div class="content">
+                <template is="dom-repeat" items="{{_displayColumns}}" as="item" indexAs="index">
+                    <div class="item">
+                        <actindo-grid-filter-tag
+                            active="{{active}}"
+                            noCheckBox="[[true]]"
+                            on-remove="_onRemove"
+                            no-self-remove
+                            id="[[item.field]]"
+                        >
+                            <div class="tag-content" slot="content">
+                                <span class="index">[[_getIndex(index)]]</span>
+                                <span class="name">[[item.label]]</span>
+                            </div>
+                        </actindo-grid-filter-tag>
+                    </div>
+                </template>
+            </div>
+
+            <div class="actions">
+                <div class="actions-left">
+                    <actindo-combobox
+                        label="Column"
+                        items="[[_hiddenColumns]]"
+                        display-field="label"
+                        value-field="field"
+                        value="{{_columnKey}}"
+                    >
+                    </actindo-combobox>
+                    <paper-button on-click="_onAddColumn">
+                        <span>ADD COLUMN</span>
+                    </paper-button>
+                </div>
+                <div class="actions-right">
+                    <paper-button on-click="_onApply">
+                        <span>APPLY</span>
+                    </paper-button>
+                </div>
+            </div>
+            
+        </div>
+
+    </template>
+
+    <script>
+        class ActindoGridFilterColumns extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-columns'; }
+
+            static get properties() {
+                return {
+                    /**
+                     * contains all the columns
+                     */
+                    columns: {
+                        type: Array,
+                        notify: true
+                    },
+                    /**
+                     * Internal property, contains all the columns
+                     */
+                    _columns: {
+                        type: Array,
+                        notify: true
+                    },
+                    /**
+                     * Internal property, contains all display columns
+                     */
+                    _displayColumns: {
+                        type: Array
+                    },
+                    /**
+                     * Internal property, contains all hidden columns
+                     */
+                    _hiddenColumns: {
+                        type: Array
+                    },
+                    /**
+                     * Internal property, key of the selected column
+                     */
+                    _columnKey: {
+                        type: String
+                    }
+                    
+                };
+            }
+
+            /*
+             * lifecycle and initialization
+             */
+
+            static get observers() {
+                return [
+                    '_onColumnsChanged(columns.*)',
+                    '_onInternalColumnsChanged(_columns.*)'
+                ];
+            }
+
+            ready()
+            {
+                super.ready();
+            }
+            
+            _onColumnsChanged(columns)
+            {
+                this._columns = columns.value;
+            }
+            _onInternalColumnsChanged(columns)
+            {   
+                const columnValue = columns.value;
+
+                const displayColumns = columnValue.filter(item => item.hidden === false);
+                const hiddenColumns = columnValue.filter(item => item.hidden === true);
+
+                this.set('_displayColumns', displayColumns);
+                this.set('_hiddenColumns', hiddenColumns);
+            }
+            
+            _onAddColumn()
+            {
+                const columns = [...this._columns];
+                const index = columns.findIndex(item => item.field === this._columnKey);
+
+                if(index != -1)
+                {
+                    columns[index].hidden = false;
+                    this.set(`_columns`, columns);
+                }
+                
+            }
+
+            _onApply()
+            {
+                this.set('columns', this._columns);
+            }
+
+            _onRemove(event)
+            {
+                const fieldValue = event.detail.id;
+                const columns = [...this._columns];
+                const index = columns.findIndex(item => item.field === fieldValue);
+
+                if(index != -1)
+                {
+                    columns[index].hidden = true;
+                    this.set(`_columns`, columns);
+                }
+            }
+
+            _getIndex(index)
+            {
+                return ++index;
+            }
+        }
+
+        customElements.define(ActindoGridFilterColumns.is, ActindoGridFilterColumns);
+    </script>
+</dom-module>

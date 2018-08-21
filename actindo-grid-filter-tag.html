@@ -23,6 +23,7 @@
                 height: 32px;
                 display: flex;
                 align-items: center;
+                padding-left: 15px;
                 @apply(--filter-tag-container);
             }
             .container.checked-false
@@ -42,25 +43,20 @@
                 display: flex;
                 align-items: center;
             }
-            .container .content
+            .content
             {
-                padding-left: 10px;
                 font-size: var(--paper-font-body2_-_font-size);
                 font-weight: var(--paper-font-body2_-_font-weight);
                 @apply(--filter-tag-content);
             }
 
-            .checked-true .remove-icon
+            .remove-icon
             {
-                opacity: 0.6;
+                @apply(--filter-tag-remove-icon);
             }
 
-            .checked-false .remove-icon
-            {
-                opacity: 0.4;
-            }
         </style>
-        <div class$="container checked-[[active]]" on-remove="_remove">
+        <div class="container" on-remove="_remove">
             <template is="dom-if" if="[[!noCheckBox]]">
                 <div class="icon" slot="icon">
                     <paper-checkbox checked="{{active}}" ></paper-checkbox>
@@ -84,6 +80,14 @@
             static get properties() {
                 return {
                     /**
+                     * identification for this tag
+                     */
+                    id: {
+                        type: String,
+                        value: '',
+                    },
+
+                    /**
                      * set to true if the filter is active
                      */
                     active: {
@@ -96,7 +100,6 @@
                      */
                     noCheckBox: {
                         type: Boolean,
-                        value: false
                     },
 
                     /**
@@ -122,7 +125,12 @@
              */
             _remove()
             {
-                const evt = new CustomEvent("remove", { cancelable: true })
+                const detail = {};
+                if(this.id)
+                {
+                    detail.id = this.id
+                }
+                const evt = new CustomEvent("remove", { cancelable: true, detail: detail})
                 this.dispatchEvent(evt)
 
                 // Dispatch event only so ignore
@@ -135,7 +143,6 @@
                 if (!this.parentNode) {
                     return
                 }
-
                 return this.parentNode.removeChild(this);
             }
         }
