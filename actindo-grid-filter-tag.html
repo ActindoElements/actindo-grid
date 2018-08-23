@@ -3,8 +3,8 @@
         <style>
             :host
             {
-                --paper-checkbox-unchecked-color: rgba(255,255,255,0.4);
-                --paper-checkbox-checkmark-color: var(--actindo-secondary);
+                --paper-checkbox-unchecked-color: var(--actindo-light-grey-light);
+                --paper-checkbox-checkmark-color: var(--actindo-primary);
                 --paper-checkbox-checked-color: rgba(255,255,255,0.8);
             }
 
@@ -23,14 +23,9 @@
                 height: 32px;
                 display: flex;
                 align-items: center;
-                padding-left: 15px;
                 @apply(--filter-tag-container);
             }
-            .container.checked-false
-            {
-                color: rgba(255,255,255, 0.4);
-                background-color: rgba(255,255,255,0.2);
-            }
+           
             .container paper-checkbox
             {
                 margin-left: 10px;
@@ -38,7 +33,7 @@
             .container .icon
             {
                 border-radius: 100% 0 0 100%;
-                border-right: 2px solid var(--actindo-secondary);
+                border-right: 2px solid var(--actindo-light-grey-light);
                 height: 100%;
                 display: flex;
                 align-items: center;
@@ -47,6 +42,7 @@
             {
                 font-size: var(--paper-font-body2_-_font-size);
                 font-weight: var(--paper-font-body2_-_font-weight);
+                margin-left: 10px
                 @apply(--filter-tag-content);
             }
 
@@ -54,9 +50,20 @@
             {
                 @apply(--filter-tag-remove-icon);
             }
+            .unactive.container
+            {
+                background-color: var(--actindo-secondary-light);
+                opacity: 0.72;
+                color: var(--actindo-light-grey-light);
+            }
+        
+            .unactive .content
+            {
+                opacity: 0.72;
+            }
 
         </style>
-        <div class="container" on-remove="_remove">
+        <div class="container" id="container" on-remove="_remove">
             <template is="dom-if" if="[[!noCheckBox]]">
                 <div class="icon" slot="icon">
                     <paper-checkbox checked="{{active}}" ></paper-checkbox>
@@ -92,14 +99,15 @@
                      */
                     active: {
                         type: Boolean,
-                        notify: true
+                        notify: true,
+                        observer: '_onActiveChanged'
                     },
 
                     /**
                      * if this is true, the checkbox on the left will be hidden
                      */
                     noCheckBox: {
-                        type: Boolean,
+                        type: Boolean
                     },
 
                     /**
@@ -144,6 +152,16 @@
                     return
                 }
                 return this.parentNode.removeChild(this);
+            }
+
+            _onActiveChanged(active)
+            {
+                if(this.active)
+                {
+                    this.$.container.classList.remove('unactive');
+                } else {
+                    this.$.container.classList.add('unactive');
+                }
             }
         }
 
