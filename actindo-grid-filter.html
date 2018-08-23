@@ -1,50 +1,40 @@
 <dom-module id="actindo-grid-filter">
     <template>
         <style>
-            :host
-            {
-                --paper-checkbox-unchecked-color: rgba(255,255,255,0.4);
-                --paper-checkbox-checkmark-color: var(--actindo-secondary);
-                --paper-checkbox-checked-color: rgba(255,255,255,0.8);
-            }
+            
             .container
             {
                 display: flex;
                 transition: all 500ms linear;
-                width: calc(2 * 100%);
+                flex-direction: column;
+                background-color: var(--primary-background-color);
+                border-top: 1px solid var(--light-theme-divider-color);
+                border-bottom: 1px solid var(--light-theme-divider-color);
+                position: relative;
+                padding-top: 20px;
+                padding-left: 25px;
+                padding-bottom: 25px;
+                padding-right: 35px;
             }
-            .container.setting-true
-            {
-                transform: translateX(-50%);
-            }
+    
             .content
             {
                 display: flex;
-                background-color: var(--actindo-secondary);
-                padding: 8px 24px;
-                justify-content: space-between;
-                align-items: flex-end;
-                width: 50%;
+                flex-direction: row;
+                flex-wrap: wrap;
             }
-            .content.setting
+            .clear-icon
             {
-                --paper-checkbox-label-color: #fff;
-                --paper-checkbox-unchecked-background-color: #fff;
-                align-items: center;
-            }
-            paper-icon-button
-            {
-                color: white;
+                position: absolute;
+                right: 20px;
+                top: 25px;
                 opacity: 0.6;
             }
-            .toolbar
-            {
-                margin-bottom: 5px;
-            }
-            .filter
+            
+            .actions
             {
                 display: flex;
-                flex-wrap: wrap;
+                flex-direction: row;
             }
             .add
             {
@@ -63,77 +53,30 @@
                     padding: 0 10px;
                 };
             }
-            .add actindo-grid-filter-tag
-            {
-                justify-content: space-between;
-                display: flex;
-                width: 7em;
-            }
-            .add .button
-            {
-                outline: none;
-                margin: 8px 0;
-                overflow: hidden;
-                border-radius: 16px;
-                box-sizing: border-box;
-                height: 32px;
-                display: flex;
-                align-items: center;
-                text-transform: initial;
-                background-color: transparent;
-                color: rgba(255,255,255,0.8);
-                border: 2px solid rgba(255,255,255,0.8);
-                justify-content: space-between;
-                padding-left: 13px;
-                width: 9em;
-            }
-            actindo-grid-filter-edit
-            {
-                top: 0;
-                position: absolute;
-            }
-            actindo-grid-filter-edit.offset-right
-            {
-                right: 324px;
-            }
+
         </style>
         <div class="container" id="container">
             <div class="content">
-                <div class="filter">
-                    <template is="dom-repeat" items="{{filterList}}" as="item">
-                        <actindo-grid-filter-item
-                            on-remove="_removeFilter"
-                            on-edit="_editFilter"
-                            columns="[[columns]]"
-                            filter="{{item}}">
-                        </actindo-grid-filter-item>
-                    </template>
-                    <div id="add" class="add">
-                        <paper-button on-click="_showAddDialog" class="button">
-                            <span>Add filter</span>
-                            <iron-icon icon="icons:add"></iron-icon>
-                        </paper-button>
-
-                        <actindo-grid-filter-edit
-                            columns="[[columns]]"
-                            on-save="_createNewFilter"
-                            id="dialog">
-                        </actindo-grid-filter-edit>
-                    </div>
-
-                </div>
-                <div class="toolbar">
-                    <paper-icon-button icon="icons:settings" on-click="_onSettingClick"></paper-icon-button>
-                    <template is="dom-if" if="[[filterList.length]]">
-                        <paper-icon-button on-click="_deleteMultiple" icon="delete">
-                        </paper-icon-button>
-                    </template>
-                </div>
+                <template is="dom-repeat" items="{{filterList}}" as="item">
+                    <actindo-grid-filter-item
+                        on-remove="_removeFilter"
+                        on-edit="_editFilter"
+                        columns="[[filterColumns]]"
+                        filter="{{item}}">
+                    </actindo-grid-filter-item>
+                </template>
             </div>
-            <div class="content setting">
-                <paper-checkbox checked="{{debounce}}">Debounce</paper-checkbox>
-                <paper-icon-button icon="icons:close" on-click="_onSettingClick"></paper-icon-button>
+            <div class="actions">
+                <actindo-grid-filter-form
+                    columns="[[filterColumns]]"
+                    on-save="_createNewFilter"
+                    id="dialog">
+                </actindo-grid-filter-form>
             </div>
+            <template is="dom-if" if="[[filterList.length]]">
+                <paper-icon-button on-click="_deleteMultiple" icon="delete" class="clear-icon">
+                </paper-icon-button>
+            </template>
         </div>
 
     </template>
@@ -156,7 +99,7 @@
                     /**
                      * contains all the columns has filterable property equal to true
                      */
-                    columns: {
+                    filterColumns: {
                         type: Array,
                     },
                     /**
@@ -169,13 +112,11 @@
                     }
                 };
             }
-            /**
-             * Toggle the setting panel
-             */
-            _onSettingClick()
+            ready()
             {
-                this.$.container.classList.toggle('setting-true');
+                super.ready();
             }
+            
             /**
              * Remove all available filter
              */
@@ -183,20 +124,7 @@
             {
                 this.splice('filterList', 0, this.filterList.length);
             }
-            /**
-             * Show the add dialog to create a filter
-             */
-            _showAddDialog()
-            {
-                this.$.dialog.open();
-                if (this.$.add.offsetLeft > 350)
-                {
-                    this.$.dialog.classList.add('offset-right');
-                    return;
-                }
-                this.$.dialog.classList.remove('offset-right');
-
-            }
+            
             /**
              * Append a filter to the filter list
              */

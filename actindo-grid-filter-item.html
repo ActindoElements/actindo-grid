@@ -4,21 +4,63 @@
             .container
             {
                 position: relative;
-                margin-right: 15px;
+                margin-right: 5px;
             }
             paper-button
             {
                 text-transform: initial;
                 color: inherit;
             }
+        
+            .content
+            {
+                white-space: nowrap; 
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-size: 15px;
+            }
+            .remove-icon
+            {
+                height: 100%;
+                padding: 1px;
+            }
+            actindo-grid-filter-tag
+            {
+                --filter-tag-container: {
+                    background-color: var(--actindo-primary);
+                };
+                --filter-tag-remove-icon: {
+                    padding: 5px;
+                };
+                --filter-tag-content: {
+                    color: var(--actindo-light-grey-light);
+                };
+            }
+            .btn-edit
+            {
+                padding: 0px;
+                margin: 0px;
+            }
+            paper-button.btn-edit paper-icon-button
+            {
+                padding: 3px;
+                height: 100%;
+            }
+            
         </style>
         <div class="container">
+            
             <actindo-grid-filter-tag
                 active="{{active}}"
+                no-check-box="[[_tagNoCheckBox]]"
                 on-remove="_remove"
                 no-self-remove
             >
-                <paper-button on-click="_showEditDialog" slot="content">[[_label]]</paper-button>
+                <paper-button class="btn-edit" on-click="_showEditDialog" slot="content">
+                    <span>[[_label]]</span>
+                    <paper-icon-button icon="icons:arrow-drop-down"></paper-icon-button>
+                </paper-button>
+                
             </actindo-grid-filter-tag>
 
             <actindo-grid-filter-edit
@@ -27,7 +69,9 @@
                 filter="[[filter]]"
                 columns="[[columns]]"
                 on-save="_save"
-                id="edit">
+                filter-name="[[_label]]"
+                id="edit"
+            >
             </actindo-grid-filter-edit>
         </div>
     </template>
@@ -61,16 +105,32 @@
                         type: Object,
                         observer: '_onFilterChanged'
                     },
+                    /**
+                     * Internal property, hold the title will show on tag content
+                     */
                     _label: {
                         type: String
                     },
+                    /**
+                     * Internal property
+                     */
                     _firstLoad: {
                         type: Boolean,
                         value: true
                     },
+                    /**
+                     * Internal property
+                     */
                     _filter: {
                         type: Object
-                    }
+                    },
+                    /**
+                     * Internal property
+                     */
+                    _tagNoCheckBox: {
+                        type: Boolean,
+                        value: false
+                    },
                 };
             }
 
@@ -138,10 +198,9 @@
                 const operator = column.operators.find(item => item.value === filter.operator);
                 this.$.edit.getInputComponent(column, operator).then(node => {
                     const value = this._getDisplayValue(node, this.filter);
-                    this._label = `${column.label} ${operator.name} ${value}`;
+                    let label = `${column.label} ${operator.name} ${value}`;
+                    this.set('_label', label);
                 });
-
-
             }
         }
 
