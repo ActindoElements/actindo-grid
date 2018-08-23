@@ -2,23 +2,33 @@
 
     <template>
         <style>
+            .container
+            {
+                display: flex;
+            }
+            paper-input:first-child
+            {
+                margin-right: 10px;
+            }
         </style>
-        <paper-input
-            error-message="You must enter a Number"
-            auto-validate
-            label="From"
-            value="{{value.from}}"
-            pattern="^-?[0-9]\d*(\.\d+)?$"
-            allowed-pattern="[0-9\-\.]">
-        </paper-input>
-        <paper-input
-            error-message="You must enter a Number"
-            auto-validate
-            label="To"
-            value="{{value.to}}"
-            pattern="^-?[0-9]\d*(\.\d+)?$"
-            allowed-pattern="[0-9\-\.]">
-        </paper-input>
+        <div class="container">
+            <paper-input
+                error-message="You must enter a Number"
+                auto-validate
+                label="From"
+                value="{{value.from}}"
+                pattern="^-?[0-9]\d*(\.\d+)?$"
+                allowed-pattern="[0-9\-\.]">
+            </paper-input>
+            <paper-input
+                error-message="You must enter a Number"
+                auto-validate
+                label="To"
+                value="{{value.to}}"
+                pattern="^-?[0-9]\d*(\.\d+)?$"
+                allowed-pattern="[0-9\-\.]">
+            </paper-input>
+        </div>
     </template>
 
     <script>

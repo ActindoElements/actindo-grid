@@ -3,7 +3,6 @@
 <link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
 <link rel="import" href="actindo-grid-cell-content.html">
-<link rel="import" href="actindo-grid-column-configurator.html">
 <link rel="import" href="actindo-grid-search.html">
 <link rel="import" href="actindo-grid-filter-helper.html">
 <link rel="import" href="actindo-grid-filter-in-option-input.html">
@@ -14,6 +13,10 @@
 <link rel="import" href="actindo-grid-filter-item.html">
 <link rel="import" href="actindo-grid-filter-tag.html">
 <link rel="import" href="actindo-grid-error.html">
+<link rel="import" href="actindo-grid-filter-configurator.html">
+<link rel="import" href="actindo-grid-filter-form.html">
+<link rel="import" href="actindo-grid-filter-columns.html">
+
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
 
@@ -42,6 +45,11 @@
             }
             :host[hidden] {
                 display: none;
+            }
+
+            [hidden] 
+            {
+                display: none !important;
             }
 
             table {
@@ -313,11 +321,53 @@
                 width: 50px;
                 height: 50px;
             }
+            .header-bar
+            {
+                display: flex;
+                flex-direction: row;
+                @apply(--header-bar-style);
+            }
+            .header-title
+            {
+                @apply(--font-subheader);
+                opacity: 0.7;
+                display: flex;
+                align-items: center;
+                @apply(--header-title-style);
+            }
+            
+            #actions
+            {
+                display: flex;
+                align-items: center;
+            }
+            #header-second-line
+            {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                min-height: 3.7em;
+                justify-content: space-between;
+                padding: 0 1em;
+            }
+            .header-second-line-icons
+            {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+            }
+            .header-second-line-content
+            {
+                display: flex;
+            }
         </style>
 
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
             <div hidden$="[[!selectedItems.length]]">[[selectedItems.length]] gewählt</div>
-            <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]">
+            <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
+                <template is="dom-if" if="[[title]]">
+                    <div class="header-title">[[title]]</div>
+                </template>
                 <slot name="toolbar"></slot>
             </div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 1)]]">
@@ -326,19 +376,61 @@
             <div hidden$="[[!_arrayLengthGT(selectedItems.*, 1)]]">
                 <slot name="multiActions"></slot>
             </div>
+            
             <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
+                <slot name="noSelectionActions"></slot>
                 <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="refresh"></paper-icon-button>
-                <actindo-grid-column-configurator columns="{{_columns}}" hidden="[[hideColumnConfiguration]]"></actindo-grid-column-configurator>
+
+                <template is="dom-if" if="[[_isHeaderSingleMode()]]">
+                    <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                        <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
+                        <span slot="content">Columns ([[_displayColumns.length]])</span>
+                    </actindo-grid-filter-configurator>
+
+                    <template is="dom-if" if="[[_filterColumns.length]]">
+                        <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
+                            <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
+                            <span slot="content">Filter ([[filterList.length]])</span>
+                        </actindo-grid-filter-configurator>
+                    </template>
+                </template>
             </div>
         </div>
-        <template is="dom-if" if="[[_filterColumns.length]]">
+
+        <template is="dom-if" if="[[!_isHeaderSingleMode()]]">
+            <div id="header-second-line">
+                <div class="header-second-line-content">
+                    <slot name="secondLineContent"></slot>
+                </div>
+                <div class="header-second-line-icons">
+                    <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                        <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
+                        <span slot="content">Columns ([[_displayColumns.length]])</span>
+                    </actindo-grid-filter-configurator>
+
+                    <template is="dom-if" if="[[_filterColumns.length]]">
+                        <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
+                            <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
+                            <span slot="content">Filter ([[filterList.length]])</span>
+                        </actindo-grid-filter-configurator>
+                    </template>
+                </div>
+            </div>
+        </template>
+
+        <template is="dom-if" if="[[_showFilterArea]]">
             <actindo-grid-filter
                 filter-list="{{filterList}}"
-                columns="{{_filterColumns}}" 
+                filter-columns="{{_filterColumns}}" 
                 debounce="{{filterDebounce}}"
             >
             </actindo-grid-filter>
+        </template>
+
+        <template is="dom-if" if="[[_showColumnsArea]]">
+            <actindo-grid-filter-columns columns="{{_columns}}">
+            </actindo-grid-filter-columns>
         </template>
 
         <div id="fixed">
@@ -761,6 +853,14 @@
                     },
 
                     /**
+                     * holds the colmumn has hidden is false
+                     */
+                    _displayColumns: {
+                        type: Array,
+                        value: []
+                    },
+
+                    /**
                      * property that controls the checked state of the "select all checkbox" in selectionMode=multi
                      */
                     _everythingSelected: {
@@ -799,10 +899,10 @@
                         value: function(){return [];}
                     },
 
-                     /**
+                    /**
                       * List of the optional column. The hidden column will not be in this list
-                      */
-                     _serializeOptionals: {
+                     */
+                    _serializeOptionals: {
                         type: Array,
                         value: function(){return [];}
                      },
@@ -815,11 +915,47 @@
                         value: function(){return [];}
                      },
 
+                    /**
+                      * the title will show on headline
+                     */
+                    title: {
+                        type: String,
+                    },
 
+                    /**
+                      * internal property, the title  will show on headline
+                     */
+                    header: {
+                        type: String,
+                    },
+
+                    /**
+                      * internal property, set to true if the filter area will show
+                     */
+                    _showFilterArea: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+
+                    /**
+                      * internal property, set to true if the columns area will show
+                     */
+                    _showColumnsArea: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
+                    },
+
+                    /**
+                      * property that indicates header will display one line (single) or two line (multi)
+                     */
+                    multiLineHeader: {
+                        type: Boolean,
+                        value: false
+                    }
                 };
             }
-
-
 
             /*
              * public api
@@ -1319,7 +1455,10 @@
                 {
                     return;
                 }
-
+                
+                let displayColumns = this._columns.filter(item => item.hidden === false);
+                this.set('_displayColumns', displayColumns);
+                
                 // Do not reload if the column is hidden or not optional
                 if (!column.optional)
                 {
@@ -1401,6 +1540,7 @@
                 this._columns = columns;
                 this._filterColumns = filterColumns;
                 this._serializeOptionals = serializeOptionals;
+                
             }
 
             _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
@@ -1801,6 +1941,32 @@
                 }
                 let width = parseInt(header.style.width) - 19.5;
                 return 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
+            }
+
+            /**
+             * when click filter icon will show or hide filter area
+             */
+            _onClickFilterIcon()
+            {
+                this.set('_showColumnsArea', false);
+                this.set('_showFilterArea', !this._showFilterArea);
+            }
+
+            /**
+             * when click column icon will show or hide columns area
+             */
+            _onClickColumnIcon()
+            {
+                this.set('_showFilterArea', false);
+                this.set('_showColumnsArea', !this._showColumnsArea);
+            }
+
+            /**
+             * check header mode display is single or multi, default is single
+             * 
+             */
+            _isHeaderSingleMode(){
+                return !this.multiLineHeader;
             }
         }
 
