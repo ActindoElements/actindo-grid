@@ -12,8 +12,8 @@
             paper-dialog
             {
                 @apply(--paper-material-elevation-2);
-                min-width: 25em;
-                min-height: 22em;
+                min-width: 35em;
+                min-height: 16em;
                 margin-left: 4px;
                 position: absolute;
                 top: 0;
@@ -26,26 +26,54 @@
                 padding: 0;
                 margin-bottom: 0;
                 margin-top: 0;
+                --header-container-style: {
+                    position: relative;
+                    border-bottom: none !important;
+                };
             }
-            paper-dialog .header
+            paper-dialog .content
             {
                 display: flex;
-                margin-right: 24px;
                 flex-direction: column;
             }
-            .header .toolbar
+            .content .toolbar
             {
                 display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-end;
             }
-            .header actindo-combobox
+            .content actindo-combobox
             {
                margin-right: 0.6em;
-               width: 50%;
+            }
+
+            .header
+            {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                font-size: 15px;
+                opacity: 0.72;
+            }
+
+            .filter-name
+            {
+                display: flex;
+                background-color: var(--actindo-primary);
+                padding: 5px 15px;
+                border-radius: 15px;
+                margin-left: 10px;
+                color: var(--actindo-light-grey-light);
             }
         </style>
         <paper-dialog id="alignedDialog">
             <actindo-basic-panel on-save="_save" on-cancel="_cancel" save-label="[[saveLabel]]" no-back-icon>
-                <div class="header" slot="content">
+                <div slot="header" class="header">
+                    <span>Edit Filter</span>
+                    <span class="filter-name">[[filterName]]</span>
+                </div>
+                <div class="content" slot="content">
                     <div class="toolbar">
                         <template is="dom-if" if="[[columns.length]]">
                             <actindo-combobox
@@ -69,10 +97,11 @@
                             >
                             </actindo-combobox>
                         </template>
+                        <div hidden="[[!operator]]">
+                            <div id="inputFilter"></div>
+                        </div>
                     </div>
-                    <div hidden="[[!operator]]">
-                        <div id="inputFilter"></div>
-                    </div>
+                    
                 </div>
             </actindo-basic-panel>
         </paper-dialog>
@@ -141,6 +170,12 @@
                     _saveLabel: {
                         type: String,
                         computed: '_getSaveLabel(filter)'
+                    },
+                    /**
+                     * the filter name will show on header
+                     */
+                    filterName: {
+                        type: String,
                     }
                 };
             }
