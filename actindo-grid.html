@@ -54,7 +54,7 @@
                     color: transparent;
                     font-weight: normal;
                     line-height: 0;
-                    padding: 0;
+                    padding: 0 0.75em;
                     text-align: left;
                 }
                     th.sortable-true {
@@ -125,7 +125,7 @@
                 tr[selected] {
                     background-color: var(--actindo-light-grey);
                 }
-                tr:hover {
+                #gridBody tr:hover {
                     background-color: var(--actindo-primary-light);
                 }
                 tr[disabled],
@@ -151,19 +151,16 @@
 
             div.th {
                 box-sizing: border-box;
-                border-bottom: 1px solid var(--actindo-border-dark);
                 color: #000;
                 line-height: 60px;
-                padding: 0 0.75em;
-                position: absolute;
-                top: 0;
+                position: relative;
             }
-                div.th span {
-                    display: block;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                }
+            div.th span {
+                display: block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
 
             th.checkbox,
             td.checkbox,
@@ -233,18 +230,10 @@
                 justify-content: center;
             }
 
-            #fixed {
-                display: flex;
-                overflow-x: auto;
-                padding-top: 60px;
+            #gridBody {
+                overflow: auto;
                 position: relative;
-                flex-grow: 1;
-            }
-
-            #grid {
                 background-color: #fff;
-                overflow-y: auto;
-                width: 100%;
             }
 
             #toolbar {
@@ -314,13 +303,48 @@
                 height: 50px;
             }
             paper-fab {
-                position:absolute;
-                bottom: 16px;
-                right: 26px;
                 background-color: var(--actindo-primary);
                 color: white;
                 width: 60px;
                 height: 60px;
+            }
+
+            ::-webkit-scrollbar {
+                width: 5px;
+                height: 5px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background-color: var(--actindo-secondary);
+                border-right: 2px solid var(--actindo-secondary);
+                border-left: 2px solid var(--actindo-secondary);
+                border-radius: 3px;
+            }
+
+            #gridContainer {
+                overflow: hidden;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                z-index: 0;
+            }
+            #createButton {
+                position: absolute;
+                bottom: 16px;
+                right: 16px;
+            }
+            #gridHeader {
+                overflow-x: scroll;
+                position: relative;
+                border-bottom: 1px solid var(--actindo-border-dark);
+                max-height: 4.7em;
+                min-height: 4.7em;
+                z-index: 9;
+            }
+            #gridHeader::-webkit-scrollbar {
+                display: none;
             }
         </style>
 
@@ -350,9 +374,9 @@
             </actindo-grid-filter>
         </template>
 
-        <div id="fixed">
-            <div id="grid">
-                <table class$="disable-tap-row-select-[[disableTapRowToSelect]]" id="table">
+        <div id="gridContainer">
+            <div id="gridHeader" on-scroll="_onScrollHeader" on-mouseover="_onGridHeaderMouseOver">
+                <table id="gridHeaderTable">
                     <thead on-tap="_onHeadTapped">
                         <tr>
                             <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]" id="toggleAllIf">
@@ -377,6 +401,10 @@
                             <th class="filler"></th>
                         </tr>
                     </thead>
+                </table>
+            </div>
+            <div id="gridBody" on-scroll="_onScroll" on-mouseover="_onGridBodyMouseOver">
+                <table id="table" class$="disable-tap-row-select-[[disableTapRowToSelect]]">
                     <tbody>
                         <template is="dom-repeat" items="[[items]]" as="row">
                             <tr on-tap="_onRowTap"
@@ -391,7 +419,7 @@
                                     </td>
                                 </template>
                                 <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
-                                    <td class$="c[[index]]" style$="[[_getColumnWidth(index)]]"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                                    <td class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
                                 </template>
                                 <td></td>
                             </tr>
@@ -413,7 +441,7 @@
                 </template>
             </div>
             <template is="dom-if" if="[[showCreateButton]]">
-                <paper-fab on-click="_onCreateClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
+                <paper-fab id="createButton" on-click="_onCreateClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
             </template>
         </div>
 
@@ -772,7 +800,7 @@
                      */
                     _filterColumns: {
                         type: Array,
-                        value: []
+                        value: function(){return [];}
                     },
 
                     /**
@@ -888,8 +916,6 @@
                 );
             }
 
-
-
             /*
              * lifecycle and initialization
              */
@@ -960,6 +986,131 @@
                 };
             }
 
+            _onScroll(e) {
+                if (this.scrollingItem !== 'body')
+                {
+                    return;
+                }
+                this.$.gridHeader.scrollLeft = e.target.scrollLeft;
+            }
+
+            /**
+             * @private
+             */
+            _onScrollHeader(e) {
+                if (this.scrollingItem !== 'header')
+                {
+                    return;
+                }
+                this.$.gridBody.scrollLeft = e.target.scrollLeft;
+            }
+
+            /**
+             * @private
+             */
+            _onGridHeaderMouseOver()
+            {
+                this.scrollingItem = 'header';
+            }
+
+            /**
+             * @private
+             */
+            _onGridBodyMouseOver()
+            {
+                this.scrollingItem = 'body';
+            }
+
+            /**
+             * @private
+             */
+            _getTotalVisibleColumns() {
+                const visibleColumns = this.columnConfiguration.filter((c) => {
+                    return !c.hidden;
+                });
+                return visibleColumns.length;
+            }
+
+            /**
+             * @private
+             */
+            _positionCreateButton() {
+                if (!this.showCreateButton) return;
+
+                const dom = Polymer.dom(this.root);
+                const gridBody = dom.querySelector('#gridBody');
+
+                if (gridBody.scrollWidth > gridBody.clientWidth) {
+                    this.shadowRoot.querySelector('#createButton').style.bottom = '21px';
+                }
+
+                if (gridBody.scrollHeight > gridBody.clientHeight) {
+                    this.shadowRoot.querySelector('#createButton').style.right = '21px';
+                }
+            }
+
+            /**
+             * @private
+             */
+            _initLayout() {
+                const totalVisibleColumns = this._getTotalVisibleColumns();
+                const dom = Polymer.dom(this.root);
+
+                let interval = window.setInterval(() => {
+                    // Make sure data loaded
+                    if (this._xhr) {
+                        return;
+                    }
+
+                    const headerColumns = dom.querySelectorAll('#gridHeader th[data-index]');
+                    const rowColumns = dom.querySelectorAll('#table tr:first-child td.row-column');
+
+                    // Skip if we have no column in configuration or have no data
+                    if (!totalVisibleColumns || !this.items.length) {
+                        window.clearInterval(interval);
+                        return;
+                    }
+
+                    // Make sure all headers and rows rendered
+                    if ((totalVisibleColumns !== headerColumns.length) || (totalVisibleColumns !== rowColumns.length)) {
+                        return;
+                    }
+
+                    // Make sure all data rendered
+                    const rows = dom.querySelectorAll('#gridBody #table tr');
+                    if (rows.length !== this.items.length) {
+                        return;
+                    }
+
+                    // Resize headers & columns
+                    for (let i = 0; i < totalVisibleColumns; i++) {
+                        const headerColumnWidth = headerColumns[i].clientWidth;
+                        const rowColumnWidth = rowColumns[i].clientWidth;
+                        let width;
+
+                        // Make sure the header and column container are visible
+                        if (!headerColumnWidth || !rowColumnWidth) {
+                            return;
+                        }
+
+                        if (headerColumnWidth > rowColumnWidth) {
+                            width = headerColumnWidth - 19.5;
+
+                        } else {
+                            width = rowColumnWidth - 19.5;
+                        }
+
+                        const styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
+                        headerColumns[i].setAttribute('style', styleString);
+                        rowColumns[i].setAttribute('style', styleString);
+
+                        window.clearInterval(interval);
+                    }
+
+                    this._positionCreateButton();
+                }, 50);
+            }
+
             /**
              * sets up the column resizing handlers
              * @private
@@ -970,7 +1121,7 @@
                 this.resizingColumns = undefined;
                 this.resizingColumnOffset = 0;
                 this.resizingHandle = undefined;
-                this.$.grid.addEventListener('mousedown', function(e) {
+                this.$.gridHeader.addEventListener('mousedown', function(e) {
                     if(e.target.classList && e.target.classList.contains('sizer')) {
                         e.target.classList.add('active');
                         me.resizingHandle = e.target;
@@ -997,55 +1148,25 @@
                         let styleTextPadded = 'width: ' + paddedWidth + 'px; min-width: ' + paddedWidth + 'px; max-width: ' + paddedWidth + 'px;';
                         for(let i = 0, c = me.resizingColumns.length; i < c; i++)
                         {
-                            if(me.resizingColumns[i].tagName === 'TH') {
-                                me.resizingColumns[i].setAttribute('style', styleTextPadded);
-                            }
-                            else {
-                                me.resizingColumns[i].setAttribute('style', styleText);
-                            }
+                            me.resizingColumns[i].setAttribute('style', styleText);
+
                             if(me.resizingColumns[i].resizeChild) {
-                                width += 19.5;
-                                me.resizingColumns[i].resizeChild.setAttribute('style', styleTextPadded);
+                                width += 0;
+                                me.resizingColumns[i].resizeChild.setAttribute('style', styleText);
                             }
                         }
                     }
                 });
                 document.addEventListener('mouseup', function(e) {
                     me.resizingColumns = undefined;
-                    if(me.resizingHandle) {
-                        me.$.grid.setAttribute('style', 'width: ' + me.$.table.clientWidth + 'px; min-width: ' + me.$.table.clientWidth + 'px; max-width: ' + me.$.table.clientWidth + 'px;');
+                    if (me.resizingHandle) {
                         me.resizingHandle.classList.remove('active');
                     }
                     me.resizingHandle = undefined;
                 });
 
-                // set initial column widths
-                let heads = Polymer.dom(me.root).querySelectorAll('th');
-                let i = 0, c = heads.length;
-                let interval = window.setInterval(function() {
-                    i = me.selectionMode ? 1 : 0;
-                    for(; i < c; i++)
-                    {
-                        if(i < c-1) {
-                            let width = heads[i].clientWidth;
-                            if(width < 1) {
-                                return;
-                            }
-                            let styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
-                            heads[i].setAttribute('style', styleString);
-                            let div = heads[i].getElementsByClassName('th')[0];
-                            if(div) {
-                                div.setAttribute('style', styleString);
-                            }
-                        }
-                        window.clearInterval(interval);
-                    }
-                    me.$.grid.style.width = me.$.table.clientWidth + 'px';
-                    me._sizeColumnsByHeaders();
-                }, 50);
+                me._initLayout();
             }
-
-
 
             /*
              * event callbacks
@@ -1215,21 +1336,7 @@
              * @private
              */
             _onItemsChanged(change) {
-                var rowsWereAdded = false;
-
-                if(change.path === 'items.splices')
-                {
-                    change.value.indexSplices.forEach(function(operation) {
-                        rowsWereAdded = rowsWereAdded || operation.addedCount > 0;
-                    });
-                }
-
                 let me = this;
-                if(rowsWereAdded || (change.path === 'items' && change.value && change.value.length > 0)) {
-                    window.setTimeout(function() {
-                        me._sizeColumnsByHeaders();
-                    }, 0);
-                }
 
                 // update selectedItems: check if the items that were selected are still the grid and are not disabled or locked
                 this.__selectionDebounce = this.__selectionDebounce | 0;
@@ -1598,36 +1705,6 @@
                 return str.join("&");
             }
 
-            /**
-             * sets the width of all grid cells to the width of its headers. This is sometimes required, for example when adding
-             * new rows: without setting an explicit width they are autosized and may end up blowing up the width of the entire column
-             *
-             * @private
-             */
-            _sizeColumnsByHeaders() {
-                let dom = Polymer.dom(this.root);
-                var headers = dom.querySelectorAll('th[data-index]');
-                for(let i = 0, c = headers.length; i < c; i++) {
-                    let index = headers[i].getAttribute('data-index');
-                    if(!index) {
-                        continue;
-                    }
-                    let width = parseInt(headers[i].style.width) - 19.5;
-                    if(isNaN(width)) {
-                        return;
-                    }
-                    let styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
-                    let columnRows = dom.querySelectorAll('.c' + index);
-                    for(let j = 1, d = columnRows.length; j < d; j++) {
-                        columnRows[j].setAttribute('style', styleString);
-                    }
-                }
-            }
-
-
-
-
-
             /*
              * template helpers
              */
@@ -1808,22 +1885,6 @@
                 }
 
                 return false;
-            }
-
-            /**
-             * helper to determine the width of newly rendered cells
-             *
-             * @param {Number} index the index of the column
-             * @returns {String} a css string defining the width
-             * @private
-             */
-            _getColumnWidth(index) {
-                var header = Polymer.dom(this.root).querySelector('th.c' + index);
-                if(!header) {
-                    return '';
-                }
-                let width = parseInt(header.style.width) - 19.5;
-                return 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
             }
         }
 
