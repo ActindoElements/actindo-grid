@@ -35,7 +35,11 @@
             {
                 display: flex;
                 flex-direction: column;
+                padding-left: 24px;
+                padding-right: 24px;
             }
+
+
             .content .toolbar
             {
                 display: flex;
@@ -53,10 +57,14 @@
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                font-size: 15px;
-                opacity: 0.72;
             }
 
+            .header span:first-child
+            {
+                color: var(--actindo-secondary);
+                @apply(--font-subheader);
+                opacity: 0.72;
+            }
             .filter-name
             {
                 display: flex;
