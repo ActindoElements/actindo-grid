@@ -33,6 +33,7 @@
                     selected-item="{{_selectedColumn}}"
                     value="{{property}}"
                     disabled="[[editing]]"
+                    allow-deselect
                 >
                 </actindo-combobox>
             </template>
@@ -50,8 +51,8 @@
                 <div id="inputFilter"></div>
             </div>
 
-            <paper-button class="btn-add" on-click="_save">
-                <span>ADD FILTER</span>
+            <paper-button class="btn-add" on-click="_save" raised>
+                <span>Add Filter</span>
             </paper-button>
         </div>
         

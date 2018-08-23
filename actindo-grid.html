@@ -329,14 +329,13 @@
             }
             .header-title
             {
-                font-size: var(--font-title_-_font-size);
-                font-weight: var(--font-title_-_font-weight);
+                @apply(--font-subheader);
                 opacity: 0.7;
                 display: flex;
-                padding-right: 15px;
-                padding-top: 35px;
+                align-items: center;
                 @apply(--header-title-style);
             }
+            
             #actions
             {
                 display: flex;
@@ -347,7 +346,6 @@
                 display: flex;
                 flex-direction: row;
                 align-items: center;
-                max-height: 3.7em;
                 min-height: 3.7em;
                 justify-content: space-between;
                 padding: 0 1em;
@@ -387,13 +385,13 @@
                 <template is="dom-if" if="[[_isHeaderSingleMode()]]">
                     <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
                         <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
-                        <span slot="content">Columns([[_displayColumns.length]])</span>
+                        <span slot="content">Columns ([[_displayColumns.length]])</span>
                     </actindo-grid-filter-configurator>
 
                     <template is="dom-if" if="[[_filterColumns.length]]">
                         <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
-                            <span slot="content">Filter([[filterList.length]])</span>
+                            <span slot="content">Filter ([[filterList.length]])</span>
                         </actindo-grid-filter-configurator>
                     </template>
                 </template>
@@ -404,18 +402,18 @@
         <template is="dom-if" if="[[!_isHeaderSingleMode()]]">
             <div id="header-second-line">
                 <div class="header-second-line-content">
-                    <slot name="headerMultiContent"></slot>
+                    <slot name="secondLineContent"></slot>
                 </div>
                 <div class="header-second-line-icons">
                     <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
                         <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
-                        <span slot="content">Columns([[_displayColumns.length]])</span>
+                        <span slot="content">Columns ([[_displayColumns.length]])</span>
                     </actindo-grid-filter-configurator>
 
                     <template is="dom-if" if="[[_filterColumns.length]]">
                         <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
-                            <span slot="content">Filter([[filterList.length]])</span>
+                            <span slot="content">Filter ([[filterList.length]])</span>
                         </actindo-grid-filter-configurator>
                     </template>
                 </div>
@@ -945,10 +943,9 @@
                     /**
                       * property that indicates header will display one line (single) or two line (multi)
                      */
-                    headerMode: {
-                        type: String,
-                        value: 'single',
-                        notify: true
+                    multiLineHeader: {
+                        type: Boolean,
+                        value: false
                     }
                 };
             }
@@ -1966,12 +1963,7 @@
              * 
              */
             _isHeaderSingleMode(){
-                if(this.headerMode === 'multi')
-                {
-                    return false;
-                } else {
-                    return true;
-                }
+                return !this.multiLineHeader;
             }
         }
 

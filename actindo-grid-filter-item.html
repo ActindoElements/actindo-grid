@@ -52,7 +52,7 @@
             
             <actindo-grid-filter-tag
                 active="{{active}}"
-                noCheckBox="[[true]]"
+                no-check-box="[[_tagNoCheckBox]]"
                 on-remove="_remove"
                 no-self-remove
             >
@@ -69,7 +69,9 @@
                 filter="[[filter]]"
                 columns="[[columns]]"
                 on-save="_save"
-                id="edit">
+                filter-name="[[_label]]"
+                id="edit"
+            >
             </actindo-grid-filter-edit>
         </div>
     </template>
@@ -121,7 +123,14 @@
                      */
                     _filter: {
                         type: Object
-                    }
+                    },
+                    /**
+                     * Internal property
+                     */
+                    _tagNoCheckBox: {
+                        type: Boolean,
+                        value: false
+                    },
                 };
             }
 
