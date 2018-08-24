@@ -377,7 +377,7 @@
                 position: relative;
                 display: flex;
                 flex-direction: column;
-                z-index: 0;
+                z-index: 1;
             }
             #createButton {
                 position: absolute;
@@ -1006,8 +1006,16 @@
                     multiLineHeader: {
                         type: Boolean,
                         value: false
+                    },
+
+                    /**
+                     * internal property, set to true if it is processing init layout
+                     */
+                    _isProcessingInitLayout: {
+                        type: Boolean,
+                        value: false
                     }
-                };
+                }
             }
 
             /*
@@ -1175,16 +1183,6 @@
             /**
              * @private
              */
-            _getTotalVisibleColumns() {
-                const visibleColumns = this.columnConfiguration.filter((c) => {
-                    return !c.hidden;
-                });
-                return visibleColumns.length;
-            }
-
-            /**
-             * @private
-             */
             _positionCreateButton() {
                 if (!this.showCreateButton) return;
 
@@ -1204,7 +1202,10 @@
              * @private
              */
             _initLayout() {
-                const totalVisibleColumns = this._getTotalVisibleColumns();
+                if (this._isProcessingInitLayout) return;
+
+                this._isProcessingInitLayout = true;
+
                 const dom = Polymer.dom(this.root);
 
                 let interval = window.setInterval(() => {
@@ -1213,12 +1214,25 @@
                         return;
                     }
 
+                    const totalVisibleColumns = this._displayColumns.length;
                     const headerColumns = dom.querySelectorAll('#gridHeader th[data-index]');
                     const rowColumns = dom.querySelectorAll('#table tr:first-child td.row-column');
 
-                    // Skip if we have no column in configuration or have no data
-                    if (!totalVisibleColumns || !this.items.length) {
+                    // Skip if we have no column in configuration
+                    if (!totalVisibleColumns) {
                         window.clearInterval(interval);
+                        this._isProcessingInitLayout = false;
+                        return;
+                    }
+
+                    // Reset header columns width
+                    if (!this.items.length) {
+                        for (let i = 0, l = headerColumns.length; i < l; i++) {
+                            headerColumns[i].setAttribute('style', '');
+                        }
+
+                        window.clearInterval(interval);
+                        this._isProcessingInitLayout = false;
                         return;
                     }
 
@@ -1259,6 +1273,7 @@
                     }
 
                     this._positionCreateButton();
+                    this._isProcessingInitLayout = false;
                 }, 50);
             }
 
@@ -1280,34 +1295,21 @@
                         let selectIndex = column.getAttribute('data-index');
                         me.resizingColumns = Polymer.dom(me.root).querySelectorAll('.c' + selectIndex);
                         me.resizingColumnOffset = column.offsetWidth - e.pageX;
-                        for(let i = 0, c = me.resizingColumns.length; i < c; i++) {
-                            let resizeChild = me.resizingColumns[i].getElementsByClassName('th')[0];
-                            if(resizeChild) {
-                                me.resizingColumns[i].resizeChild = resizeChild;
-                            }
-                            else {
-                                me.resizingColumns[i].resizeChild = null;
-                            }
-                        }
                     }
                 });
+
                 document.addEventListener('mousemove', function(e) {
-                    if(me.resizingColumns && me.resizingColumns.length) {
+                    if (me.resizingColumns && me.resizingColumns.length) {
                         let paddedWidth = Math.max(me.resizingColumnOffset + e.pageX, 32);
                         let width = paddedWidth - 19.5; // -19.5 is the width of the columns left/right padding
                         let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
-                        let styleTextPadded = 'width: ' + paddedWidth + 'px; min-width: ' + paddedWidth + 'px; max-width: ' + paddedWidth + 'px;';
-                        for(let i = 0, c = me.resizingColumns.length; i < c; i++)
-                        {
-                            me.resizingColumns[i].setAttribute('style', styleText);
 
-                            if(me.resizingColumns[i].resizeChild) {
-                                width += 0;
-                                me.resizingColumns[i].resizeChild.setAttribute('style', styleText);
-                            }
+                        for (let i = 0, c = me.resizingColumns.length; i < c; i++) {
+                            me.resizingColumns[i].setAttribute('style', styleText);
                         }
                     }
                 });
+
                 document.addEventListener('mouseup', function(e) {
                     me.resizingColumns = undefined;
                     if (me.resizingHandle) {
@@ -1315,8 +1317,6 @@
                     }
                     me.resizingHandle = undefined;
                 });
-
-                me._initLayout();
             }
 
             /*
@@ -1489,6 +1489,8 @@
             _onItemsChanged(change) {
                 let me = this;
 
+                me._initLayout();
+
                 // update selectedItems: check if the items that were selected are still the grid and are not disabled or locked
                 this.__selectionDebounce = this.__selectionDebounce | 0;
                 window.clearTimeout(this.__selectionDebounce);
@@ -1590,13 +1592,14 @@
                 
                 let displayColumns = this._columns.filter(item => item.hidden === false);
                 this.set('_displayColumns', displayColumns);
-                
+
+                this._initLayout();
+
                 // Do not reload if the column is hidden or not optional
                 if (!column.optional)
                 {
                     return;
                 }
-
                 if (this._serializeOptionals.includes(column.field))
                 {
                     if (column.hidden)
