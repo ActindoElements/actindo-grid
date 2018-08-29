@@ -62,7 +62,7 @@
                     color: transparent;
                     font-weight: normal;
                     line-height: 0;
-                    padding: 0;
+                    padding: 0 0.75em;
                     text-align: left;
                 }
                     th.sortable-true {
@@ -133,7 +133,7 @@
                 tr[selected] {
                     background-color: var(--actindo-light-grey);
                 }
-                tr:hover {
+                #gridBody tr:hover {
                     background-color: var(--actindo-primary-light);
                 }
                 tr[disabled],
@@ -159,19 +159,16 @@
 
             div.th {
                 box-sizing: border-box;
-                border-bottom: 1px solid var(--actindo-border-dark);
                 color: #000;
                 line-height: 60px;
-                padding: 0 0.75em;
-                position: absolute;
-                top: 0;
+                position: relative;
             }
-                div.th span {
-                    display: block;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    white-space: nowrap;
-                }
+            div.th span {
+                display: block;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+            }
 
             th.checkbox,
             td.checkbox,
@@ -241,18 +238,12 @@
                 justify-content: center;
             }
 
-            #fixed {
-                display: flex;
-                overflow-x: auto;
-                padding-top: 60px;
+            #gridBody {
+                overflow: auto;
                 position: relative;
-                flex-grow: 1;
-            }
-
-            #grid {
                 background-color: #fff;
-                overflow-y: auto;
-                width: 100%;
+                display: flex;
+                flex-grow: 1;
             }
 
             #toolbar {
@@ -321,6 +312,7 @@
                 width: 50px;
                 height: 50px;
             }
+
             .header-bar
             {
                 display: flex;
@@ -359,6 +351,52 @@
             .header-second-line-content
             {
                 display: flex;
+            }
+
+            paper-fab {
+                background-color: var(--actindo-primary);
+                color: white;
+                width: 60px;
+                height: 60px;
+            }
+
+            ::-webkit-scrollbar {
+                width: 5px;
+                height: 5px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-thumb {
+                background-color: var(--actindo-secondary);
+                border-right: 2px solid var(--actindo-secondary);
+                border-left: 2px solid var(--actindo-secondary);
+                border-radius: 3px;
+            }
+
+            #gridContainer {
+                overflow: hidden;
+                position: relative;
+                display: flex;
+                flex-direction: column;
+                z-index: 1;
+                flex-grow: 1;
+            }
+            #createButton {
+                position: absolute;
+                bottom: 16px;
+                right: 16px;
+            }
+            #gridHeader {
+                overflow-x: scroll;
+                position: relative;
+                border-bottom: 1px solid var(--actindo-border-dark);
+                max-height: 4.7em;
+                min-height: 4.7em;
+                z-index: 9;
+            }
+            #gridHeader::-webkit-scrollbar {
+                display: none;
             }
         </style>
 
@@ -433,9 +471,9 @@
             </actindo-grid-filter-columns>
         </template>
 
-        <div id="fixed">
-            <div id="grid">
-                <table class$="disable-tap-row-select-[[disableTapRowToSelect]]" id="table">
+        <div id="gridContainer">
+            <div id="gridHeader" on-scroll="_onScrollHeader" on-mouseover="_onGridHeaderMouseOver">
+                <table id="gridHeaderTable">
                     <thead on-tap="_onHeadTapped">
                         <tr>
                             <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]" id="toggleAllIf">
@@ -460,33 +498,38 @@
                             <th class="filler"></th>
                         </tr>
                     </thead>
+                </table>
+            </div>
+
+            <div id="gridBody" on-scroll="_onScroll" on-mouseover="_onGridBodyMouseOver">
+                <table id="table" class$="disable-tap-row-select-[[disableTapRowToSelect]]">
                     <tbody>
-                        <template is="dom-repeat" items="[[items]]" as="row">
-                            <tr on-tap="_onRowTap"
-                                disabled$="[[_propertyEvaluatesTrue(disabledField, row.*)]]"
-                                selected$="[[_isItemSelected(row, selectedItems.*)]]"
-                                finished$="[[_propertyEvaluatesTrue(finishedField, row.*)]]"
-                                locked$="[[_propertyEvaluatesTrue(lockedField, row.*)]]">
-                                <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
-                                    <td class="checkbox">
-                                        <paper-checkbox checked="[[_isItemSelected(row, selectedItems.*)]]"></paper-checkbox>
-                                        <iron-icon icon="lock"></iron-icon>
-                                    </td>
-                                </template>
-                                <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
-                                    <td class$="c[[index]]" style$="[[_getColumnWidth(index)]]"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
-                                </template>
-                                <td></td>
-                            </tr>
-                        </template>
-                        <template is="dom-if" if="[[_xhr]]">
-                            <div class="loading">
-                                <paper-spinner-lite active></paper-spinner-lite>
-                            </div>
-                        </template>
-                        <template is="dom-if" if="[[_error]]">
-                            <actindo-grid-error></actindo-grid-error>
-                        </template>
+                    <template is="dom-repeat" items="[[items]]" as="row">
+                        <tr on-tap="_onRowTap"
+                            disabled$="[[_propertyEvaluatesTrue(disabledField, row.*)]]"
+                            selected$="[[_isItemSelected(row, selectedItems.*)]]"
+                            finished$="[[_propertyEvaluatesTrue(finishedField, row.*)]]"
+                            locked$="[[_propertyEvaluatesTrue(lockedField, row.*)]]">
+                            <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
+                                <td class="checkbox">
+                                    <paper-checkbox checked="[[_isItemSelected(row, selectedItems.*)]]"></paper-checkbox>
+                                    <iron-icon icon="lock"></iron-icon>
+                                </td>
+                            </template>
+                            <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
+                                <td class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                            </template>
+                            <td></td>
+                        </tr>
+                    </template>
+                    <template is="dom-if" if="[[_xhr]]">
+                        <div class="loading">
+                            <paper-spinner-lite active></paper-spinner-lite>
+                        </div>
+                    </template>
+                    <template is="dom-if" if="[[_error]]">
+                        <actindo-grid-error></actindo-grid-error>
+                    </template>
                     </tbody>
                 </table>
                 <template is="dom-if" if="[[!_xhr]]">
@@ -495,6 +538,9 @@
                     </template>
                 </template>
             </div>
+            <template is="dom-if" if="[[showCreateButton]]">
+                <paper-fab id="createButton" on-click="_onCreateClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
+            </template>
         </div>
 
         <template is="dom-if" if="[[!pagingDisabled]]">
@@ -827,6 +873,16 @@
                         value: false
                     },
 
+                    showCreateButton: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    disableCreateButton: {
+                        type: Boolean,
+                        value: false
+                    },
+
                     /**
                      * internal property that holds the processed columns
                      */
@@ -842,7 +898,7 @@
                      */
                     _filterColumns: {
                         type: Array,
-                        value: []
+                        value: function(){return [];}
                     },
 
                     /**
@@ -853,11 +909,11 @@
                     },
 
                     /**
-                     * holds the colmumn has hidden is false
+                     * holds the column has hidden is false
                      */
                     _displayColumns: {
                         type: Array,
-                        value: []
+                        value: function(){return [];}
                     },
 
                     /**
@@ -905,18 +961,18 @@
                     _serializeOptionals: {
                         type: Array,
                         value: function(){return [];}
-                     },
-
-                     /**
-                      * List of the loaded column
-                      */
-                      _loadedColumns: {
-                        type: Array,
-                        value: function(){return [];}
-                     },
+                    },
 
                     /**
-                      * the title will show on headline
+                      * List of the loaded column
+                     */
+                    _loadedColumns: {
+                        type: Array,
+                        value: function(){return [];}
+                    },
+
+                    /**
+                     * the title will show on headline
                      */
                     title: {
                         type: String,
@@ -953,8 +1009,16 @@
                     multiLineHeader: {
                         type: Boolean,
                         value: false
+                    },
+
+                    /**
+                     * internal property, set to true if it is processing init layout
+                     */
+                    _isProcessingInitLayout: {
+                        type: Boolean,
+                        value: false
                     }
-                };
+                }
             }
 
             /*
@@ -1013,8 +1077,6 @@
                     this._serializeOptionals
                 );
             }
-
-
 
             /*
              * lifecycle and initialization
@@ -1086,6 +1148,138 @@
                 };
             }
 
+            _onScroll(e) {
+                if (this.scrollingItem !== 'body')
+                {
+                    return;
+                }
+                this.$.gridHeader.scrollLeft = e.target.scrollLeft;
+            }
+
+            /**
+             * @private
+             */
+            _onScrollHeader(e) {
+                if (this.scrollingItem !== 'header')
+                {
+                    return;
+                }
+                this.$.gridBody.scrollLeft = e.target.scrollLeft;
+            }
+
+            /**
+             * @private
+             */
+            _onGridHeaderMouseOver()
+            {
+                this.scrollingItem = 'header';
+            }
+
+            /**
+             * @private
+             */
+            _onGridBodyMouseOver()
+            {
+                this.scrollingItem = 'body';
+            }
+
+            /**
+             * @private
+             */
+            _positionCreateButton() {
+                if (!this.showCreateButton) return;
+
+                const dom = Polymer.dom(this.root);
+                const gridBody = dom.querySelector('#gridBody');
+
+                if (gridBody.scrollWidth > gridBody.clientWidth) {
+                    this.shadowRoot.querySelector('#createButton').style.bottom = '21px';
+                }
+
+                if (gridBody.scrollHeight > gridBody.clientHeight) {
+                    this.shadowRoot.querySelector('#createButton').style.right = '21px';
+                }
+            }
+
+            /**
+             * @private
+             */
+            _initLayout() {
+                if (this._isProcessingInitLayout) return;
+
+                this._isProcessingInitLayout = true;
+
+                const dom = Polymer.dom(this.root);
+
+                let interval = window.setInterval(() => {
+                    // Make sure data loaded
+                    if (this._xhr) {
+                        return;
+                    }
+
+                    const totalVisibleColumns = this._displayColumns.length;
+                    const headerColumns = dom.querySelectorAll('#gridHeader th[data-index]');
+                    const rowColumns = dom.querySelectorAll('#table tr:first-child td.row-column');
+
+                    // Skip if we have no column in configuration
+                    if (!totalVisibleColumns) {
+                        window.clearInterval(interval);
+                        this._isProcessingInitLayout = false;
+                        return;
+                    }
+
+                    // Reset header columns width
+                    if (!this.items.length) {
+                        for (let i = 0, l = headerColumns.length; i < l; i++) {
+                            headerColumns[i].setAttribute('style', '');
+                        }
+
+                        window.clearInterval(interval);
+                        this._isProcessingInitLayout = false;
+                        return;
+                    }
+
+                    // Make sure all headers and rows rendered
+                    if ((totalVisibleColumns !== headerColumns.length) || (totalVisibleColumns !== rowColumns.length)) {
+                        return;
+                    }
+
+                    // Make sure all data rendered
+                    const rows = dom.querySelectorAll('#gridBody #table tr');
+                    if (rows.length !== this.items.length) {
+                        return;
+                    }
+
+                    // Resize headers & columns
+                    for (let i = 0; i < totalVisibleColumns; i++) {
+                        const headerColumnWidth = headerColumns[i].clientWidth;
+                        const rowColumnWidth = rowColumns[i].clientWidth;
+                        let width;
+
+                        // Make sure the header and column container are visible
+                        if (!headerColumnWidth || !rowColumnWidth) {
+                            return;
+                        }
+
+                        if (headerColumnWidth > rowColumnWidth) {
+                            width = headerColumnWidth - 19.5;
+
+                        } else {
+                            width = rowColumnWidth - 19.5;
+                        }
+
+                        const styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
+                        headerColumns[i].setAttribute('style', styleString);
+                        rowColumns[i].setAttribute('style', styleString);
+
+                        window.clearInterval(interval);
+                    }
+
+                    this._positionCreateButton();
+                    this._isProcessingInitLayout = false;
+                }, 50);
+            }
+
             /**
              * sets up the column resizing handlers
              * @private
@@ -1096,7 +1290,7 @@
                 this.resizingColumns = undefined;
                 this.resizingColumnOffset = 0;
                 this.resizingHandle = undefined;
-                this.$.grid.addEventListener('mousedown', function(e) {
+                this.$.gridHeader.addEventListener('mousedown', function(e) {
                     if(e.target.classList && e.target.classList.contains('sizer')) {
                         e.target.classList.add('active');
                         me.resizingHandle = e.target;
@@ -1104,74 +1298,29 @@
                         let selectIndex = column.getAttribute('data-index');
                         me.resizingColumns = Polymer.dom(me.root).querySelectorAll('.c' + selectIndex);
                         me.resizingColumnOffset = column.offsetWidth - e.pageX;
-                        for(let i = 0, c = me.resizingColumns.length; i < c; i++) {
-                            let resizeChild = me.resizingColumns[i].getElementsByClassName('th')[0];
-                            if(resizeChild) {
-                                me.resizingColumns[i].resizeChild = resizeChild;
-                            }
-                            else {
-                                me.resizingColumns[i].resizeChild = null;
-                            }
-                        }
                     }
                 });
+
                 document.addEventListener('mousemove', function(e) {
-                    if(me.resizingColumns && me.resizingColumns.length) {
+                    if (me.resizingColumns && me.resizingColumns.length) {
                         let paddedWidth = Math.max(me.resizingColumnOffset + e.pageX, 32);
                         let width = paddedWidth - 19.5; // -19.5 is the width of the columns left/right padding
                         let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
-                        let styleTextPadded = 'width: ' + paddedWidth + 'px; min-width: ' + paddedWidth + 'px; max-width: ' + paddedWidth + 'px;';
-                        for(let i = 0, c = me.resizingColumns.length; i < c; i++)
-                        {
-                            if(me.resizingColumns[i].tagName === 'TH') {
-                                me.resizingColumns[i].setAttribute('style', styleTextPadded);
-                            }
-                            else {
-                                me.resizingColumns[i].setAttribute('style', styleText);
-                            }
-                            if(me.resizingColumns[i].resizeChild) {
-                                width += 19.5;
-                                me.resizingColumns[i].resizeChild.setAttribute('style', styleTextPadded);
-                            }
+
+                        for (let i = 0, c = me.resizingColumns.length; i < c; i++) {
+                            me.resizingColumns[i].setAttribute('style', styleText);
                         }
                     }
                 });
+
                 document.addEventListener('mouseup', function(e) {
                     me.resizingColumns = undefined;
-                    if(me.resizingHandle) {
-                        me.$.grid.setAttribute('style', 'width: ' + me.$.table.clientWidth + 'px; min-width: ' + me.$.table.clientWidth + 'px; max-width: ' + me.$.table.clientWidth + 'px;');
+                    if (me.resizingHandle) {
                         me.resizingHandle.classList.remove('active');
                     }
                     me.resizingHandle = undefined;
                 });
-
-                // set initial column widths
-                let heads = Polymer.dom(me.root).querySelectorAll('th');
-                let i = 0, c = heads.length;
-                let interval = window.setInterval(function() {
-                    i = me.selectionMode ? 1 : 0;
-                    for(; i < c; i++)
-                    {
-                        if(i < c-1) {
-                            let width = heads[i].clientWidth;
-                            if(width < 1) {
-                                return;
-                            }
-                            let styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
-                            heads[i].setAttribute('style', styleString);
-                            let div = heads[i].getElementsByClassName('th')[0];
-                            if(div) {
-                                div.setAttribute('style', styleString);
-                            }
-                        }
-                        window.clearInterval(interval);
-                    }
-                    me.$.grid.style.width = me.$.table.clientWidth + 'px';
-                    me._sizeColumnsByHeaders();
-                }, 50);
             }
-
-
 
             /*
              * event callbacks
@@ -1341,21 +1490,9 @@
              * @private
              */
             _onItemsChanged(change) {
-                var rowsWereAdded = false;
-
-                if(change.path === 'items.splices')
-                {
-                    change.value.indexSplices.forEach(function(operation) {
-                        rowsWereAdded = rowsWereAdded || operation.addedCount > 0;
-                    });
-                }
-
                 let me = this;
-                if(rowsWereAdded || (change.path === 'items' && change.value && change.value.length > 0)) {
-                    window.setTimeout(function() {
-                        me._sizeColumnsByHeaders();
-                    }, 0);
-                }
+
+                me._initLayout();
 
                 // update selectedItems: check if the items that were selected are still the grid and are not disabled or locked
                 this.__selectionDebounce = this.__selectionDebounce | 0;
@@ -1458,13 +1595,14 @@
                 
                 let displayColumns = this._columns.filter(item => item.hidden === false);
                 this.set('_displayColumns', displayColumns);
-                
+
+                this._initLayout();
+
                 // Do not reload if the column is hidden or not optional
                 if (!column.optional)
                 {
                     return;
                 }
-
                 if (this._serializeOptionals.includes(column.field))
                 {
                     if (column.hidden)
@@ -1687,7 +1825,14 @@
                );
             }
 
-
+            /**
+             * Called when create button clicked
+             *
+             * @private
+             */
+            _onCreateClick() {
+                this.dispatchEvent( new CustomEvent( "create-clicked" ) );
+            }
 
             /*
              * internal helpers
@@ -1714,36 +1859,6 @@
                 }
                 return str.join("&");
             }
-
-            /**
-             * sets the width of all grid cells to the width of its headers. This is sometimes required, for example when adding
-             * new rows: without setting an explicit width they are autosized and may end up blowing up the width of the entire column
-             *
-             * @private
-             */
-            _sizeColumnsByHeaders() {
-                let dom = Polymer.dom(this.root);
-                var headers = dom.querySelectorAll('th[data-index]');
-                for(let i = 0, c = headers.length; i < c; i++) {
-                    let index = headers[i].getAttribute('data-index');
-                    if(!index) {
-                        continue;
-                    }
-                    let width = parseInt(headers[i].style.width) - 19.5;
-                    if(isNaN(width)) {
-                        return;
-                    }
-                    let styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
-                    let columnRows = dom.querySelectorAll('.c' + index);
-                    for(let j = 1, d = columnRows.length; j < d; j++) {
-                        columnRows[j].setAttribute('style', styleString);
-                    }
-                }
-            }
-
-
-
-
 
             /*
              * template helpers
@@ -1928,26 +2043,9 @@
             }
 
             /**
-             * helper to determine the width of newly rendered cells
-             *
-             * @param {Number} index the index of the column
-             * @returns {String} a css string defining the width
-             * @private
-             */
-            _getColumnWidth(index) {
-                var header = Polymer.dom(this.root).querySelector('th.c' + index);
-                if(!header) {
-                    return '';
-                }
-                let width = parseInt(header.style.width) - 19.5;
-                return 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
-            }
-
-            /**
              * when click filter icon will show or hide filter area
              */
-            _onClickFilterIcon()
-            {
+            _onClickFilterIcon() {
                 this.set('_showColumnsArea', false);
                 this.set('_showFilterArea', !this._showFilterArea);
             }
@@ -1955,8 +2053,7 @@
             /**
              * when click column icon will show or hide columns area
              */
-            _onClickColumnIcon()
-            {
+            _onClickColumnIcon() {
                 this.set('_showFilterArea', false);
                 this.set('_showColumnsArea', !this._showColumnsArea);
             }
@@ -1965,7 +2062,7 @@
              * check header mode display is single or multi, default is single
              * 
              */
-            _isHeaderSingleMode(){
+            _isHeaderSingleMode() {
                 return !this.multiLineHeader;
             }
         }
