@@ -418,7 +418,7 @@
             <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
                 <slot name="noSelectionActions"></slot>
                 <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
-                <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="refresh"></paper-icon-button>
+                <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="_onRefreshTap"></paper-icon-button>
 
                 <template is="dom-if" if="[[_isHeaderSingleMode()]]">
                     <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
@@ -461,7 +461,6 @@
             <actindo-grid-filter
                 filter-list="{{filterList}}"
                 filter-columns="{{_filterColumns}}" 
-                debounce="{{filterDebounce}}"
             >
             </actindo-grid-filter>
         </template>
@@ -698,9 +697,9 @@
                     },
 
                     /**
-                     * if this is true, the request will be debounced when the filter is changed
+                     * Whether the request debounced or not
                      */
-                    filterDebounce: {
+                    debounced: {
                         type: Boolean,
                         value: true
                     },
@@ -1056,26 +1055,50 @@
             /**
              * reloads the grid data from the remote
              */
-            refresh() {
-                this._onRemoteChanged(
-                    this.remote,
-                    this.remotePathData,
-                    this.remotePathCount,
-                    this.remoteParams,
-                    this.remoteParamFilter,
-                    this.remoteParamLimit,
-                    this.remoteParamOffset,
-                    this.remoteParamSearch,
-                    this.remoteParamSearchFields,
-                    this.remoteParamSort,
-                    this.remoteParamSerializeOptionals,
-                    this.itemsPerPage,
-                    this.page,
-                    this.sort,
-                    this.query,
-                    this.filterList,
-                    this._serializeOptionals
-                );
+            refresh(debounced = true) {
+                
+                if (!debounced)
+                {
+                    this._load(
+                        this.remote,
+                        this.remotePathData,
+                        this.remotePathCount,
+                        this.remoteParams,
+                        this.remoteParamFilter,
+                        this.remoteParamLimit,
+                        this.remoteParamOffset,
+                        this.remoteParamSearch,
+                        this.remoteParamSearchFields,
+                        this.remoteParamSort,
+                        this.remoteParamSerializeOptionals,
+                        this.itemsPerPage,
+                        this.page,
+                        this.sort,
+                        this.query,
+                        this.filterList,
+                        this._serializeOptionals
+                    );
+                    return;
+                }
+                this._loadDebounced(
+                        this.remote,
+                        this.remotePathData,
+                        this.remotePathCount,
+                        this.remoteParams,
+                        this.remoteParamFilter,
+                        this.remoteParamLimit,
+                        this.remoteParamOffset,
+                        this.remoteParamSearch,
+                        this.remoteParamSearchFields,
+                        this.remoteParamSort,
+                        this.remoteParamSerializeOptionals,
+                        this.itemsPerPage,
+                        this.page,
+                        this.sort,
+                        this.query,
+                        this.filterList,
+                        this._serializeOptionals
+                    );
             }
 
             /*
@@ -1146,6 +1169,11 @@
                         return element;
                     }
                 };
+            }
+
+            _onRefreshTap()
+            {
+                this.refresh(false);
             }
 
             _onScroll(e) {
@@ -1730,6 +1758,8 @@
                     this._xhr.abort();
                 }
 
+                this.set('_loadedColumns', [].concat(this._serializeOptionals));
+
                 this._xhr = new XMLHttpRequest();
                 this._xhr.open("POST", remote, true);
                 this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -1788,14 +1818,7 @@
                    return;
                 }
                 
-                this.set('_loadedColumns', [].concat(this._serializeOptionals));
-                
-                if (!this.filterDebounce)
-                {
-                    this._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, this._serializeOptionals);
-                    return;
-                }
-                this._loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, this._serializeOptionals);
+                this.refresh();
             }
 
             _loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, serializeOptionals) {
