@@ -49,6 +49,7 @@
                 --filter-tag-container: {
                     background-color: var(--actindo-light-grey-light);
                     color: var(--actindo-secondary);
+                    cursor: move;
                 };
                 --filter-tag-remove-icon: {
                     padding: 5px;
@@ -65,7 +66,7 @@
             
         </style>
         <div class="container" id="container">
-            <div class="content">
+            <sortable-js class="content" on-end="_onDragFinish" handle=".item">
                 <template is="dom-repeat" items="{{_displayColumns}}" as="item" indexAs="index">
                     <div class="item">
                         <actindo-grid-filter-tag
@@ -76,13 +77,13 @@
                             id="[[item.field]]"
                         >
                             <div class="tag-content" slot="content">
-                                <span class="index">[[_getIndex(index)]]</span>
+                                <span class="index">[[_getColumnPosition(_columnPosition.*, item.field)]]</span>
                                 <span class="name">[[item.label]]</span>
                             </div>
                         </actindo-grid-filter-tag>
                     </div>
                 </template>
-            </div>
+            </sortable-js>
 
             <div class="actions">
                 <div class="actions-left">
@@ -146,6 +147,19 @@
                      */
                     _columnKey: {
                         type: String
+                    },
+                    /**
+                     * Internal property, list position by column field value
+                     */
+                    _columnPosition: {
+                        type: Object
+                    },
+                    /**
+                     * Internal property, columns properties first loaded 
+                     */
+                    _loaded: {
+                        type: Boolean,
+                        value: false
                     }
                     
                 };
@@ -157,8 +171,7 @@
 
             static get observers() {
                 return [
-                    '_onColumnsChanged(columns.*)',
-                    '_onInternalColumnsChanged(_columns.*)'
+                    '_onColumnsChanged(columns.*)'
                 ];
             }
 
@@ -169,53 +182,80 @@
             
             _onColumnsChanged(columns)
             {
-                this._columns = columns.value;
-            }
-            _onInternalColumnsChanged(columns)
-            {   
+                if (this._loaded)
+                {
+                    return;
+                }
                 const columnValue = columns.value;
 
                 const displayColumns = columnValue.filter(item => item.hidden === false);
                 const hiddenColumns = columnValue.filter(item => item.hidden === true);
-
-                this.set('_displayColumns', displayColumns);
-                this.set('_hiddenColumns', hiddenColumns);
+                this._updateColumnPosition(displayColumns);
+                this.setProperties({
+                    _displayColumns: displayColumns,
+                    _hiddenColumns: hiddenColumns,
+                    _loaded: true
+                })
             }
             
             _onAddColumn()
             {
-                const columns = [...this._columns];
-                const index = columns.findIndex(item => item.field === this._columnKey);
-
+                const index = this._hiddenColumns.findIndex(item => item.field === this._columnKey);
+                
                 if(index != -1)
                 {
-                    columns[index].hidden = false;
-                    this.set(`_columns`, columns);
+                    const column = this.splice('_hiddenColumns', index, 1)[0];
+                    column.hidden = false;
+                    this.push('_displayColumns', column);
+                    this.set(`_columnPosition.${column.field}`, this._displayColumns.length);
+                    this.set('_columnKey', null);
+                    this._updateColumnPosition(this._displayColumns);
                 }
                 
             }
 
+            _updateColumnPosition(displayColumns)
+            {
+                const indexList = {}; 
+                displayColumns.forEach(((column, index) => {
+                    indexList[column.field] = index + 1
+                }));
+                this.set('_columnPosition', indexList);
+            }
+
             _onApply()
             {
-                this.set('columns', this._columns);
+                this.set('columns', this._displayColumns.concat(this._hiddenColumns));
             }
 
             _onRemove(event)
             {
                 const fieldValue = event.detail.id;
-                const columns = [...this._columns];
-                const index = columns.findIndex(item => item.field === fieldValue);
-
+                const index = this._displayColumns.findIndex(item => item.field === fieldValue);
+                
                 if(index != -1)
                 {
-                    columns[index].hidden = true;
-                    this.set(`_columns`, columns);
+                    const column = this.splice('_displayColumns', index, 1)[0];
+                    column.hidden = true;
+                    this.push('_hiddenColumns', column);
+                    this._updateColumnPosition(this._displayColumns);
                 }
             }
 
-            _getIndex(index)
+            _getColumnPosition(indexList, field)
             {
-                return ++index;
+                indexList = indexList.base;
+                return indexList[field];
+            }
+
+            _onDragFinish(e)
+            {
+                if (!e.hasOwnProperty('newIndex') || !e.hasOwnProperty('oldIndex'))
+                {
+                    return;
+                }
+                this._displayColumns.splice(e.newIndex, 0, this._displayColumns.splice(e.oldIndex, 1)[0]);
+                this._updateColumnPosition(this._displayColumns);
             }
         }
 
