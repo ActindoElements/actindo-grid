@@ -522,11 +522,7 @@
                             <td></td>
                         </tr>
                     </template>
-                    <template is="dom-if" if="[[_xhr]]">
-                        <div class="loading">
-                            <paper-spinner-lite active></paper-spinner-lite>
-                        </div>
-                    </template>
+                    
                     <template is="dom-if" if="[[_error]]">
                         <actindo-grid-error></actindo-grid-error>
                     </template>
@@ -538,6 +534,11 @@
                     </template>
                 </template>
             </div>
+            <template is="dom-if" if="[[_xhr]]">
+                <div class="loading">
+                    <paper-spinner-lite active></paper-spinner-lite>
+                </div>
+            </template>
             <template is="dom-if" if="[[showCreateButton]]">
                 <paper-fab id="createButton" on-click="_onCreateClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
             </template>
