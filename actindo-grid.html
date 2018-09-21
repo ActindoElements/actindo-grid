@@ -244,6 +244,7 @@
                 background-color: #fff;
                 display: flex;
                 flex-grow: 1;
+                flex-direction: column;
             }
 
             #toolbar {
@@ -288,13 +289,11 @@
                 max-height: 4.15em;
                 min-height: 4.15em;
                 position: relative;
+                opacity: 0.54;
             }
             #paging[hidden] {
                 display: none;
             }
-                #paging > div {
-                    opacity: 0.54;
-                }
 
             paper-icon-button[hidden] {
                 display: none;
@@ -397,6 +396,13 @@
             }
             #gridHeader::-webkit-scrollbar {
                 display: none;
+            }
+
+            #rowsPerPage {
+                margin-right: 10px;
+            }
+            #rowsPerPage > span {
+                margin-right: 10px;
             }
         </style>
 
@@ -544,18 +550,25 @@
 
         <template is="dom-if" if="[[!pagingDisabled]]">
             <div id="paging" hidden="[[!remote]]">
-                <div>
-                    [[_getItemsFrom(page, itemsPerPage, totalItems)]]-[[_getItemsTo(page, itemsPerPage, totalItems)]] of [[totalItems]]
-                    <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
-                    <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
-                    <select value="{{page::change}}">
-                        <template is="dom-repeat" items="[[_pages]]">
-                            <option value="[[item]]">[[item]]</option>
+                <div id="rowsPerPage">
+                    <span>Rows per page:</span>
+                    <select value="{{_itemsPerPage::change}}">
+                        <template is="dom-repeat" items="[[itemsPerPageList]]">
+                            <option value="[[item]]" selected$="{{_isItemsPerPageSelected(item)}}">[[item]]</option>
                         </template>
                     </select>
-                    <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
-                    <paper-icon-button disabled="[[!_canPageForward(page, itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
                 </div>
+
+                [[_getItemsFrom(page, _itemsPerPage, totalItems)]]-[[_getItemsTo(page, _itemsPerPage, totalItems)]] of [[totalItems]]
+                <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
+                <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
+                <select value="{{page::change}}">
+                    <template is="dom-repeat" items="[[_pages]]">
+                        <option value="[[item]]">[[item]]</option>
+                    </template>
+                </select>
+                <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
+                <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
             </div>
         </template>
     </template>
@@ -714,14 +727,6 @@
                         	return [];
                         },
                         notify: true
-                    },
-                    
-                    /**
-                     * how mny items to show per page
-                     */
-                    itemsPerPage: {
-                        type: Number,
-                        value: 25
                     },
 
                     /**
@@ -883,6 +888,17 @@
                     },
 
                     /**
+                     * List of items per page used for dom-repeat in dropdown
+                     */
+                    itemsPerPageList: {
+                        type: Array,
+                        value: function() {
+                            return [5, 10, 25, 50, 100];
+                        }
+                    },
+
+
+                    /**
                      * internal property that holds the processed columns
                      */
                     _columns: {
@@ -952,6 +968,15 @@
                     _pages: {
                         type: Array,
                         value: function(){return [];}
+                    },
+
+                    /**
+                     * how many items to show per page
+                     */
+                    _itemsPerPage: {
+                        type: Number,
+                        value: 25,
+                        observer: '_onItemsPerPageChanged'
                     },
 
                     /**
@@ -1035,14 +1060,14 @@
              * loads the last page
              */
             lastPage() {
-                this.page = Math.max(1, Math.ceil(this.totalItems / this.itemsPerPage));
+                this.page = Math.max(1, Math.ceil(this.totalItems / this._itemsPerPage));
             }
 
             /**
              * loads the next page
              */
             nextPage() {
-                this.page = Math.max(1, Math.min(this.page + 1, Math.ceil(this.totalItems / this.itemsPerPage)));
+                this.page = Math.max(1, Math.min(this.page + 1, Math.ceil(this.totalItems / this._itemsPerPage)));
             }
 
             /**
@@ -1071,7 +1096,7 @@
                         this.remoteParamSearchFields,
                         this.remoteParamSort,
                         this.remoteParamSerializeOptionals,
-                        this.itemsPerPage,
+                        this._itemsPerPage,
                         this.page,
                         this.sort,
                         this.query,
@@ -1092,13 +1117,14 @@
                         this.remoteParamSearchFields,
                         this.remoteParamSort,
                         this.remoteParamSerializeOptionals,
-                        this.itemsPerPage,
+                        this._itemsPerPage,
                         this.page,
                         this.sort,
                         this.query,
                         this.filterList,
                         this._serializeOptionals
                     );
+                );
             }
 
             /*
@@ -1110,7 +1136,7 @@
                     '_consolidateColumns(columnConfiguration.*)',
                     '_onItemsChanged(items.*)',
                     '_onSelectionChanged(selectedItems.*)',
-                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, _serializeOptionals.*)',
+                    '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, _itemsPerPage, page, sort, query, filterList, _serializeOptionals.*)',
                     '_onFilterChanged(filterList.*)',
                     '_onColumnConfigurationChanged(_columns.*)'
                 ];
@@ -1546,10 +1572,10 @@
                     }
                     me.set('selectedItems', newSelectedItems);
                 }, 5);
-                if( this.itemsPerPage > 0 && this.totalItems && this.remote )
+                if( this._itemsPerPage > 0 && this.totalItems && this.remote )
                 {
                     let pages = [];
-                    for(let i=1;i<=Math.ceil(this.totalItems / this.itemsPerPage);i++)
+                    for(let i=1;i<=Math.ceil(this.totalItems / this._itemsPerPage);i++)
                     {
                         pages.push(i);
                     }
@@ -1565,9 +1591,9 @@
              * @private
              */
             _onPageChanged(newVal) {
-                if(this.totalItems > 0 && this.itemsPerPage > 0)
+                if(this.totalItems > 0 && this._itemsPerPage > 0)
                 {
-                    this.page = Math.max(1, Math.min(this.page, Math.ceil(this.totalItems / this.itemsPerPage)));
+                    this.page = Math.max(1, Math.min(this.page, Math.ceil(this.totalItems / this._itemsPerPage)));
                 }
             }
 
@@ -1855,6 +1881,23 @@
              */
             _onCreateClick() {
                 this.dispatchEvent( new CustomEvent( "create-clicked" ) );
+            }
+
+            /**
+             * @private
+             */
+            _onItemsPerPageChanged() {
+                const lastPage = Math.max(1, Math.ceil(this.totalItems / this._itemsPerPage));
+                if (this.page > lastPage) {
+                    this.page = lastPage;
+                }
+            }
+
+            /**
+             * @private
+             */
+            _isItemsPerPageSelected(selectedItem) {
+                return this._itemsPerPage === selectedItem;
             }
 
             /*
