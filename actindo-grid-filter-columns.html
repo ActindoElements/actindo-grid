@@ -156,8 +156,9 @@
                     /**
                      * Internal property, whether we are change the column position or not
                      */
-                    _dragging: {
-                        type: Boolean
+                    _loaded: {
+                        type: Boolean,
+                        value: false
                     }
                     
                 };
@@ -180,9 +181,8 @@
             
             _onColumnsChanged(columns)
             {
-                if (this._dragging)
+                if (this._loaded)
                 {
-                    this._dragging = false;
                     return;
                 }
                 const columnValue = columns.value;
@@ -190,8 +190,11 @@
                 const displayColumns = columnValue.filter(item => item.hidden === false);
                 const hiddenColumns = columnValue.filter(item => item.hidden === true);
                 this._updateColumnPosition(displayColumns);
-                this.set('_displayColumns', displayColumns);
-                this.set('_hiddenColumns', hiddenColumns);
+                this.setProperties({
+                    _displayColumns: displayColumns,
+                    _hiddenColumns: hiddenColumns,
+                    _loaded: true
+                })
             }
             
             _onAddColumn()
@@ -250,8 +253,6 @@
                 {
                     return;
                 }
-                this._dragging = true;
-
                 this._displayColumns.splice(e.newIndex, 0, this._displayColumns.splice(e.oldIndex, 1)[0]);
                 this._updateColumnPosition(this._displayColumns);
             }
