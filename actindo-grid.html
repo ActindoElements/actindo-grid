@@ -1664,28 +1664,22 @@
 
                 this._initLayout();
 
-                // Do not reload if the column is hidden or not optional
-                if (!column.optional)
-                {
-                    return;
-                }
-                if (this._serializeOptionals.includes(column.field))
-                {
-                    if (column.hidden)
-                    {
-                        const idx = this._serializeOptionals.indexOf(column.field);
-                        this._serializeOptionals.splice(idx, 1);
-                    }
-                    
-                    return;
-                }
+                // need to remove column field in optional list if it changed to hidden
+                const hiddenOptionalColumns = this._columns.filter(item => item.hidden && this._serializeOptionals.includes(item.field));
+                hiddenOptionalColumns.forEach(column => {
+                    const index = this._serializeOptionals.findIndex( item => item === column.field);
+                    this._serializeOptionals.splice(index, 1);
+                });
 
-                if (this._loadedColumns.includes(column.field))
+                // Do not reload if there isn't any new optional column shown
+                const optionalColumns = this._displayColumns.filter( item => item.optional && !this._serializeOptionals.includes(item.field) && !this._loadedColumns.includes(item.field))
+                if (optionalColumns.length === 0)
                 {
                     return;
                 }
-
-                this.push('_serializeOptionals', column.field);
+                
+                const optionalColumnFields = optionalColumns.map(item => item.field);
+                this.push('_serializeOptionals', ...optionalColumnFields);
             }
 
             _checkIdentifyColumn(column)
