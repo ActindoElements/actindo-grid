@@ -3196,7 +3196,7 @@
         {
           "name": "_loaded",
           "type": "boolean",
-          "description": "Internal property, whether we are change the column position or not",
+          "description": "Internal property, columns properties first loaded",
           "privacy": "protected",
           "sourceRange": {
             "start": {
