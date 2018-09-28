@@ -188,24 +188,25 @@
 
             #toggleAll {
                 position: relative;
-                left: 6px;
+                width: 18px;
+                height: 18px;
             }
-                #toggleAll:after {
-                    background: #000;
-                    content: "";
-                    display: block;
-                    font-weight: bold;
-                    height: 2px;
-                    left: 6px;
-                    opacity: 0;
-                    position: absolute;
-                    top: 8px;
-                    transition: opacity 200ms;
-                    width: 6px;
-                }
-                #toggleAll[partial]:after {
-                    opacity: 1;
-                }
+            #toggleAll:after {
+                background: #000;
+                content: "";
+                display: block;
+                font-weight: bold;
+                height: 2px;
+                left: 6px;
+                opacity: 0;
+                position: absolute;
+                top: 8px;
+                transition: opacity 200ms;
+                width: 6px;
+            }
+            #toggleAll[partial]:after {
+                opacity: 1;
+            }
 
             input[type="checkbox"] {
                 cursor: pointer;
@@ -326,7 +327,7 @@
                 align-items: center;
                 @apply(--header-title-style);
             }
-            
+
             #actions
             {
                 display: flex;
@@ -420,14 +421,17 @@
             <div hidden$="[[!_arrayLengthGT(selectedItems.*, 1)]]">
                 <slot name="multiActions"></slot>
             </div>
-            
+
             <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
                 <slot name="noSelectionActions"></slot>
                 <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="_onRefreshTap"></paper-icon-button>
 
                 <template is="dom-if" if="[[_isHeaderSingleMode()]]">
-                    <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                    <actindo-grid-filter-configurator
+                            on-click="_onClickColumnIcon"
+                            active="{{_showColumnsArea}}"
+                            hidden="[[hideColumnConfiguration]]">
                         <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
                         <span slot="content">Columns ([[_displayColumns.length]])</span>
                     </actindo-grid-filter-configurator>
@@ -448,7 +452,10 @@
                     <slot name="secondLineContent"></slot>
                 </div>
                 <div class="header-second-line-icons">
-                    <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                    <actindo-grid-filter-configurator
+                            on-click="_onClickColumnIcon"
+                            active="{{_showColumnsArea}}"
+                            hidden="[[hideColumnConfiguration]]">
                         <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
                         <span slot="content">Columns ([[_displayColumns.length]])</span>
                     </actindo-grid-filter-configurator>
@@ -483,10 +490,7 @@
                         <tr>
                             <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]" id="toggleAllIf">
                                 <th class="checkbox">
-                                    <div class="th checkbox">
-                                        <paper-checkbox id="toggleAll" partial$="[[_partiallySelected]]" checked="[[_everythingSelected]]" hidden="[[!_stringEquals(selectionMode, 'multi')]]" on-checked-changed="_toggleAllSelection"></paper-checkbox>
-                                        &nbsp;
-                                    </div>
+                                    <paper-checkbox id="toggleAll" partial$="[[_partiallySelected]]" checked="[[_everythingSelected]]" hidden="[[!_stringEquals(selectionMode, 'multi')]]" on-checked-changed="_toggleAllSelection"></paper-checkbox>
                                 </th>
                             </template>
                             <template is="dom-repeat" items="{{_columns}}" filter="_isColumnVisibile" observe="hidden" id="headerRepeat">
@@ -500,7 +504,6 @@
                                     [[item.label]]
                                 </th>
                             </template>
-                            <th class="filler"></th>
                         </tr>
                     </thead>
                 </table>
@@ -524,10 +527,9 @@
                             <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
                                 <td class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
                             </template>
-                            <td></td>
                         </tr>
                     </template>
-                    
+
                     <template is="dom-if" if="[[_error]]">
                         <actindo-grid-error></actindo-grid-error>
                     </template>
@@ -868,7 +870,7 @@
                         },
                         notify: true
                     },
-                    
+
                     /**
                      * if this is enabled and a selection mode is active, tapping a row will not select it. Rows can then
                      * only be selected by explicitely checking their checkboxes
@@ -1090,7 +1092,7 @@
              * reloads the grid data from the remote
              */
             refresh(debounced = true) {
-                
+
                 if (!debounced)
                 {
                     this._load(
@@ -1280,7 +1282,7 @@
                     }
 
                     const totalVisibleColumns = this._displayColumns.length;
-                    const headerColumns = dom.querySelectorAll('#gridHeader th[data-index]');
+                    const headerColumns = dom.querySelectorAll('#gridHeaderTable th[data-index]');
                     const rowColumns = dom.querySelectorAll('#table tr:first-child td.row-column');
 
                     // Skip if we have no column in configuration
@@ -1312,7 +1314,12 @@
                         return;
                     }
 
-                    // Resize headers & columns
+                    // Reset header & body table width
+                    this.$.table.style.width = '';
+                    this.$.gridHeaderTable.style.width = '';
+
+                    // Set headers & columns width
+                    let totalWidth = 0;
                     for (let i = 0; i < totalVisibleColumns; i++) {
                         const headerColumnWidth = headerColumns[i].clientWidth;
                         const rowColumnWidth = rowColumns[i].clientWidth;
@@ -1322,24 +1329,49 @@
                         if (!headerColumnWidth || !rowColumnWidth) {
                             return;
                         }
-                        
-                        // If first time render and the column configuration has min-width 
-                        if (this._displayColumns[i].minWidth && this._isFirstTimeRenderLayout)
+
+                        // If first time render and the column configuration has min-width
+                        if ((i < this._displayColumns.length)
+                            && this._displayColumns[i].minWidth
+                            && this._isFirstTimeRenderLayout)
                         {
                             width = this._displayColumns[i].minWidth - 19.5;
-                        }
-                        else if (headerColumnWidth > rowColumnWidth) {
+                        } else if (headerColumnWidth > rowColumnWidth) {
                             width = headerColumnWidth - 19.5;
                         } else {
                             width = rowColumnWidth - 19.5;
                         }
-                        
+
+                        totalWidth += width + 19.5;
+
                         const styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
                         headerColumns[i].setAttribute('style', styleString);
                         rowColumns[i].setAttribute('style', styleString);
 
                         window.clearInterval(interval);
                     }
+
+                    // Set checkbox width
+                    const checkBoxAll = dom.querySelectorAll('#gridHeaderTable th.checkbox');
+                    if (checkBoxAll.length) {
+                        const rowCheckbox = dom.querySelectorAll('#table tr:first-child td.checkbox');
+                        let width = checkBoxAll[0].clientWidth;
+                        if (width < rowCheckbox[0].clientWidth) {
+                            width = rowCheckbox[0].clientWidth - 19.5;
+                        } else {
+                            width -= 19.5;
+                        }
+
+                        totalWidth += width + 19.5;
+
+                        const styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
+                        checkBoxAll[0].setAttribute('style', styleString);
+                        rowCheckbox[0].setAttribute('style', styleString);
+                    }
+
+                    this.$.table.style.width = totalWidth + 'px';
+                    this.$.gridHeaderTable.style.width = totalWidth + 'px';
+
                     this._isFirstTimeRenderLayout = false;
 
                     this._positionCreateButton();
@@ -1659,7 +1691,7 @@
                 {
                     return;
                 }
-                
+
                 let displayColumns = this._columns.filter(item => item.hidden === false);
                 this.set('_displayColumns', displayColumns);
 
@@ -1678,7 +1710,7 @@
                 {
                     return;
                 }
-                
+
                 const optionalColumnFields = optionalColumns.map(item => item.field);
                 this.push('_serializeOptionals', ...optionalColumnFields);
             }
@@ -1739,7 +1771,7 @@
                 this._columns = columns;
                 this._filterColumns = filterColumns;
                 this._serializeOptionals = serializeOptionals;
-                
+
             }
 
             _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
@@ -1850,7 +1882,7 @@
                 if(!remote) {
                    return;
                 }
-                
+
                 this.refresh();
             }
 
