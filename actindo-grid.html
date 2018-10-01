@@ -432,7 +432,7 @@
                         <span slot="content">Columns ([[_displayColumns.length]])</span>
                     </actindo-grid-filter-configurator>
 
-                    <template is="dom-if" if="[[_filterColumns.length]]">
+                    <template is="dom-if" if="[[_isFiltersVisible()]]">
                         <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
                             <span slot="content">Filter ([[filterList.length]])</span>
@@ -1088,6 +1088,10 @@
              * reloads the grid data from the remote
              */
             refresh(debounced = true) {
+                if( !this.remote )
+                {
+                    return;
+                }
 
                 if (!debounced)
                 {
@@ -1555,17 +1559,19 @@
              * called when the "select all" checkbox is tapped. Toggles the selection of all items
              * @private
              */
-            _toggleAllSelection() {
+            _toggleAllSelection(e) {
                 if(this._everythingSelected)
                 {
                     this.set('selectedItems', []);
                 }
                 else
                 {
-                    if(!this.items) {
+                    if(!this.items)
+                    {
                         this.set('selectedItems', []);
                     }
-                    else {
+                    else if(e.detail.value) // Check if checkbox checked
+                    {
                         let selected = [];
                         for(let i = 0, c = this.items.length; i < c; i++)
                         {
@@ -1772,8 +1778,6 @@
 
             _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
             {
-
-
                 let me = this;
                 let request = remoteParams;
                 this._error = false;
@@ -2165,6 +2169,16 @@
              */
             _isHeaderSingleMode() {
                 return !this.multiLineHeader;
+            }
+
+            /**
+             * Determines if the filters is visible
+             *
+             * @returns {boolean}
+             * @private
+             */
+            _isFiltersVisible() {
+                return this.remote && this._filterColumns.length;
             }
         }
 
