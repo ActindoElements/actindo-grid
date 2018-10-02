@@ -1090,7 +1090,10 @@
              * reloads the grid data from the remote
              */
             refresh(debounced = true) {
-                
+                if( !this.remote )
+                {
+                    return;
+                }
                 if (!debounced)
                 {
                     this._load(
@@ -1745,7 +1748,10 @@
             _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
             {
 
-
+                if( !remote )
+                {
+                    return;
+                }
                 let me = this;
                 let request = remoteParams;
                 this._error = false;
