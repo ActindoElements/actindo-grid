@@ -1090,7 +1090,10 @@
              * reloads the grid data from the remote
              */
             refresh(debounced = true) {
-                
+                if( !this.remote )
+                {
+                    return;
+                }
                 if (!debounced)
                 {
                     this._load(
