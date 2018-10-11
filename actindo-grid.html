@@ -1656,7 +1656,6 @@
              */
             _onColumnConfigurationChanged(columns)
             {
-                const column = columns.value;
 
                 if (typeof columns.value !== 'object')
                 {
@@ -1734,14 +1733,28 @@
                     return column;
                 });
 
-                if(this._identifyingColumn === null && this.selectionMode) {
-                    console.warn('no identifying column given, disabling selection model', columns);
-                    this.selectionMode = null;
-                }
-
                 this._columns = columns;
                 this._filterColumns = filterColumns;
-                this._serializeOptionals = serializeOptionals;
+                let updateSerializeOptionals = true;
+                if( Array.isArray( this._serializeOptionals ) ) //Allows dynamic change of column e.g. with config provided by remote result;
+                    //prevents infinite load loop
+                {
+                    if( this._serializeOptionals.length ===  serializeOptionals.length )
+                    {
+                        let allContained = true;
+                        for( let i=0;i<this._serializeOptionals.length;i++)
+                        {
+                            allContained = serializeOptionals.contains( this._serializeOptionals[i] );
+                            if( !allContained )
+                            {
+                                break;
+                            }
+                        }
+                        updateSerializeOptionals = !allContained;
+                    }
+                }
+                if( updateSerializeOptionals )
+                    this._serializeOptionals = serializeOptionals;
                 
             }
 
