@@ -47,6 +47,29 @@
                 display: none;
             }
 
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 5px;
+                padding-right: 5px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-track:hover {
+                background: rgba(0,0,0,0.15);
+            }
+            ::-webkit-scrollbar-thumb {
+                background-color: var(--actindo-secondary-light);
+                border-right: 2px solid var(--actindo-secondary-light);
+                border-left: 2px solid var(--actindo-secondary-light);
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: var(--actindo-secondary);
+                border-right: 2px solid var(--actindo-secondary);
+                border-left: 2px solid var(--actindo-secondary);
+            }
+
             [hidden] 
             {
                 display: none !important;
