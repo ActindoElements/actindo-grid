@@ -499,7 +499,7 @@
                                 </th>
                             </template>
                             <template is="dom-repeat" items="{{_columns}}" filter="_isColumnVisibile" observe="hidden" id="headerRepeat">
-                                <th data-index$="[[index]]" class$="c[[index]] sortable-[[item.sortable]] is-sorted-[[_isSortedBy(item, sort)]]">
+                                <th data-index$="[[index]]" field-name$="[[item.field]]" class$="c[[index]] sortable-[[item.sortable]] is-sorted-[[_isSortedBy(item, sort)]]">
                                     <div class="th">
                                         <span>[[item.label]]</span>
                                         <template is="dom-if" if="[[_evaluatesTrue(item.resizable)]]">
@@ -531,7 +531,7 @@
                                 </td>
                             </template>
                             <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
-                                <td class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                                <td field-name$="[[column.field]]" class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
                             </template>
                             <td></td>
                         </tr>
@@ -622,7 +622,8 @@
                         type: Array,
                         value: function() {
                         	return [];
-                        }
+                        },
+                        notify: true
                     },
 
                     /**
@@ -669,7 +670,8 @@
                         value: function() {
                         	return {};
                         },
-                        notify: true
+                        notify: true,
+                        observer: "_onSortChanged"
                     },
 
                     /**
@@ -915,7 +917,8 @@
                         type: Array,
                         value: function() {
                         	return [];
-                        }
+                        },
+                        notify: true
                     },
 
                     /**
@@ -1147,6 +1150,47 @@
                 );
             }
 
+            /**
+             * Returns array containing all fields that are visible
+             * @return {Array}
+             */
+            getVisibleFields()
+            {
+                let ret = [];
+                for(let i=0;i<this._columns.length;i++)
+                {
+                    let column = this._columns[i];
+                    if( column.hidden === false )
+                    {
+                        ret.push( column.field );
+                    }
+                }
+            }
+
+            /**
+             * @param {String} fieldName
+             * Shows column with corresponding fieldName if existing
+             */
+            showColumnByFieldName( fieldName )
+            {
+                if( this._columnIndexByFieldName[fieldName] !== undefined )
+                {
+                    this.set( '_columns.'+this._columnIndexByFieldName[fieldName]+'.hidden', false );
+                }
+            }
+
+            /**
+             * Hides column with corresponding fieldName if visible
+             */
+            hideColumnByFieldName( fieldName )
+            {
+                if( this._columnIndexByFieldName[fieldName] !== undefined)
+                {
+                    this.set( '_columns.'+this._columnIndexByFieldName[fieldName]+'.hidden', true );
+                }
+            }
+
+
             /*
              * lifecycle and initialization
              */
@@ -1215,6 +1259,51 @@
                         return element;
                     }
                 };
+            }
+
+            setColumnToPositionIndex( fieldName, newIndex )
+            {
+                //Important because we can ensure that async updated _columnIndexByFieldName is correct
+                window.setTimeout(
+                    () => {
+                        const oldIndex = this._columnIndexByFieldName[fieldName];
+                        if( oldIndex !== undefined && oldIndex !== false )
+                        {
+                            this.splice( '_columns', newIndex, 0, this.splice( '_columns', oldIndex, 1)[0]);
+                        }
+                    }, 0
+                );
+            }
+
+            /**
+             * Get width in px of a column
+             * @return {String}
+             */
+            getColumnWidth( fieldName )
+            {
+                const dom = Polymer.dom(this.root);
+                const headerColumns = dom.querySelector('#gridHeader th[field-name='+fieldName+']');
+                let paddingLeftRight =
+                    parseFloat(window.getComputedStyle(headerColumns,null).getPropertyValue( 'padding-left' ))
+                    +parseFloat(window.getComputedStyle(headerColumns,null).getPropertyValue( 'padding-right' ));
+                return headerColumns ? headerColumns.clientWidth-paddingLeftRight : null;
+            }
+
+            /**
+             * @param {String} fieldName field of the column to be resized
+             * @param {Number} width in px
+             */
+            setColumnWidth( fieldName, width )
+            {
+                if( this._columnIndexByFieldName[fieldName] !== undefined && this._columns[this._columnIndexByFieldName[fieldName]].resizable === true )
+                {
+                    const index = this._columnIndexByFieldName[fieldName];
+                    const dom = Polymer.dom(this.root);
+                    let resizingColumns = dom.querySelectorAll('.c' + index);
+                    this._resizeColumn( resizingColumns, width );
+                }
+
+
             }
 
             _onRefreshTap()
@@ -1291,6 +1380,7 @@
                         return;
                     }
 
+
                     const totalVisibleColumns = this._displayColumns.length;
                     const headerColumns = dom.querySelectorAll('#gridHeader th[data-index]');
                     const rowColumns = dom.querySelectorAll('#table tr:first-child td.row-column');
@@ -1334,9 +1424,15 @@
                         if (!headerColumnWidth || !rowColumnWidth) {
                             return;
                         }
-                        
-                        // If first time render and the column configuration has min-width 
-                        if (this._displayColumns[i].minWidth && this._isFirstTimeRenderLayout)
+                        window.clearInterval(interval);
+                        const field = this._displayColumns[i].field;
+                        if( this.widthByFieldName && this.widthByFieldName[field] )
+                        {
+                            this.setColumnWidth( field, this.widthByFieldName[field] );
+                            continue;
+                        }
+                        // If first time render and the column configuration has min-width
+                        else if (this._displayColumns[i].minWidth && this._isFirstTimeRenderLayout)
                         {
                             width = this._displayColumns[i].minWidth - 19.5;
                         }
@@ -1350,12 +1446,16 @@
                         headerColumns[i].setAttribute('style', styleString);
                         rowColumns[i].setAttribute('style', styleString);
 
-                        window.clearInterval(interval);
+                        this.widthByFieldName = {};
                     }
                     this._isFirstTimeRenderLayout = false;
 
                     this._positionCreateButton();
                     this._isProcessingInitLayout = false;
+                    for(let i=0;i<this._displayColumns.length;i++)
+                    {
+                        this.widthByFieldName[this._displayColumns[i].field] = this.getColumnWidth( this._displayColumns[i].field );
+                    }
                 }, 50);
             }
 
@@ -1383,12 +1483,14 @@
                 document.addEventListener('mousemove', function(e) {
                     if (me.resizingColumns && me.resizingColumns.length) {
                         let paddedWidth = Math.max(me.resizingColumnOffset + e.pageX, 32);
-                        let width = paddedWidth - 19.5; // -19.5 is the width of the columns left/right padding
-                        let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
-
-                        for (let i = 0, c = me.resizingColumns.length; i < c; i++) {
-                            me.resizingColumns[i].setAttribute('style', styleText);
+                        if( !me._paddingLeftRight )
+                        {
+                            me._paddingLeftRight =
+                                parseFloat(window.getComputedStyle(me.resizingColumns[0],null).getPropertyValue( 'padding-left' ))
+                                +parseFloat(window.getComputedStyle(me.resizingColumns[0],null).getPropertyValue( 'padding-right' ));
                         }
+                        let width = paddedWidth - me._paddingLeftRight;
+                        me._resizeColumn( me.resizingColumns, width );
                     }
                 });
 
@@ -1401,9 +1503,66 @@
                 });
             }
 
+            /**
+             * Performs resizing column;
+             * @param {Array} list of columns in all rows and header
+             * @param {Number} width in px
+             */
+            _resizeColumn( list, width )
+            {
+                let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
+                for (let i = 0, c = list.length; i < c; i++) {
+                    list[i].setAttribute('style', styleText);
+                    if( i === 0 ) //Once is enough
+                    {
+                        this.widthByFieldName[list[i].getAttribute( 'field-name' )] = this.getColumnWidth( list[i].getAttribute( 'field-name' ) );
+                    }
+                }
+                this._resizeDebouncer = Polymer.Debouncer.debounce( //Important to resize because called by mousemove event
+                    this._resizeDebouncer,
+                    Polymer.Async.timeOut.after(500),
+                    () => {
+                    this.dispatchEvent(  new CustomEvent( "after-resize" ) );
+                } )
+            }
+
+            /**
+             * Initialize sorting
+             * @param {String} fieldName
+             * @param {String} order ASC or DESC not case sensitive
+             */
+            setSortOrder( fieldName, order )
+            {
+                order = order.toLowerCase();
+                if( order !== 'asc' && order !== 'desc' )
+                {
+                    throw "Unknown sort order";
+                }
+                if( !this._columnIndexByFieldName[fieldName] === undefined )
+                {
+                    throw "Unknown field";
+                }
+                let column = this._columns[this._columnIndexByFieldName[fieldName]];
+                if( !column.sortable )
+                {
+                    throw "Column not sortable"
+                }
+                this.set( "sort", {field:fieldName, order: order === 'asc' } );
+            }
+
+            removeSorting()
+            {
+                this.set( 'sort', {} );
+            }
+
             /*
              * event callbacks
              */
+
+            _onSortChanged()
+            {
+                this.dispatchEvent( new CustomEvent( 'sort-changed' ) );
+            }
 
             /**
              * called when the table head is tapped. Check if the tapped column is sortable and if so, sort by it
@@ -1673,6 +1832,12 @@
                 }
                 
                 let displayColumns = this._columns.filter(item => item.hidden === false);
+
+                this._columnIndexByFieldName = {};
+                for(let i=0;i<columns.base.length;i++)
+                {
+                    this._columnIndexByFieldName[columns.base[i].field] = i;
+                }
                 this.set('_displayColumns', displayColumns);
 
                 this._initLayout();
@@ -1749,6 +1914,11 @@
                 }
 
                 this._columns = columns;
+                this._columnIndexByFieldName = {};
+                for(let i=0;i<columns.length;i++)
+                {
+                    this._columnIndexByFieldName[columns[i].field] = i;
+                }
                 this._filterColumns = filterColumns;
                 this._serializeOptionals = serializeOptionals;
                 
