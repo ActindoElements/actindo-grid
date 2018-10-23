@@ -475,7 +475,8 @@
         <template is="dom-if" if="[[_showFilterArea]]">
             <actindo-grid-filter
                 filter-list="{{filterList}}"
-                filter-columns="{{_filterColumns}}" 
+                filter-columns="{{_filterColumns}}"
+                on-inactive-filter-changed="_inactiveFilterChanged"
             >
             </actindo-grid-filter>
         </template>
@@ -690,7 +691,8 @@
                         type: Array,
                         value: function() {
                             return [];
-                        }
+                        },
+                        notify: true
                     },
 
                     /**
@@ -1151,6 +1153,47 @@
             }
 
             /**
+             * Removes all filters
+             */
+            clearFilters()
+            {
+                this.set( "filterList", [] );
+            }
+
+            /**
+             * Returns list of all filters (active/inactive)
+             * @return {Array}
+             */
+            getFilters()
+            {
+                return this.filterList;
+            }
+
+            /**
+             * Adds a filter
+             * @param {String} field
+             * @param {String} operator
+             * @param {*} value
+             * @param {Boolean} active
+             * @return {Boolean} success
+             */
+            addFilter( field, operator, value, active )
+            {
+                const index = this._columnIndexByFieldName[field];
+                if( index === undefined || !this._columns[index].filterable )
+                {
+                    return false;
+                }
+                this.push( "filterList", {
+                    property: field,
+                    operator: operator,
+                    value: value,
+                    active: active
+                } );
+                return true;
+            }
+
+            /**
              * Returns array containing all fields that are visible
              * @return {Array}
              */
@@ -1562,6 +1605,11 @@
             _onSortChanged()
             {
                 this.dispatchEvent( new CustomEvent( 'sort-changed' ) );
+            }
+
+            _inactiveFilterChanged()
+            {
+                this.dispatchEvent( new CustomEvent( "inactive-filter-changed", {} ) );
             }
 
             /**

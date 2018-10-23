@@ -139,6 +139,7 @@
             {
                 if (!event.detail.active)
                 {
+                    this.dispatchEvent( new CustomEvent( "inactive-filter-changed", {} ) );
                     return;
                 }
                 const idx = this.filterList.indexOf(event.detail);
