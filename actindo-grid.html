@@ -2044,7 +2044,7 @@
                             let data = JSON.parse(me._xhr.responseText);
                             me._setTotalItems(Polymer.Path.get(data, remotePathCount));
                             me.items = Polymer.Path.get(data, remotePathData);
-                            this.dispatchEvent( new CustomEvent( "after-load", {detail: data} ) );
+                            me.dispatchEvent( new CustomEvent( "after-load", {detail: data} ) );
                         }
                         else if( me._xhr.status !== 0 )
                         {
