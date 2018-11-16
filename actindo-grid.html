@@ -1346,13 +1346,10 @@
             {
                 if( this._columnIndexByFieldName[fieldName] !== undefined && this._columns[this._columnIndexByFieldName[fieldName]].resizable === true )
                 {
-                    const index = this._columnIndexByFieldName[fieldName];
                     const dom = Polymer.dom(this.root);
-                    let resizingColumns = dom.querySelectorAll('.c' + index);
+                    let resizingColumns = dom.querySelectorAll('td[field-name='+fieldName+'],th[field-name='+fieldName+']');
                     this._resizeColumn( resizingColumns, width );
                 }
-
-
             }
 
             _onRefreshTap()
@@ -1559,12 +1556,16 @@
              */
             _resizeColumn( list, width )
             {
+                if( typeof this.widthByFieldName !== 'object' )
+                {
+                    this.widthByFieldName = {};
+                }
                 let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
                 for (let i = 0, c = list.length; i < c; i++) {
                     list[i].setAttribute('style', styleText);
                     if( i === 0 ) //Once is enough
                     {
-                        this.widthByFieldName[list[i].getAttribute( 'field-name' )] = this.getColumnWidth( list[i].getAttribute( 'field-name' ) );
+                        this.widthByFieldName[list[i].getAttribute( 'field-name' )] = width;
                     }
                 }
                 this._resizeDebouncer = Polymer.Debouncer.debounce( //Important to resize because called by mousemove event
@@ -1878,13 +1879,6 @@
              */
             _onColumnConfigurationChanged(columns)
             {
-                const column = columns.value;
-
-                if (typeof columns.value !== 'object')
-                {
-                    return;
-                }
-                
                 let displayColumns = this._columns.filter(item => item.hidden === false);
 
                 this._columnIndexByFieldName = {};
