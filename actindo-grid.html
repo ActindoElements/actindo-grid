@@ -1347,6 +1347,7 @@
                 if( this._columnIndexByFieldName[fieldName] !== undefined && this._columns[this._columnIndexByFieldName[fieldName]].resizable === true )
                 {
                     const dom = Polymer.dom(this.root);
+                    fieldName = fieldName.replace( ".", "\\." );
                     let resizingColumns = dom.querySelectorAll('td[field-name='+fieldName+'],th[field-name='+fieldName+']');
                     this._resizeColumn( resizingColumns, width );
                 }
