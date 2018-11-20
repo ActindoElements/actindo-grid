@@ -42,9 +42,25 @@
                 height: 100%;
                 overflow: hidden;
                 width: 100%;
+                --background-color: white;
+                --hover-color: var(--actindo-primary-light);
+                --selected-color: var(--actindo-primary);
+                background-color: var(--background-color);
+                --border-color: var(--actindo-secondary-30);
+
             }
             :host[hidden] {
                 display: none;
+            }
+
+            :host([embedded])
+            {
+                --background-color: var(--actindo-light-grey-30);
+                --hover-color: var(--actindo-light-grey-70);
+                --selected-color: var(--actindo-light-grey-50);
+                --border-color: var(--actindo-secondary-30);
+                border-radius: 5px;
+                border: 1px solid var(--border-color);
             }
 
             ::-webkit-scrollbar {
@@ -124,7 +140,7 @@
                 }
 
                 th, td {
-                    border: solid var(--actindo-border-dark);
+                    border: solid var(--border-color);
                     border-width: 1px 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -154,10 +170,10 @@
                     width: 18px;
                 }
                 tr[selected] {
-                    background-color: var(--actindo-light-grey);
+                    background-color: var(--selected-color);
                 }
                 #gridBody tr:hover {
-                    background-color: var(--actindo-primary-light);
+                    background-color: var(--hover-color);
                 }
                 tr[disabled],
                 tr[locked] td {
@@ -175,7 +191,7 @@
                     opacity: 1;
                 }
                 tr[finished] td.checkbox paper-checkbox {
-                    background-color: var(--actindo-primary);
+                    background-color: var(--selected-color);
                     border-radius: 50%;
                     text-indent: -5em;
                 }
@@ -264,7 +280,7 @@
             #gridBody {
                 overflow: auto;
                 position: relative;
-                background-color: #fff;
+                background-color: var(--background-color);
                 display: flex;
                 flex-grow: 1;
                 flex-direction: column;
@@ -306,7 +322,7 @@
 
             #paging {
                 align-items: center;
-                border-top: 1px solid var(--actindo-border-dark);
+                border-top: 1px solid var(--border-color);
                 display: flex;
                 justify-content: flex-end;
                 max-height: 4.15em;
@@ -398,7 +414,7 @@
             #gridHeader {
                 overflow-x: scroll;
                 position: relative;
-                border-bottom: 1px solid var(--actindo-border-dark);
+                border-bottom: 1px solid var(--border-color);
                 max-height: 4.7em;
                 min-height: 4.7em;
                 z-index: 9;
