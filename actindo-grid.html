@@ -47,6 +47,7 @@
                 --selected-color: var(--actindo-primary);
                 background-color: var(--background-color);
                 --border-color: var(--actindo-secondary-30);
+                --menu-background-color: var(--actindo-light-grey-70);
 
             }
             :host[hidden] {
@@ -141,12 +142,12 @@
 
                 th, td {
                     border: solid var(--border-color);
-                    border-width: 1px 0;
+                    border-width: 1px 0 0 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
                 }
-                    tr:last-of-type td,
+                    /*tr:last-of-type td,*/
                     tbody tr:first-of-type td {
                         border: 0;
                     }
@@ -428,7 +429,14 @@
             }
             #rowsPerPage > span {
                 margin-right: 10px;
+
             }
+
+            actindo-grid-filter-columns, actindo-grid-filter
+            {
+                background-color: var(--menu-background-color);
+            }
+
         </style>
 
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
