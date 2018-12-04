@@ -3,9 +3,11 @@
         <style>
             :host
             {
-                --paper-checkbox-unchecked-color: var(--actindo-light-grey-light);
-                --paper-checkbox-checkmark-color: var(--actindo-primary);
-                --paper-checkbox-checked-color: rgba(255,255,255,0.8);
+            }
+
+            :host([no-check-box])
+            {
+                @apply(--no-checkbox-style);
             }
 
             .container
@@ -16,14 +18,12 @@
                 margin: 8px 0;
                 overflow: visible;
                 border-radius: 16px;
-                background-color: rgba(255,255,255,0.4);
+                background-color: var(--container-background-color);
                 position: relative;
-                color: rgb(255,255,255);
                 box-sizing: border-box;
                 height: 32px;
                 display: flex;
                 align-items: center;
-                @apply(--filter-tag-container);
             }
            
             .container paper-checkbox
@@ -42,7 +42,7 @@
             {
                 font-size: var(--paper-font-body2_-_font-size);
                 font-weight: var(--paper-font-body2_-_font-weight);
-                margin-left: 10px
+                margin-left: 10px;
                 @apply(--filter-tag-content);
             }
 
@@ -50,14 +50,14 @@
             {
                 @apply(--filter-tag-remove-icon);
             }
-            .unactive.container
+            .inactive.container
             {
                 background-color: var(--actindo-secondary-light);
                 opacity: 0.72;
                 color: var(--actindo-light-grey-light);
             }
         
-            .unactive .content
+            .inactive .content
             {
                 opacity: 0.72;
             }
@@ -107,7 +107,9 @@
                      * if this is true, the checkbox on the left will be hidden
                      */
                     noCheckBox: {
-                        type: Boolean
+                        type: Boolean,
+                        value: false,
+                        reflectToAttribute: true
                     },
 
                     /**
@@ -158,9 +160,9 @@
             {
                 if(this.active)
                 {
-                    this.$.container.classList.remove('unactive');
+                    this.$.container.classList.remove('inactive');
                 } else {
-                    this.$.container.classList.add('unactive');
+                    this.$.container.classList.add('inactive');
                 }
             }
         }

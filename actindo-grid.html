@@ -35,17 +35,47 @@
 -->
 <dom-module id="actindo-grid">
     <template>
+        <style include="actindo-level-style"></style>
         <style>
+
             :host {
                 display: flex;
                 flex-direction: column;
                 height: 100%;
                 overflow: hidden;
                 width: 100%;
+                --settings-style: {
+                    background-color: var(--actindo-level0-d1);
+                    color: var(--actindo-level2);
+                };
+                --filter-tag-container: {
+                    background-color: var(--actindo-level0);
+                    color: var(--actindo-level2);
+                };
+                --filter-tag: {
+                    --paper-checkbox-unchecked-color: var(--actindo-light-grey-light);
+                    --paper-checkbox-checkmark-color: var(--actindo-primary);
+                    --paper-checkbox-checked-color: var(--actindo-highlight);
+                };
+                --no-checkbox-style:
+                {
+                    --container-background-color: var(--actindo-level0);
+                    color: var(--actindo-level2);
+                };
+                --checkbox-style: {
+                    --inactive-background-color:
+                    --inactive-color: asdasd;
+                }
             }
             :host[hidden] {
                 display: none;
             }
+
+            actindo-grid-filter-columns, actindo-grid-filter
+            {
+                @apply(--settings-style);
+            }
+
 
             ::-webkit-scrollbar {
                 width: 10px;
@@ -124,7 +154,7 @@
                 }
 
                 th, td {
-                    border: solid var(--actindo-border-dark);
+                    border: solid var(--divider-color);
                     border-width: 1px 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -154,14 +184,15 @@
                     width: 18px;
                 }
                 tr[selected] {
-                    background-color: var(--actindo-light-grey);
+                    background-color: var(--selected-color);
                 }
                 #gridBody tr:hover {
-                    background-color: var(--actindo-primary-light);
+                    background-color: var(--hover-color);
                 }
                 tr[disabled],
                 tr[locked] td {
-                    background-color: transparent;
+                    color: var(--disabled-color);
+                    background-color: var(---primary-background-color);
                     cursor: auto;
                     opacity: 0.34;
                 }
@@ -175,7 +206,7 @@
                     opacity: 1;
                 }
                 tr[finished] td.checkbox paper-checkbox {
-                    background-color: var(--actindo-primary);
+                    background-color: var(--selected-color);
                     border-radius: 50%;
                     text-indent: -5em;
                 }
@@ -253,7 +284,7 @@
                 left:0;
                 right: 0;
                 bottom: 0;
-                background-color: white;
+                background-color: var(--primary-background-color);
                 opacity: 0.72;
                 display: flex;
                 align-items: center;
@@ -264,7 +295,7 @@
             #gridBody {
                 overflow: auto;
                 position: relative;
-                background-color: #fff;
+                background-color: var(--primary-background-color);
                 display: flex;
                 flex-grow: 1;
                 flex-direction: column;
@@ -306,13 +337,12 @@
 
             #paging {
                 align-items: center;
-                border-top: 1px solid var(--actindo-border-dark);
+                border-top: 1px solid var(--divider-color);
                 display: flex;
                 justify-content: flex-end;
                 max-height: 4.15em;
                 min-height: 4.15em;
                 position: relative;
-                opacity: 0.54;
             }
             #paging[hidden] {
                 display: none;
@@ -330,7 +360,7 @@
 
             paper-spinner-lite
             {
-                --paper-spinner-color: var(--actindo-primary);
+                --paper-spinner-color: var(--primary-color);
                 width: 50px;
                 height: 50px;
             }
@@ -376,8 +406,8 @@
             }
 
             paper-fab {
-                background-color: var(--actindo-primary);
-                color: white;
+                background-color: var(--actindo-highlight);
+                color: var(--actindo-level0);
                 width: 60px;
                 height: 60px;
             }
@@ -398,7 +428,7 @@
             #gridHeader {
                 overflow-x: scroll;
                 position: relative;
-                border-bottom: 1px solid var(--actindo-border-dark);
+                border-bottom: 1px solid var(--divider-color);
                 max-height: 4.7em;
                 min-height: 4.7em;
                 z-index: 9;
@@ -619,6 +649,13 @@
                      *     nullMessage: string
                      * }]}
                      */
+                    styleLevel: {
+                        type: Number,
+                        value: 0,
+                        reflectToAttribute: true
+                    },
+
+
                     columnConfiguration: {
                         type: Array,
                         value: function() {
