@@ -380,6 +380,9 @@
                 color: white;
                 width: 60px;
                 height: 60px;
+                --paper-fab-iron-icon: {
+                    transition:transform 250ms;
+                }
             }
 
             #gridContainer {
@@ -387,14 +390,81 @@
                 position: relative;
                 display: flex;
                 flex-direction: column;
-                z-index: 1;
                 flex-grow: 1;
             }
-            #createButton {
+            #createButton, #multiActionsContainer {
                 position: absolute;
                 bottom: 16px;
                 right: 16px;
             }
+
+            #multiActionsContainer
+            {
+                display: flex;
+                z-index: 102;
+                flex-direction: column;
+                align-items: flex-end;
+                justify-content: flex-end;
+            }
+
+            #multiActionsContainer .actionContainer
+            {
+                display: flex;
+                margin-bottom: 16px;
+                align-items: center;
+                transition: opacity 200ms linear;
+                opacity: 1
+            }
+
+            #multiActionsContainer .actionContainer.invisible
+            {
+                opacity: 0;
+            }
+
+            #multiActionsContainer > div.invisible
+            {
+                display: none;
+            }
+
+            #multiActionsRepeatContainer
+            {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: flex-end;
+            }
+
+            #multiActionsRepeatContainer paper-fab
+            {
+                width: 48px;
+                height: 48px;
+                margin-right: 6px;
+            }
+
+            paper-fab.active
+            {
+                --paper-fab-iron-icon: {
+                    transform:rotate(45deg) scale(1.2);
+                    transition:transform 250ms;
+                }
+            }
+
+            #multiActionsContainer .actionContainer paper-fab
+            {
+                color: var(--actindo-secondary);
+                background-color: var(--actindo-light-grey-dark);
+                margin-left: 16px;
+            }
+
+            #multiActionsContainer .actionContainer > div
+            {
+                color: var(--actindo-secondary);
+                background-color: var(--actindo-light-grey-dark);
+                padding: 5px;
+                border-radius: 3px;
+                @apply(--paper-material-elevation-2);
+            }
+
             #gridHeader {
                 overflow-x: scroll;
                 position: relative;
@@ -413,8 +483,26 @@
             #rowsPerPage > span {
                 margin-right: 10px;
             }
-        </style>
 
+            div.actionsoverlay
+            {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                background-color: var(--actindo-secondary-dark);
+                opacity: 0.7;
+                z-index: 101;
+            }
+            div.actionsoverlay.invisible
+            {
+                display:none;
+            }
+
+        </style>
+        <div id="multiActionsOverlay" class="actionsoverlay invisible">
+        </div>
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
             <div hidden$="[[!selectedItems.length]]">[[selectedItems.length]] gewählt</div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
@@ -556,6 +644,19 @@
             </template>
             <template is="dom-if" if="[[showCreateButton]]">
                 <paper-fab id="createButton" on-click="_onCreateClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
+            </template>
+            <template is="dom-if" if="[[showMultiActions]]">
+                <div id="multiActionsContainer">
+                    <div id="multiActionsRepeatContainer" class="invisible">
+                        <template is="dom-repeat" items="[[multiActions]]">
+                            <div class="actionContainer invisible">
+                                <div>[[item.label]]</div>
+                                <paper-fab icon="[[item.icon]]"></paper-fab>
+                            </div>
+                        </template>
+                    </div>
+                    <paper-fab id="multiActionsButton" on-click="_onMultiActionsClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
+                </div>
             </template>
         </div>
 
@@ -894,6 +995,21 @@
                     showCreateButton: {
                         type: Boolean,
                         value: false
+                    },
+
+                    showMultiActions: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    _multiActionsActive: {
+                        type: Boolean,
+                        value: false,
+                        observer:"_multiActionsActiveChanged"
+                    },
+
+                    multiActions: {
+                        type: Array,
                     },
 
                     disableCreateButton: {
@@ -1393,21 +1509,35 @@
                 this.scrollingItem = 'body';
             }
 
+            _getMultiActionsIcon(_multiActionsActive)
+            {
+                return _multiActionsActive ? "close" : "add";
+            }
+
             /**
              * @private
              */
             _positionCreateButton() {
-                if (!this.showCreateButton) return;
+                let id = null;
+                if( this.showCreateButton )
+                {
+                    id = 'createButton';
+                }
+                if( this.showMultiActions )
+                {
+                    id = 'multiActionContainer';
+                }
+                if (!id) return;
 
                 const dom = Polymer.dom(this.root);
                 const gridBody = dom.querySelector('#gridBody');
 
                 if (gridBody.scrollWidth > gridBody.clientWidth) {
-                    this.shadowRoot.querySelector('#createButton').style.bottom = '21px';
+                    this.shadowRoot.querySelector('#'+id).style.bottom = '21px';
                 }
 
                 if (gridBody.scrollHeight > gridBody.clientHeight) {
-                    this.shadowRoot.querySelector('#createButton').style.right = '21px';
+                    this.shadowRoot.querySelector('#'+id).style.right = '21px';
                 }
             }
 
@@ -2126,6 +2256,53 @@
              */
             _onCreateClick() {
                 this.dispatchEvent( new CustomEvent( "create-clicked" ) );
+            }
+
+            _onMultiActionsClick()
+            {
+                this._multiActionsActive = !this._multiActionsActive;
+                const fab = Polymer.dom(this.root).querySelector('#multiActionsButton');
+                if( this._multiActionsActive )
+                {
+                    fab.classList.add("active");
+                }
+                else
+                {
+                    fab.classList.remove("active");
+                }
+            }
+
+            _multiActionsActiveChanged( newValue, oldValue )
+            {
+                const elements = Polymer.dom( this.root ).querySelectorAll( "div.actionContainer" );
+                const overlay = Polymer.dom( this.root ).querySelector('#multiActionsOverlay');
+                const container = Polymer.dom( this.root ).querySelector('#multiActionsRepeatContainer');
+                const offset = 100;
+                if( newValue )
+                {
+                    overlay.classList.remove( "invisible" );
+                    container.classList.remove( "invisible" );
+                    for(let i=0;i<elements.length;i++)
+                    {
+                        window.setTimeout( () => { elements[i].classList.remove( "invisible" ) }, (elements.length-i)*offset );
+                    }
+                }
+                else
+                {
+                    for(let i=0;i<elements.length;i++)
+                    {
+                        window.setTimeout( () => {
+                            elements[i].classList.add( "invisible" );
+                            if( i === elements.length-1 )
+                            {
+                                window.setTimeout( () => {
+                                    overlay.classList.add("invisible");
+                                    container.classList.add( "invisible" );
+                                    }, offset );
+                            }
+                        }, i*offset );
+                    }
+                }
             }
 
             /**
