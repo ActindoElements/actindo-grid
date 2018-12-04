@@ -66,6 +66,13 @@
                     --inactive-background-color:
                     --inactive-color: asdasd;
                 }
+                --background-color: white;
+                --hover-color: var(--actindo-primary-light);
+                --selected-color: var(--actindo-primary);
+                background-color: var(--background-color);
+                --border-color: var(--actindo-secondary-30);
+                --menu-background-color: var(--actindo-light-grey-70);
+
             }
             :host[hidden] {
                 display: none;
@@ -76,6 +83,16 @@
                 @apply(--settings-style);
             }
 
+
+            :host([embedded])
+            {
+                --background-color: var(--actindo-light-grey-30);
+                --hover-color: var(--actindo-light-grey-70);
+                --selected-color: var(--actindo-light-grey-50);
+                --border-color: var(--actindo-secondary-30);
+                border-radius: 5px;
+                border: 1px solid var(--border-color);
+            }
 
             ::-webkit-scrollbar {
                 width: 10px;
@@ -154,13 +171,13 @@
                 }
 
                 th, td {
-                    border: solid var(--divider-color);
-                    border-width: 1px 0;
+                    border: solid var(--border-color);
+                    border-width: 1px 0 0 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
                 }
-                    tr:last-of-type td,
+                    /*tr:last-of-type td,*/
                     tbody tr:first-of-type td {
                         border: 0;
                     }
@@ -295,7 +312,7 @@
             #gridBody {
                 overflow: auto;
                 position: relative;
-                background-color: var(--primary-background-color);
+                background-color: var(--background-color);
                 display: flex;
                 flex-grow: 1;
                 flex-direction: column;
@@ -337,7 +354,7 @@
 
             #paging {
                 align-items: center;
-                border-top: 1px solid var(--divider-color);
+                border-top: 1px solid var(--border-color);
                 display: flex;
                 justify-content: flex-end;
                 max-height: 4.15em;
@@ -428,7 +445,7 @@
             #gridHeader {
                 overflow-x: scroll;
                 position: relative;
-                border-bottom: 1px solid var(--divider-color);
+                border-bottom: 1px solid var(--border-color);
                 max-height: 4.7em;
                 min-height: 4.7em;
                 z-index: 9;
@@ -442,7 +459,14 @@
             }
             #rowsPerPage > span {
                 margin-right: 10px;
+
             }
+
+            actindo-grid-filter-columns, actindo-grid-filter
+            {
+                background-color: var(--menu-background-color);
+            }
+
         </style>
 
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
