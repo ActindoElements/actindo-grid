@@ -647,11 +647,13 @@
             </template>
             <template is="dom-if" if="[[showMultiActions]]">
                 <div id="multiActionsContainer">
-                    <div id="multiActionsRepeatContainer" class="invisible">
+                    <div id="multiActionsRepeatContainer" class="invisible"> <!-- we need it for display: none otherwise opacity effect does not work -->
                         <template is="dom-repeat" items="[[multiActions]]">
                             <div class="actionContainer invisible">
-                                <div>[[item.label]]</div>
-                                <paper-fab icon="[[item.icon]]"></paper-fab>
+                                <template is="dom-if" if="[[item.label]]">
+                                    <div>[[item.label]]</div>
+                                </template>
+                                <paper-fab icon="[[item.icon]]" on-click="_onMultiActionClick"></paper-fab>
                             </div>
                         </template>
                     </div>
@@ -999,7 +1001,7 @@
 
                     showMultiActions: {
                         type: Boolean,
-                        value: false
+                        computed: "_showMultiActions(multiActions.length)"
                     },
 
                     _multiActionsActive: {
@@ -1008,6 +1010,9 @@
                         observer:"_multiActionsActiveChanged"
                     },
 
+                    /**
+                     * array of multi actions in list; example of a single action {icon: "add", label: "create", "event": "create"}
+                     */
                     multiActions: {
                         type: Array,
                     },
@@ -1509,9 +1514,13 @@
                 this.scrollingItem = 'body';
             }
 
-            _getMultiActionsIcon(_multiActionsActive)
+
+            /**
+             * @private
+             */
+            _showMultiActions(multiActionsLength)
             {
-                return _multiActionsActive ? "close" : "add";
+                return multiActionsLength > 0;
             }
 
             /**
@@ -2258,9 +2267,25 @@
                 this.dispatchEvent( new CustomEvent( "create-clicked" ) );
             }
 
+            /**
+             * Callback of click event of an action button
+             * @param {Event} e
+             * @private
+             */
+            _onMultiActionClick(e)
+            {
+                this.dispatchEvent( new CustomEvent( e.model.get('item.event') ) );
+                this._onMultiActionsClick(); //trigger closing
+            }
+
+            /**
+             * Callback of click event of + button of multi actions
+             * @private
+             */
             _onMultiActionsClick()
             {
                 this._multiActionsActive = !this._multiActionsActive;
+                //trigger the fab rotation
                 const fab = Polymer.dom(this.root).querySelector('#multiActionsButton');
                 if( this._multiActionsActive )
                 {
@@ -2272,7 +2297,12 @@
                 }
             }
 
-            _multiActionsActiveChanged( newValue, oldValue )
+            /**
+             * Observer of _multiActionsActive property; handles animation timings
+             * @param {Boolean} newValue
+             * @private
+             */
+            _multiActionsActiveChanged( newValue )
             {
                 const elements = Polymer.dom( this.root ).querySelectorAll( "div.actionContainer" );
                 const overlay = Polymer.dom( this.root ).querySelector('#multiActionsOverlay');
