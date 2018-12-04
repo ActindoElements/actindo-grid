@@ -1,0 +1,43 @@
+<link rel="import" href="../actindo-toggle-button/actindo-toggle-button.html">
+<dom-module id="actindo-grid-filter-boolean">
+    <template>
+        <style>
+
+        </style>
+        <paper-toggle-button checked="{{checked}}"></paper-toggle-button>
+    </template>
+    <script>
+        class ActindoGridFilterBoolean extends Polymer.Element
+        {
+            static get is()
+            {
+                return "actindo-grid-filter-boolean";
+            }
+            static get properties()
+            {
+                return {
+                    checked: {
+                        type: Boolean,
+                        value: false
+                    },
+                    value: {
+                        type: Number,
+                        notify: true,
+                        computed: "_getValue(checked)"
+                    }
+                };
+            }
+
+            _getValue(checked)
+            {
+                return checked ? 1 : 0;
+            }
+
+            getDisplayValue(value)
+            {
+                return value ? "true" : "false";
+            }
+        }
+        customElements.define( ActindoGridFilterBoolean.is, ActindoGridFilterBoolean )
+    </script>
+</dom-module>
