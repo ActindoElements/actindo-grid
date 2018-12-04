@@ -6,6 +6,11 @@
                 key: 'equal',
                 value: '='
             },
+            equal_boolean:{
+                name:'equal',
+                value: '=',
+                key: 'equal_boolean'
+            },
             between: {
                 name: 'between',
                 key: 'between',
@@ -72,6 +77,9 @@
                 operators.like,
                 operators.equal,
                 operators.in
+            ],
+            Boolean: [
+                operators.equal_boolean
             ],
             Number: numberOperators,
             Date: relationalOperators,
