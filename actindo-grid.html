@@ -12,6 +12,8 @@
 <link rel="import" href="actindo-grid-filter-in-input.html">
 <link rel="import" href="actindo-grid-filter-item.html">
 <link rel="import" href="actindo-grid-filter-tag.html">
+<link rel="import" href="actindo-grid-filter-equal-date.html">
+<link rel="import" href="actindo-grid-filter-between-date.html">
 <link rel="import" href="actindo-grid-error.html">
 <link rel="import" href="actindo-grid-filter-configurator.html">
 <link rel="import" href="actindo-grid-filter-form.html">
@@ -1408,7 +1410,14 @@
                         switch(operator.key)
                         {
                             case betweenKey:
-                                element = document.createElement('actindo-grid-filter-between-input');
+                                if (properties.inputType === 'Date')
+                                {
+                                    element = document.createElement('actindo-grid-filter-between-date');
+                                }
+                                else
+                                {
+                                    element = document.createElement('actindo-grid-filter-between-input');
+                                }
                                 break;
                             case inKey:
                                 element = document.createElement('actindo-grid-filter-in-input');
@@ -1417,11 +1426,18 @@
                                 element = document.createElement('actindo-grid-filter-in-option-input');
                                 break;
                             case equalBooleanKey:
-                                element = document.createElement( 'actindo-grid-filter-boolean' );
+                                element = document.createElement('actindo-grid-filter-boolean');
                                 element.style = "position:relative; top: -10px";
                                 break;
                             default:
-                                element = document.createElement('paper-input');
+                                if (properties.inputType === 'Date')
+                                {
+                                    element = document.createElement('actindo-grid-filter-equal-date');
+                                }
+                                else
+                                {
+                                    element = document.createElement('paper-input');
+                                }
                                 break;
                         }
                         if( !element.label )

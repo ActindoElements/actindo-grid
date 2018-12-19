@@ -1,0 +1,38 @@
+<link rel="import" href="../../bower_components/actindo-date-picker/actindo-date-picker.html">
+
+<dom-module id="actindo-grid-filter-equal-date">
+    <template>
+        <style>
+            .container
+            {
+                display: flex;
+            }
+        </style>
+        <div class="container">
+            <actindo-date-picker
+                label="Select date"
+                value="{{value}}"
+            ></actindo-date-picker>
+        </div>
+    </template>
+
+    <script>
+        class ActindoGridFilterEqualDate extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-equal-date'; }
+
+            static get properties() {
+                return {
+                    value: {
+                        type: String,
+                        notify: true
+                    }
+                }
+            }
+            getDisplayValue(value)
+            {
+                 return `${value}`;
+            }
+        }
+        customElements.define(ActindoGridFilterEqualDate.is, ActindoGridFilterEqualDate);
+    </script>
+</dom-module>

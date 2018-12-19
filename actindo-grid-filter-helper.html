@@ -82,7 +82,10 @@
                 operators.equal_boolean
             ],
             Number: numberOperators,
-            Date: relationalOperators,
+            Date: [
+                operators.equal,
+                operators.between
+            ],
             default: [
                 operators.matches
             ],
