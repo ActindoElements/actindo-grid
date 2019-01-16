@@ -1,0 +1,51 @@
+<link rel="import" href="../actindo-date-picker/actindo-date-picker.html">
+
+<dom-module id="actindo-grid-filter-between-date">
+    <template>
+        <style>
+            .container
+            {
+                display: flex;
+            }
+            actindo-date-picker:first-child
+            {
+                margin-right: 10px;
+            }
+        </style>
+        <div class="container">
+            <actindo-date-picker
+                label="From"
+                value="{{value.from}}"
+            ></actindo-date-picker>
+            <actindo-date-picker
+                label="To"
+                value="{{value.to}}"
+            ></actindo-date-picker>
+        </div>
+    </template>
+
+    <script>
+        class ActindoGridFilterBetweenDate extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-between-date'; }
+
+            static get properties() {
+                return {
+                    value: {
+                        type: Object,
+                        notify: true,
+                        value: function() {
+                            return {};
+                        }
+                    }
+                }
+            }
+            getDisplayValue(value)
+            {
+                 return `${value.from} and ${value.to}`;
+            }
+        }
+
+
+        customElements.define(ActindoGridFilterBetweenDate.is, ActindoGridFilterBetweenDate);
+    </script>
+</dom-module>

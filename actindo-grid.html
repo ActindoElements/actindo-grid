@@ -12,9 +12,12 @@
 <link rel="import" href="actindo-grid-filter-in-input.html">
 <link rel="import" href="actindo-grid-filter-item.html">
 <link rel="import" href="actindo-grid-filter-tag.html">
+<link rel="import" href="actindo-grid-filter-equal-date.html">
+<link rel="import" href="actindo-grid-filter-between-date.html">
 <link rel="import" href="actindo-grid-error.html">
 <link rel="import" href="actindo-grid-filter-configurator.html">
 <link rel="import" href="actindo-grid-filter-form.html">
+<link rel="import" href="actindo-grid-filter-boolean.html">
 <link rel="import" href="actindo-grid-filter-columns.html">
 
 <!--
@@ -1435,11 +1438,19 @@
                         const betweenKey = ActindoGridFilterHelper.operators.between.key;
                         const inKey = ActindoGridFilterHelper.operators.in.key;
                         const equalInOptionKey = ActindoGridFilterHelper.operators.equal_in_option.key;
+                        const equalBooleanKey = ActindoGridFilterHelper.operators.equal_boolean.key;
 
                         switch(operator.key)
                         {
                             case betweenKey:
-                                element = document.createElement('actindo-grid-filter-between-input');
+                                if (properties.inputType === 'Date')
+                                {
+                                    element = document.createElement('actindo-grid-filter-between-date');
+                                }
+                                else
+                                {
+                                    element = document.createElement('actindo-grid-filter-between-input');
+                                }
                                 break;
                             case inKey:
                                 element = document.createElement('actindo-grid-filter-in-input');
@@ -1447,11 +1458,25 @@
                             case equalInOptionKey:
                                 element = document.createElement('actindo-grid-filter-in-option-input');
                                 break;
+                            case equalBooleanKey:
+                                element = document.createElement('actindo-grid-filter-boolean');
+                                element.style = "position:relative; top: -10px";
+                                break;
                             default:
-                                element = document.createElement('paper-input');
+                                if (properties.inputType === 'Date')
+                                {
+                                    element = document.createElement('actindo-grid-filter-equal-date');
+                                }
+                                else
+                                {
+                                    element = document.createElement('paper-input');
+                                }
                                 break;
                         }
-                        element.label = 'Value';
+                        if( !element.label )
+                        {
+                            element.label = 'Value';
+                        }
                         Object.assign(element, properties);
                         return element;
                     }
@@ -2153,7 +2178,7 @@
                     return;
                 }
                 let me = this;
-                let request = remoteParams;
+                let request = JSON.parse( JSON.stringify( remoteParams ) );
                 this._error = false;
                 if( !this.pagingDisabled )
                 {
@@ -2176,6 +2201,11 @@
                             request[remoteParamFilter].push(item)
                         }
                     });
+                }
+
+                if( remoteParams[remoteParamFilter] !== undefined && Array.isArray( remoteParams[remoteParamFilter] ) ) //Take into account any filters that are hardcoded
+                {
+                    request[remoteParamFilter] = request[remoteParamFilter].concat( remoteParams[remoteParamFilter] );
                 }
 
                 request[this.remoteParamSerializeOptionals] = serializeOptionals;
