@@ -1,6 +1,7 @@
 <dom-module id="actindo-grid-filter-item">
     <template>
-        <style>
+        <style include="actindo-level-style">
+
             .container
             {
                 position: relative;
@@ -28,12 +29,12 @@
             {
                 --filter-tag-container: {
                     background-color: var(--actindo-primary);
+                    color: var(--actindo-white);
                 };
                 --filter-tag-remove-icon: {
                     padding: 5px;
                 };
                 --filter-tag-content: {
-                    color: var(--actindo-light-grey-light);
                 };
             }
             .btn-edit
@@ -51,6 +52,7 @@
         <div class="container">
             
             <actindo-grid-filter-tag
+                    style-level="[[styleLevel]]"
                 active="{{active}}"
                 no-check-box="[[_tagNoCheckBox]]"
                 on-remove="_remove"
@@ -82,6 +84,10 @@
 
             static get properties() {
                 return {
+                    styleLevel: {
+                        type: Number,
+                        reflectToAttribute: true
+                    },
                     /**
                      * contains all the columns has filterable property equal to true
                      */

@@ -1,13 +1,19 @@
 <dom-module id="actindo-grid-filter-columns">
     <template>
-        <style>
+        <style include="actindo-level-style">
+
+            :host
+            {
+                background-color: var(--selected-background-color) !important;
+                color: var(--selected-text-color) !important;
+            }
+
             .container
             {
                 display: flex;
                 transition: all 500ms linear;
-                /*background-color: var(--primary-background-color);*/
-                border-top: 1px solid var(--light-theme-divider-color);
-                border-bottom: 1px solid var(--light-theme-divider-color);
+                border-top: 1px solid var(--actindo-border-light);
+                border-bottom: 1px solid var(--actindo-border-light);
                 padding: 20px 30px;
                 flex-direction: column;
             }
@@ -33,8 +39,8 @@
             }
             .actions paper-button
             {
-                background-color: var(--actindo-primary);
-                color: var(--actindo-light-grey-light);
+                background-color: var(--actindo-green);
+                color: var(--actindo-white);
                 padding: 0px 25px;
                 height: 35px;
                 margin-bottom: 7px;
@@ -47,8 +53,6 @@
             actindo-grid-filter-tag
             {
                 --filter-tag-container: {
-                    background-color: var(--actindo-light-grey-light);
-                    color: var(--actindo-secondary);
                     cursor: move;
                 };
                 --filter-tag-remove-icon: {
@@ -122,6 +126,10 @@
                     columns: {
                         type: Array,
                         notify: true
+                    },
+                    styleLevel: {
+                        type: Number,
+                        reflectToAttribute: true
                     },
                     /**
                      * Internal property, contains all the columns

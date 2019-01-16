@@ -35,33 +35,35 @@
 -->
 <dom-module id="actindo-grid">
     <template>
-        <style>
+        <style include="actindo-level-style">
             :host {
                 display: flex;
                 flex-direction: column;
                 height: 100%;
                 overflow: hidden;
                 width: 100%;
-                --background-color: white;
-                --hover-color: var(--actindo-primary-light);
-                --selected-color: var(--actindo-primary);
-                background-color: var(--background-color);
-                --border-color: var(--actindo-secondary-30);
-                --menu-background-color: var(--actindo-light-grey-70);
+                @apply(--style-level-0);
 
+            }
+            :host([style-level="0"])
+            {
+                --action-header-background-color: var(--actindo-green);
+                --actindo-header-text-color: var(--actindo-white);
+            }
+            :host([style-level="1"])
+            {
+                --action-header-background-color: var(--actindo-grey);
+                --actindo-header-text-color: var(--actindo-white);
             }
             :host[hidden] {
                 display: none;
             }
 
+
             :host([embedded])
             {
-                --background-color: var(--actindo-light-grey-30);
-                --hover-color: var(--actindo-light-grey-70);
-                --selected-color: var(--actindo-light-grey-50);
-                --border-color: var(--actindo-secondary-30);
                 border-radius: 5px;
-                border: 1px solid var(--border-color);
+                border: 1px solid var(--actindo-border-light);
             }
 
             ::-webkit-scrollbar {
@@ -141,7 +143,7 @@
                 }
 
                 th, td {
-                    border: solid var(--border-color);
+                    border: solid var(--actindo-border-light);
                     border-width: 1px 0 0 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
@@ -162,7 +164,6 @@
                     transition: opacity 150ms;
                 }
                 tr td.checkbox paper-checkbox {
-                    background-color: rgba(0, 0, 0, 0);
                     border-radius: 0;
                     height: 18px;
                     position: relative;
@@ -171,10 +172,12 @@
                     width: 18px;
                 }
                 tr[selected] {
-                    background-color: var(--selected-color);
+                    background-color: var(--selected-background-color);
+                    color: var(--selected-text-color);
                 }
                 #gridBody tr:hover {
-                    background-color: var(--hover-color);
+                    background-color: var(--hover-background-color);
+                    color: var(--hover-text-color);
                 }
                 tr[disabled],
                 tr[locked] td {
@@ -192,14 +195,14 @@
                     opacity: 1;
                 }
                 tr[finished] td.checkbox paper-checkbox {
-                    background-color: var(--selected-color);
+                    background-color: var(--selected-background-color);
+                    color: var(--selected-text-color);
                     border-radius: 50%;
                     text-indent: -5em;
                 }
 
             div.th {
                 box-sizing: border-box;
-                color: #000;
                 line-height: 60px;
                 position: relative;
             }
@@ -231,7 +234,6 @@
                 left: 6px;
             }
                 #toggleAll:after {
-                    background: #000;
                     content: "";
                     display: block;
                     font-weight: bold;
@@ -270,7 +272,7 @@
                 left:0;
                 right: 0;
                 bottom: 0;
-                background-color: white;
+                background-color: var(--background-color);
                 opacity: 0.72;
                 display: flex;
                 align-items: center;
@@ -281,7 +283,6 @@
             #gridBody {
                 overflow: auto;
                 position: relative;
-                background-color: var(--background-color);
                 display: flex;
                 flex-grow: 1;
                 flex-direction: column;
@@ -303,8 +304,8 @@
             }
             #toolbar.actions-true {
                 /*background-position: 50% 50%;*/
-                background: var(--actindo-primary);
-                color: #fff;
+                background: var(--action-header-background-color);
+                color: var(--actindo-header-text-color);
             }
 
             .sizer {
@@ -323,7 +324,7 @@
 
             #paging {
                 align-items: center;
-                border-top: 1px solid var(--border-color);
+                border-top: 1px solid var(--actindo-border-light);
                 display: flex;
                 justify-content: flex-end;
                 max-height: 4.15em;
@@ -347,7 +348,7 @@
 
             paper-spinner-lite
             {
-                --paper-spinner-color: var(--actindo-primary);
+                --paper-spinner-color: var(--actindo-green);
                 width: 50px;
                 height: 50px;
             }
@@ -393,10 +394,13 @@
             }
 
             paper-fab {
-                background-color: var(--actindo-primary);
+                background-color: var(--actindo-green);
                 color: white;
                 width: 60px;
                 height: 60px;
+                --paper-fab-iron-icon: {
+                    transition:transform 250ms;
+                }
             }
 
             #gridContainer {
@@ -404,14 +408,81 @@
                 position: relative;
                 display: flex;
                 flex-direction: column;
-                z-index: 1;
                 flex-grow: 1;
             }
-            #createButton {
+            #createButton, #multiActionsContainer {
                 position: absolute;
                 bottom: 16px;
                 right: 16px;
             }
+
+            #multiActionsContainer
+            {
+                display: flex;
+                z-index: 102;
+                flex-direction: column;
+                align-items: flex-end;
+                justify-content: flex-end;
+            }
+
+            #multiActionsContainer .actionContainer
+            {
+                display: flex;
+                margin-bottom: 16px;
+                align-items: center;
+                transition: opacity 200ms linear;
+                opacity: 1
+            }
+
+            #multiActionsContainer .actionContainer.invisible
+            {
+                opacity: 0;
+            }
+
+            #multiActionsContainer > div.invisible
+            {
+                display: none;
+            }
+
+            #multiActionsRepeatContainer
+            {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: flex-end;
+            }
+
+            #multiActionsRepeatContainer paper-fab
+            {
+                width: 48px;
+                height: 48px;
+                margin-right: 6px;
+            }
+
+            paper-fab.active
+            {
+                --paper-fab-iron-icon: {
+                    transform:rotate(45deg) scale(1.2);
+                    transition:transform 250ms;
+                }
+            }
+
+            #multiActionsContainer .actionContainer paper-fab
+            {
+                color: var(--actindo-secondary);
+                background-color: var(--actindo-light-grey-dark);
+                margin-left: 16px;
+            }
+
+            #multiActionsContainer .actionContainer > div
+            {
+                color: var(--actindo-secondary);
+                background-color: var(--actindo-light-grey-dark);
+                padding: 5px;
+                border-radius: 3px;
+                @apply(--paper-material-elevation-2);
+            }
+
             #gridHeader {
                 overflow-x: scroll;
                 position: relative;
@@ -432,15 +503,28 @@
 
             }
 
-            actindo-grid-filter-columns, actindo-grid-filter
+
+            div.actionsoverlay
             {
-                background-color: var(--menu-background-color);
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                background-color: var(--actindo-secondary-dark);
+                opacity: 0.7;
+                z-index: 101;
+            }
+            div.actionsoverlay.invisible
+            {
+                display:none;
             }
 
         </style>
-
+        <div id="multiActionsOverlay" class="actionsoverlay invisible">
+        </div>
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
-            <div hidden$="[[!selectedItems.length]]">[[selectedItems.length]] gewählt</div>
+            <div hidden$="[[!selectedItems.length]]">[[header]] ([[selectedItems.length]] gewählt)</div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
                 <template is="dom-if" if="[[title]]">
                     <div class="header-title">[[title]]</div>
@@ -498,6 +582,7 @@
 
         <template is="dom-if" if="[[_showFilterArea]]">
             <actindo-grid-filter
+                    style-level="[[styleLevel]]"
                 filter-list="{{filterList}}"
                 filter-columns="{{_filterColumns}}"
                 on-inactive-filter-changed="_inactiveFilterChanged"
@@ -506,7 +591,7 @@
         </template>
 
         <template is="dom-if" if="[[_showColumnsArea]]">
-            <actindo-grid-filter-columns columns="{{_columns}}">
+            <actindo-grid-filter-columns style-level="[[styleLevel]]" columns="{{_columns}}">
             </actindo-grid-filter-columns>
         </template>
 
@@ -581,6 +666,21 @@
             <template is="dom-if" if="[[showCreateButton]]">
                 <paper-fab id="createButton" on-click="_onCreateClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
             </template>
+            <template is="dom-if" if="[[showMultiActions]]">
+                <div id="multiActionsContainer">
+                    <div id="multiActionsRepeatContainer" class="invisible"> <!-- we need it for display: none otherwise opacity effect does not work -->
+                        <template is="dom-repeat" items="[[multiActions]]">
+                            <div class="actionContainer invisible">
+                                <template is="dom-if" if="[[item.label]]">
+                                    <div>[[item.label]]</div>
+                                </template>
+                                <paper-fab icon="[[item.icon]]" on-click="_onMultiActionClick"></paper-fab>
+                            </div>
+                        </template>
+                    </div>
+                    <paper-fab id="multiActionsButton" on-click="_onMultiActionsClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
+                </div>
+            </template>
         </div>
 
         <template is="dom-if" if="[[!pagingDisabled]]">
@@ -613,6 +713,13 @@
 
             static get properties() {
                 return {
+
+                    styleLevel: {
+                        type: Number,
+                        value: 0,
+                        reflectToAttribute: true
+                    },
+
                     /**
                      * contains the columns and their configuration.
                      * * label: the name of this column, used in the header
@@ -920,6 +1027,24 @@
                         value: false
                     },
 
+                    showMultiActions: {
+                        type: Boolean,
+                        computed: "_showMultiActions(multiActions.length)"
+                    },
+
+                    _multiActionsActive: {
+                        type: Boolean,
+                        value: false,
+                        observer:"_multiActionsActiveChanged"
+                    },
+
+                    /**
+                     * array of multi actions in list; example of a single action {icon: "add", label: "create", "event": "create"}
+                     */
+                    multiActions: {
+                        type: Array,
+                    },
+
                     disableCreateButton: {
                         type: Boolean,
                         value: false
@@ -1090,6 +1215,11 @@
                         value: true
                     }
                 }
+            }
+
+            _getStyleLevelUp(styleLevel)
+            {
+                return Number(styleLevel)+1;
             }
 
             /*
@@ -1417,21 +1547,39 @@
                 this.scrollingItem = 'body';
             }
 
+
+            /**
+             * @private
+             */
+            _showMultiActions(multiActionsLength)
+            {
+                return multiActionsLength > 0;
+            }
+
             /**
              * @private
              */
             _positionCreateButton() {
-                if (!this.showCreateButton) return;
+                let id = null;
+                if( this.showCreateButton )
+                {
+                    id = 'createButton';
+                }
+                if( this.showMultiActions )
+                {
+                    id = 'multiActionContainer';
+                }
+                if (!id) return;
 
                 const dom = Polymer.dom(this.root);
                 const gridBody = dom.querySelector('#gridBody');
 
                 if (gridBody.scrollWidth > gridBody.clientWidth) {
-                    this.shadowRoot.querySelector('#createButton').style.bottom = '21px';
+                    this.shadowRoot.querySelector('#'+id).style.bottom = '21px';
                 }
 
                 if (gridBody.scrollHeight > gridBody.clientHeight) {
-                    this.shadowRoot.querySelector('#createButton').style.right = '21px';
+                    this.shadowRoot.querySelector('#'+id).style.right = '21px';
                 }
             }
 
@@ -2150,6 +2298,74 @@
              */
             _onCreateClick() {
                 this.dispatchEvent( new CustomEvent( "create-clicked" ) );
+            }
+
+            /**
+             * Callback of click event of an action button
+             * @param {Event} e
+             * @private
+             */
+            _onMultiActionClick(e)
+            {
+                this.dispatchEvent( new CustomEvent( e.model.get('item.event') ) );
+                this._onMultiActionsClick(); //trigger closing
+            }
+
+            /**
+             * Callback of click event of + button of multi actions
+             * @private
+             */
+            _onMultiActionsClick()
+            {
+                this._multiActionsActive = !this._multiActionsActive;
+                //trigger the fab rotation
+                const fab = Polymer.dom(this.root).querySelector('#multiActionsButton');
+                if( this._multiActionsActive )
+                {
+                    fab.classList.add("active");
+                }
+                else
+                {
+                    fab.classList.remove("active");
+                }
+            }
+
+            /**
+             * Observer of _multiActionsActive property; handles animation timings
+             * @param {Boolean} newValue
+             * @private
+             */
+            _multiActionsActiveChanged( newValue )
+            {
+                const elements = Polymer.dom( this.root ).querySelectorAll( "div.actionContainer" );
+                const overlay = Polymer.dom( this.root ).querySelector('#multiActionsOverlay');
+                const container = Polymer.dom( this.root ).querySelector('#multiActionsRepeatContainer');
+                const offset = 100;
+                if( newValue )
+                {
+                    overlay.classList.remove( "invisible" );
+                    container.classList.remove( "invisible" );
+                    for(let i=0;i<elements.length;i++)
+                    {
+                        window.setTimeout( () => { elements[i].classList.remove( "invisible" ) }, (elements.length-i)*offset );
+                    }
+                }
+                else
+                {
+                    for(let i=0;i<elements.length;i++)
+                    {
+                        window.setTimeout( () => {
+                            elements[i].classList.add( "invisible" );
+                            if( i === elements.length-1 )
+                            {
+                                window.setTimeout( () => {
+                                    overlay.classList.add("invisible");
+                                    container.classList.add( "invisible" );
+                                    }, offset );
+                            }
+                        }, i*offset );
+                    }
+                }
             }
 
             /**
