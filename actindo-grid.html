@@ -142,7 +142,7 @@
                 }
                 tr td.checkbox iron-icon {
                     left: 1em;
-                    opacity: 0;
+                    display: none;
                     position: absolute;
                     top: 0.7em;
                     transition: opacity 150ms;
@@ -175,7 +175,7 @@
                     transform: scale(0.5, 0.5);
                 }
                 tr[locked] td.checkbox iron-icon {
-                    opacity: 1;
+                    display: block;
                 }
                 tr[finished] td.checkbox paper-checkbox {
                     background-color: var(--actindo-primary);
@@ -611,7 +611,8 @@
                 <table id="table" class$="disable-tap-row-select-[[disableTapRowToSelect]]">
                     <tbody>
                     <template is="dom-repeat" items="[[items]]" as="row">
-                        <tr on-tap="_onRowTap"
+                        <tr on-click="_onRowTap"
+                            on-dblclick="_onRowTap"
                             disabled$="[[_propertyEvaluatesTrue(disabledField, row.*)]]"
                             selected$="[[_isItemSelected(row, selectedItems.*)]]"
                             finished$="[[_propertyEvaluatesTrue(finishedField, row.*)]]"
@@ -1188,6 +1189,15 @@
                      _isFirstTimeRenderLayout: {
                         type: Boolean,
                         value: true
+                    },
+                     /**
+                      * how rows can be click.
+                      * "double" will fire click event when user double click on row, a single click still allows to select a row
+                      * "single" will fire click event when user click on row, to select a row should select on checkbox
+                      * Any other value will disable row-click-actions
+                      */
+                    rowClickMode: {
+                        type: String
                     }
                 }
             }
@@ -1385,7 +1395,7 @@
             /**
              * returns the default configuration for a column
              *
-             * @returns {{}}
+             * @returns {}
              */
             static get columnDefaults() {
                 return {
@@ -1854,6 +1864,11 @@
                 this.firstPage();
             }
 
+            _isCheckBox(e)
+            {
+                return e.target.tagName === 'PAPER-CHECKBOX' || e.target.className === "checkbox";
+            }
+
             /**
              * called when a row in the table is tapped. If row tapping should select the row and a selection mode
              * is active, the tapped row is selected
@@ -1861,12 +1876,22 @@
              */
             _onRowTap(e) {
                 e.stopPropagation();
-                if(!this.selectionMode || (e.target.tagName !== 'PAPER-CHECKBOX' && this.disableTapRowToSelect))
+                let index = e.model.index;
+                let row = this.items[index];
+                if (this.rowClickMode === 'single' && !this._isCheckBox(e))
+                {
+                    this.dispatchEvent( new CustomEvent( "row-click", {detail: row } ) );
+                    return;
+                }
+                if (this.rowClickMode === 'double' && e.type === 'dblclick')
+                {
+                    this.dispatchEvent( new CustomEvent( "row-click", {detail: row } ) );
+                    return;
+                }
+                if(!this.selectionMode || (!this._isCheckBox(e) && this.disableTapRowToSelect))
                 {
                     return;
                 }
-                let index = e.model.index;
-                let row = this.items[index];
 
                 if(this._propertyEvaluatesTrue(this.disabledField, this.items[index])) {
                     // field is disabled, no interaction possible
