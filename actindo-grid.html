@@ -2362,7 +2362,13 @@
              */
             _onMultiActionClick(e)
             {
-                this.dispatchEvent( new CustomEvent( e.model.get('item.event') ) );
+                this.dispatchEvent(new CustomEvent(e.model.get('item.event'), {
+                    detail: {
+                        event: e,
+                        model: e.model,
+                        item: e.model.item
+                    }
+                }));
                 this._onMultiActionsClick(); //trigger closing
             }
 
