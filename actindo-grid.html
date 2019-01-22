@@ -38,16 +38,35 @@
 -->
 <dom-module id="actindo-grid">
     <template>
-        <style>
+        <style include="actindo-level-style">
             :host {
                 display: flex;
                 flex-direction: column;
                 height: 100%;
                 overflow: hidden;
                 width: 100%;
+                @apply(--style-level-0);
+
+            }
+            :host([style-level="0"])
+            {
+                --action-header-background-color: var(--actindo-green);
+                --actindo-header-text-color: var(--actindo-white);
+            }
+            :host([style-level="1"])
+            {
+                --action-header-background-color: var(--actindo-grey);
+                --actindo-header-text-color: var(--actindo-white);
             }
             :host[hidden] {
                 display: none;
+            }
+
+
+            :host([embedded])
+            {
+                border-radius: 5px;
+                border: 1px solid var(--actindo-border-light);
             }
 
             ::-webkit-scrollbar {
@@ -127,13 +146,13 @@
                 }
 
                 th, td {
-                    border: solid var(--actindo-border-dark);
-                    border-width: 1px 0;
+                    border: solid var(--actindo-border-light);
+                    border-width: 1px 0 0 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
                 }
-                    tr:last-of-type td,
+                    /*tr:last-of-type td,*/
                     tbody tr:first-of-type td {
                         border: 0;
                     }
@@ -148,7 +167,6 @@
                     transition: opacity 150ms;
                 }
                 tr td.checkbox paper-checkbox {
-                    background-color: rgba(0, 0, 0, 0);
                     border-radius: 0;
                     height: 18px;
                     position: relative;
@@ -157,10 +175,12 @@
                     width: 18px;
                 }
                 tr[selected] {
-                    background-color: var(--actindo-light-grey);
+                    background-color: var(--selected-background-color);
+                    color: var(--selected-text-color);
                 }
                 #gridBody tr:hover {
-                    background-color: var(--actindo-primary-light);
+                    background-color: var(--hover-background-color);
+                    color: var(--hover-text-color);
                 }
                 tr[disabled],
                 tr[locked] td {
@@ -178,14 +198,14 @@
                     display: block;
                 }
                 tr[finished] td.checkbox paper-checkbox {
-                    background-color: var(--actindo-primary);
+                    background-color: var(--selected-background-color);
+                    color: var(--selected-text-color);
                     border-radius: 50%;
                     text-indent: -5em;
                 }
 
             div.th {
                 box-sizing: border-box;
-                color: #000;
                 line-height: 60px;
                 position: relative;
             }
@@ -217,7 +237,6 @@
                 left: 6px;
             }
                 #toggleAll:after {
-                    background: #000;
                     content: "";
                     display: block;
                     font-weight: bold;
@@ -256,7 +275,7 @@
                 left:0;
                 right: 0;
                 bottom: 0;
-                background-color: white;
+                background-color: var(--background-color);
                 opacity: 0.72;
                 display: flex;
                 align-items: center;
@@ -267,7 +286,6 @@
             #gridBody {
                 overflow: auto;
                 position: relative;
-                background-color: #fff;
                 display: flex;
                 flex-grow: 1;
                 flex-direction: column;
@@ -289,8 +307,8 @@
             }
             #toolbar.actions-true {
                 /*background-position: 50% 50%;*/
-                background: var(--actindo-primary);
-                color: #fff;
+                background: var(--action-header-background-color);
+                color: var(--actindo-header-text-color);
             }
 
             .sizer {
@@ -309,7 +327,7 @@
 
             #paging {
                 align-items: center;
-                border-top: 1px solid var(--actindo-border-dark);
+                border-top: 1px solid var(--actindo-border-light);
                 display: flex;
                 justify-content: flex-end;
                 max-height: 4.15em;
@@ -333,7 +351,7 @@
 
             paper-spinner-lite
             {
-                --paper-spinner-color: var(--actindo-primary);
+                --paper-spinner-color: var(--actindo-green);
                 width: 50px;
                 height: 50px;
             }
@@ -379,7 +397,7 @@
             }
 
             paper-fab {
-                background-color: var(--actindo-primary);
+                background-color: var(--actindo-green);
                 color: white;
                 width: 60px;
                 height: 60px;
@@ -471,7 +489,7 @@
             #gridHeader {
                 overflow-x: scroll;
                 position: relative;
-                border-bottom: 1px solid var(--actindo-border-dark);
+                border-bottom: 1px solid var(--border-color);
                 max-height: 4.7em;
                 min-height: 4.7em;
                 z-index: 9;
@@ -485,7 +503,9 @@
             }
             #rowsPerPage > span {
                 margin-right: 10px;
+
             }
+
 
             div.actionsoverlay
             {
@@ -507,7 +527,7 @@
         <div id="multiActionsOverlay" class="actionsoverlay invisible">
         </div>
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
-            <div hidden$="[[!selectedItems.length]]">[[selectedItems.length]] gewählt</div>
+            <div hidden$="[[!selectedItems.length]]">[[header]] ([[selectedItems.length]] gewählt)</div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
                 <template is="dom-if" if="[[title]]">
                     <div class="header-title">[[title]]</div>
@@ -565,6 +585,7 @@
 
         <template is="dom-if" if="[[_showFilterArea]]">
             <actindo-grid-filter
+                    style-level="[[styleLevel]]"
                 filter-list="{{filterList}}"
                 filter-columns="{{_filterColumns}}"
                 on-inactive-filter-changed="_inactiveFilterChanged"
@@ -573,7 +594,7 @@
         </template>
 
         <template is="dom-if" if="[[_showColumnsArea]]">
-            <actindo-grid-filter-columns columns="{{_columns}}">
+            <actindo-grid-filter-columns style-level="[[styleLevel]]" columns="{{_columns}}">
             </actindo-grid-filter-columns>
         </template>
 
@@ -696,6 +717,13 @@
 
             static get properties() {
                 return {
+
+                    styleLevel: {
+                        type: Number,
+                        value: 0,
+                        reflectToAttribute: true
+                    },
+
                     /**
                      * contains the columns and their configuration.
                      * * label: the name of this column, used in the header
@@ -1200,6 +1228,11 @@
                         type: String
                     }
                 }
+            }
+
+            _getStyleLevelUp(styleLevel)
+            {
+                return Number(styleLevel)+1;
             }
 
             /*

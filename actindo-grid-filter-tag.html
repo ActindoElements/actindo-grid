@@ -1,6 +1,6 @@
 <dom-module id="actindo-grid-filter-tag">
     <template>
-        <style>
+        <style include="actindo-level-style">
             :host
             {
                 --paper-checkbox-unchecked-color: var(--actindo-light-grey-light);
@@ -16,9 +16,8 @@
                 margin: 8px 0;
                 overflow: visible;
                 border-radius: 16px;
-                background-color: rgba(255,255,255,0.4);
                 position: relative;
-                color: rgb(255,255,255);
+                background-color: var(--background-color);
                 box-sizing: border-box;
                 height: 32px;
                 display: flex;
@@ -33,7 +32,7 @@
             .container .icon
             {
                 border-radius: 100% 0 0 100%;
-                border-right: 2px solid var(--actindo-light-grey-light);
+                border-right: 2px solid var(--level-up_-_--background-color);
                 height: 100%;
                 display: flex;
                 align-items: center;
@@ -42,7 +41,7 @@
             {
                 font-size: var(--paper-font-body2_-_font-size);
                 font-weight: var(--paper-font-body2_-_font-weight);
-                margin-left: 10px
+                margin-left: 10px;
                 @apply(--filter-tag-content);
             }
 
@@ -54,7 +53,6 @@
             {
                 background-color: var(--actindo-secondary-light);
                 opacity: 0.72;
-                color: var(--actindo-light-grey-light);
             }
         
             .unactive .content
@@ -108,6 +106,11 @@
                      */
                     noCheckBox: {
                         type: Boolean
+                    },
+
+                    styleLevel: {
+                        type: Number,
+                        reflectToAttribute: true
                     },
 
                     /**

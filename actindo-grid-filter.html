@@ -1,15 +1,21 @@
 <dom-module id="actindo-grid-filter">
     <template>
-        <style>
-            
+        <style include="actindo-level-style">
+
+            :host
+            {
+                background-color: var(--selected-background-color) !important;
+                color: var(--selected-text-color) !important;
+            }
+
             .container
             {
                 display: flex;
                 transition: all 500ms linear;
                 flex-direction: column;
-                background-color: var(--primary-background-color);
-                border-top: 1px solid var(--light-theme-divider-color);
-                border-bottom: 1px solid var(--light-theme-divider-color);
+                /*background-color: var(--primary-background-color);*/
+                border-top: 1px solid var(--actindo-border-light);
+                border-bottom: 1px solid var(--actindo-border-light);
                 position: relative;
                 padding-top: 20px;
                 padding-left: 25px;
@@ -40,10 +46,7 @@
             {
                 position: relative;
                 --filter-tag-container: {
-                    color: rgba(255,255,255,0.8);
                     margin-right: 20px;
-                    background-color: transparent;
-                    border: 2px solid rgba(255,255,255,0.8);
                 };
                 --filter-tag-content: {
                     padding: var(--filter-tag-content_-_padding);
@@ -88,6 +91,10 @@
             static get properties() {
                 return {
 
+                    styleLevel:{
+                        type: Number,
+                        reflectToAttribute: true
+                    },
                     /**
                      * contain all available filter
                      */
