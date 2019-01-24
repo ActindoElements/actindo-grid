@@ -213,8 +213,11 @@
                     opacity: 1;
                 }
                     .frozenDisplay {
-                        background: var(--actindo-warning);
+                        background: var(--primary-text-color);
                         border-radius: 2em;
+                        color: var(--background-color);
+                        font-weight: 500;
+                        line-height: 28px;
                         overflow: hidden;
                         paddding: 0;
                         position: absolute;
@@ -224,12 +227,13 @@
                         width: 0;
                     }
                         .frozenDisplay iron-icon {
-                            bottom: 1px;
                             color: var(--background-color);
+                            left: 3px;
+                            margin-right: 5px;
                             position: relative;
                         }
                     tr[frozen] .frozenDisplay {
-                        padding: 0.2em 0.8em;
+                        padding: 0 0.8em 0 0;
                         transform: translate(-9px, -1.08em);
                         width: auto;
                     }
@@ -678,7 +682,7 @@
                             <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
                                 <td field-name$="[[column.field]]" class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
                             </template>
-                            <td><div class="frozenDisplay"><iron-icon icon="warning"></iron-icon> [[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
+                            <td><div class="frozenDisplay"><iron-icon icon="info"></iron-icon> [[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
                         </tr>
                     </template>
                     
