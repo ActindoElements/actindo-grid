@@ -40,6 +40,7 @@
     <template>
         <style include="actindo-level-style">
             :host {
+                background: var(--background-color);
                 display: flex;
                 flex-direction: column;
                 height: 100%;
@@ -50,11 +51,13 @@
             }
             :host([style-level="0"])
             {
+                background: var(--background-color);
                 --action-header-background-color: var(--actindo-green);
                 --actindo-header-text-color: var(--actindo-white);
             }
             :host([style-level="1"])
             {
+                background: var(--background-color);
                 --action-header-background-color: var(--actindo-grey);
                 --actindo-header-text-color: var(--actindo-white);
             }
@@ -203,6 +206,33 @@
                     border-radius: 50%;
                     text-indent: -5em;
                 }
+                tr[frozen] td {
+                    opacity: 0.4;
+                }
+                tr[frozen] td:last-child {
+                    opacity: 1;
+                }
+                    .frozenDisplay {
+                        background: var(--actindo-warning);
+                        border-radius: 2em;
+                        overflow: hidden;
+                        paddding: 0;
+                        position: absolute;
+                        right: 0;
+                        transform: translate(150%, -1.08em);
+                        transition: transform 500ms;
+                        width: 0;
+                    }
+                        .frozenDisplay iron-icon {
+                            bottom: 1px;
+                            color: var(--background-color);
+                            position: relative;
+                        }
+                    tr[frozen] .frozenDisplay {
+                        padding: 0.2em 0.8em;
+                        transform: translate(-9px, -1.08em);
+                        width: auto;
+                    }
 
             div.th {
                 box-sizing: border-box;
@@ -637,7 +667,8 @@
                             disabled$="[[_propertyEvaluatesTrue(disabledField, row.*)]]"
                             selected$="[[_isItemSelected(row, selectedItems.*)]]"
                             finished$="[[_propertyEvaluatesTrue(finishedField, row.*)]]"
-                            locked$="[[_propertyEvaluatesTrue(lockedField, row.*)]]">
+                            locked$="[[_propertyEvaluatesTrue(lockedField, row.*)]]"
+                            frozen$="[[_propertyEvaluatesTrue(frozenByField, row.*)]]">
                             <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
                                 <td class="checkbox">
                                     <paper-checkbox checked="[[_isItemSelected(row, selectedItems.*)]]"></paper-checkbox>
@@ -647,7 +678,7 @@
                             <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
                                 <td field-name$="[[column.field]]" class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
                             </template>
-                            <td></td>
+                            <td><div class="frozenDisplay"><iron-icon icon="warning"></iron-icon> [[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
                         </tr>
                     </template>
                     
@@ -1218,6 +1249,7 @@
                         type: Boolean,
                         value: true
                     },
+
                      /**
                       * how rows can be click.
                       * "double" will fire click event when user double click on row, a single click still allows to select a row
@@ -1226,6 +1258,47 @@
                       */
                     rowClickMode: {
                         type: String
+                    },
+
+                    /**
+                     * this field contains an identifier of some sort that uniqely identifies the entity (the "class", not the object!)
+                     */
+                    entityIdentifyingField: {
+                        type: String,
+                        value: '_E'
+                    },
+
+                    /**
+                     * collection of all values of "entityIdentifyingField" currently in this grid (usually this will only be 1
+                     * but you may have grids displaying objects of different types)
+                     */
+                    _containedEntities: {
+                        type: Array,
+                        value: function() {
+                            return [];
+                        }
+                    },
+
+                    /**
+                     * if an event with this name is fired on `document`, that event is caught and parsed for updates:
+                     * If it contains an item that identifies as the same item that this grid is currently showing, that item
+                     * is updated locally. It is regarded as "the same item" if the values of the "entityIdentifyingField"
+                     * and the value of the "_identifyingColumn.field" match.
+                     *
+                     * @see entityIdentifyingField
+                     */
+                    itemUpdateEventName: {
+                        type: String,
+                        value: 'actindo-entity-update'
+                    },
+
+                    /**
+                     * if an item has a property with this name that evaluates to true, it is considered frozen and displayed
+                     * accordingly. The contents of this field is displayed as "locker" (i.e.: locked by [[frozenByName]])
+                     */
+                    frozenByField: {
+                        type: String,
+                        value: 'frozenByName'
                     }
                 }
             }
@@ -1425,10 +1498,29 @@
                 }, 0);
             }
 
+            connectedCallback() {
+                super.connectedCallback();
+
+                if(this.itemUpdateEventName)
+                {
+                    this._updateListener = this._onItemUpdate.bind(this);
+                    document.addEventListener(this.itemUpdateEventName, this._updateListener);
+                }
+            }
+
+            disconnectedCallback() {
+                super.disconnectedCallback();
+
+                if(this._updateListener)
+                {
+                    document.removeEventListener(this._updateListener);
+                }
+            }
+
             /**
              * returns the default configuration for a column
              *
-             * @returns {}
+             * @returns {{}}
              */
             static get columnDefaults() {
                 return {
@@ -2267,6 +2359,12 @@
                             let data = JSON.parse(me._xhr.responseText);
                             me._setTotalItems(Polymer.Path.get(data, remotePathCount));
                             me.items = Polymer.Path.get(data, remotePathData);
+                            me._containedEntities = me.items.map(function(item) {
+                                return Polymer.Path.get(item, me.entityIdentifyingField);
+                            }).filter(function(value, index, self) {
+                                return self.indexOf(value) === index;
+                            });
+                            console.log('setting contained', me.id, me._containedEntities);
                             me.dispatchEvent( new CustomEvent( "after-load", {detail: data} ) );
                         }
                         else if( me._xhr.status !== 0 )
@@ -2446,6 +2544,65 @@
                 return this._itemsPerPage === selectedItem;
             }
 
+            /**
+             * this is called when we receive updated data (i.e. any entity was changed - system wide). Now we'll check
+             * if that entity is currently being displayed in this grid, and if it is, we change all the updated data
+             * so this grid reflects the changes.
+             * To check if the received entity is an item in our grid, we check if both "entityIdentifyingField" and
+             * "_identifyingColumn.field" exist on the received entity and in one of our grid items. If both match, it's
+             * the same entity and we update it.
+             *
+             * @private
+             * @param {{detail: {}}} e
+             */
+            _onItemUpdate(e) {
+                let data = e.detail; // contains the updated entity
+
+                if(!this.entityIdentifyingField || !this._identifyingColumn)
+                {
+                    // we're not fully configured t3o check identities
+                    return;
+                }
+                let entityField = this.entityIdentifyingField;
+                let idField = this._identifyingColumn.field;
+
+                if(!data.hasOwnProperty(entityField) || !data.hasOwnProperty(idField))
+                {
+                    // received entity does not contain the fields we need for our identity check
+                    return;
+                }
+
+                if(-1 === this._containedEntities.indexOf(data[entityField]))
+                {
+                    // our grid does not contain items of the same type as the received entity
+                    return;
+                }
+
+                // walk through all items
+                for(let i = 0, c = this.items.length; i < c; i++)
+                {
+                    let item = this.items[i];
+                    if(!item.hasOwnProperty(entityField) || !item.hasOwnProperty(idField))
+                    {
+                        // item does not contain the fields we need for our identity check
+                        continue;
+                    }
+
+                    if(item[entityField] === data[entityField] && item[idField] === data[idField])
+                    {
+                        // we have lift-off, we're actually displaying the received entity, update it!
+                        for(let key in data)
+                        {
+                            if(data.hasOwnProperty(key))
+                            {
+                                this.set('items.' + i + '.' + key, data[key]);
+                            }
+                        }
+                        break;
+                    }
+                }
+            }
+
             /*
              * internal helpers
              */
@@ -2516,6 +2673,19 @@
              */
             _canPageForward(page, itemsPerPage, totalItems) {
                 return this._getItemsTo(page, itemsPerPage, totalItems) < totalItems;
+            }
+
+            _displayFrozenInfo(item, frozenByField) {
+                if(item.base[frozenByField])
+                {
+                    let name = item.base[frozenByField];
+                    if(name.split('-')[1]) { // only show userName if we get "loginName - userName"
+                        name = name.split('-')[1];
+                    }
+                    return 'in Bearbeitung durch ' + item.base[frozenByField].split('-')[1];
+                }
+
+                return '';
             }
 
             /**
