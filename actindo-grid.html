@@ -213,34 +213,26 @@
                     opacity: 1;
                 }
                     .frozenDisplay {
-                        background: var(--background-color);
-                        padding: 0.95em;
+                        background: var(--actindo-warning);
+                        border-radius: 2em;
+                        overflow: hidden;
+                        paddding: 0;
                         position: absolute;
                         right: 0;
-                        transform: translate(150%, -1.58em);
+                        transform: translate(150%, -1.08em);
                         transition: transform 500ms;
                         width: 0;
                     }
+                        .frozenDisplay iron-icon {
+                            bottom: 1px;
+                            color: var(--background-color);
+                            position: relative;
+                        }
                     tr[frozen] .frozenDisplay {
-                        transform: translate(0, -1.58em);
+                        padding: 0.2em 0.8em;
+                        transform: translate(-9px, -1.08em);
                         width: auto;
                     }
-                        tr[frozen] .frozenDisplay:before,
-                        tr[frozen] .frozenDisplay:after {
-                            background: linear-gradient(to left, var(--background-color), transparent);
-                            bottom: 0;
-                            content: "";
-                            display: block;
-                            left: -20px;
-                            position: absolute;
-                            top: 0;
-                            width: 20px;
-                        }
-                        tr[frozen] .frozenDisplay:after {
-                            background: linear-gradient(to right, var(--background-color), transparent);
-                            left: auto;
-                            right: -20px;
-                        }
 
             div.th {
                 box-sizing: border-box;
@@ -686,7 +678,7 @@
                             <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
                                 <td field-name$="[[column.field]]" class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
                             </template>
-                            <td><div class="frozenDisplay">[[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
+                            <td><div class="frozenDisplay"><iron-icon icon="warning"></iron-icon> [[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
                         </tr>
                     </template>
                     
@@ -1511,66 +1503,8 @@
 
                 if(this.itemUpdateEventName)
                 {
-                    this._updateListener = this.onItemUpdate.bind(this);
+                    this._updateListener = this._onItemUpdate.bind(this);
                     document.addEventListener(this.itemUpdateEventName, this._updateListener);
-                }
-            }
-
-            /**
-             * this is called when we receive updated data (i.e. any entity was changed - system wide). Now we'll check
-             * if that entity is currently being displayed in this grid, and if it is, we change all the updated data
-             * so this grid reflects the changes.
-             * To check if the received entity is an item in our grid, we check if both "entityIdentifyingField" and
-             * "_identifyingColumn.field" exist on the received entity and in one of our grid items. If both match, it's
-             * the same entity and we update it.
-             *
-             * @param {{detail: {}}} e
-             */
-            onItemUpdate(e) {
-                let data = e.detail; // contains the updated entity
-
-                if(!this.entityIdentifyingField || !this._identifyingColumn)
-                {
-                    // we're not fully configured t3o check identities
-                    return;
-                }
-                let entityField = this.entityIdentifyingField;
-                let idField = this._identifyingColumn.field;
-
-                if(!data.hasOwnProperty(entityField) || !data.hasOwnProperty(idField))
-                {
-                    // received entity does not contain the fields we need for our identity check
-                    return;
-                }
-
-                if(-1 === this._containedEntities.indexOf(data[entityField]))
-                {
-                    // our grid does not contain items of the same type as the received entity
-                    return;
-                }
-
-                // walk through all items
-                for(let i = 0, c = this.items.length; i < c; i++)
-                {
-                    let item = this.items[i];
-                    if(!item.hasOwnProperty(entityField) || !item.hasOwnProperty(idField))
-                    {
-                        // item does not contain the fields we need for our identity check
-                        continue;
-                    }
-
-                    if(item[entityField] === data[entityField] && item[idField] === data[idField])
-                    {
-                        // we have lift-off, we're actually displaying the received entity, update it!
-                        for(let key in data)
-                        {
-                            if(data.hasOwnProperty(key))
-                            {
-                                this.set('items.' + i + '.' + key, data[key]);
-                            }
-                        }
-                        break;
-                    }
                 }
             }
 
@@ -1586,7 +1520,7 @@
             /**
              * returns the default configuration for a column
              *
-             * @returns {}
+             * @returns {{}}
              */
             static get columnDefaults() {
                 return {
@@ -2608,6 +2542,65 @@
              */
             _isItemsPerPageSelected(selectedItem) {
                 return this._itemsPerPage === selectedItem;
+            }
+
+            /**
+             * this is called when we receive updated data (i.e. any entity was changed - system wide). Now we'll check
+             * if that entity is currently being displayed in this grid, and if it is, we change all the updated data
+             * so this grid reflects the changes.
+             * To check if the received entity is an item in our grid, we check if both "entityIdentifyingField" and
+             * "_identifyingColumn.field" exist on the received entity and in one of our grid items. If both match, it's
+             * the same entity and we update it.
+             *
+             * @private
+             * @param {{detail: {}}} e
+             */
+            _onItemUpdate(e) {
+                let data = e.detail; // contains the updated entity
+
+                if(!this.entityIdentifyingField || !this._identifyingColumn)
+                {
+                    // we're not fully configured t3o check identities
+                    return;
+                }
+                let entityField = this.entityIdentifyingField;
+                let idField = this._identifyingColumn.field;
+
+                if(!data.hasOwnProperty(entityField) || !data.hasOwnProperty(idField))
+                {
+                    // received entity does not contain the fields we need for our identity check
+                    return;
+                }
+
+                if(-1 === this._containedEntities.indexOf(data[entityField]))
+                {
+                    // our grid does not contain items of the same type as the received entity
+                    return;
+                }
+
+                // walk through all items
+                for(let i = 0, c = this.items.length; i < c; i++)
+                {
+                    let item = this.items[i];
+                    if(!item.hasOwnProperty(entityField) || !item.hasOwnProperty(idField))
+                    {
+                        // item does not contain the fields we need for our identity check
+                        continue;
+                    }
+
+                    if(item[entityField] === data[entityField] && item[idField] === data[idField])
+                    {
+                        // we have lift-off, we're actually displaying the received entity, update it!
+                        for(let key in data)
+                        {
+                            if(data.hasOwnProperty(key))
+                            {
+                                this.set('items.' + i + '.' + key, data[key]);
+                            }
+                        }
+                        break;
+                    }
+                }
             }
 
             /*
