@@ -53,7 +53,7 @@
             {
                 background: var(--background-color);
                 --action-header-background-color: var(--actindo-green);
-                --actindo-header-text-color: var(--primary-text-color);
+                --actindo-header-text-color: var(--actindo-white);
             }
             :host([style-level="1"])
             {
@@ -342,6 +342,11 @@
                 /*background-position: 50% 50%;*/
                 background: var(--action-header-background-color);
                 color: var(--actindo-header-text-color);
+            }
+
+            #toolbar.actions-true > div
+            {
+                @apply(--font-menu);
             }
 
             .sizer {
@@ -1613,7 +1618,7 @@
             getColumnWidth( fieldName )
             {
                 const dom = Polymer.dom(this.root);
-                fieldName = fieldName.replace( ".", "\\." );
+                fieldName = fieldName.replace( /\./g, "\\." );
                 const headerColumns = dom.querySelector('#gridHeader th[field-name='+fieldName+']');
                 let paddingLeftRight =
                     parseFloat(window.getComputedStyle(headerColumns,null).getPropertyValue( 'padding-left' ))
@@ -1630,7 +1635,7 @@
                 if( this._columnIndexByFieldName[fieldName] !== undefined && this._columns[this._columnIndexByFieldName[fieldName]].resizable === true )
                 {
                     const dom = Polymer.dom(this.root);
-                    fieldName = fieldName.replace( ".", "\\." );
+                    fieldName = fieldName.replace( /\./g, "\\." );
                     let resizingColumns = dom.querySelectorAll('td[field-name='+fieldName+'],th[field-name='+fieldName+']');
                     this._resizeColumn( resizingColumns, width );
                 }
