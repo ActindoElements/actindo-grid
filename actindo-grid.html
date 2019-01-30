@@ -2294,16 +2294,9 @@
                 
             }
 
-            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
-            {
-
-                if( !remote )
-                {
-                    return;
-                }
+            _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals) {
                 let me = this;
                 let request = JSON.parse( JSON.stringify( remoteParams ) );
-                this._error = false;
                 if( !this.pagingDisabled )
                 {
                     // pagination
@@ -2334,6 +2327,7 @@
 
                 request[this.remoteParamSerializeOptionals] = serializeOptionals;
 
+
                 // searching
                 if(query.length) {
                     request[remoteParamSearch] = query;
@@ -2348,6 +2342,20 @@
                 else {
                     request[remoteParamSearch] = "";
                 }
+
+                return request;
+            }
+
+            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
+            {
+
+                if( !remote )
+                {
+                    return;
+                }
+                let me = this;
+                let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals);
+                this._error = false;
 
                 if( this._xhr )
                 {
@@ -2371,7 +2379,6 @@
                             }).filter(function(value, index, self) {
                                 return self.indexOf(value) === index;
                             });
-                            console.log('setting contained', me.id, me._containedEntities);
                             me.dispatchEvent( new CustomEvent( "after-load", {detail: data} ) );
                         }
                         else if( me._xhr.status !== 0 )
