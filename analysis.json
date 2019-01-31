@@ -89,7 +89,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridCellContent",
       "attributes": [
         {
@@ -332,7 +332,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridSearch",
       "attributes": [
         {
@@ -538,7 +538,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterInOprionInput",
       "attributes": [
         {
@@ -1040,7 +1040,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterEdit",
       "attributes": [
         {
@@ -1342,7 +1342,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilter",
       "attributes": [
         {
@@ -1473,7 +1473,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterBetweenInput",
       "attributes": [
         {
@@ -1759,7 +1759,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterInInput",
       "attributes": [
         {
@@ -2117,7 +2117,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterItem",
       "attributes": [
         {
@@ -2373,7 +2373,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterTag",
       "attributes": [
         {
@@ -2568,7 +2568,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterEqualDate",
       "attributes": [
         {
@@ -2668,7 +2668,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterBetweenDate",
       "attributes": [
         {
@@ -2723,7 +2723,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridError",
       "attributes": [],
       "events": [],
@@ -2812,7 +2812,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterConfigurator",
       "attributes": [
         {
@@ -3207,7 +3207,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterForm",
       "attributes": [
         {
@@ -3436,7 +3436,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterBoolean",
       "attributes": [
         {
@@ -3825,7 +3825,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGridFilterColumns",
       "attributes": [
         {
@@ -5215,8 +5215,7 @@
           "metadata": {},
           "params": [
             {
-              "name": "debounced",
-              "defaultValue": "true"
+              "name": "debounced = true"
             }
           ]
         },
@@ -6026,7 +6025,7 @@
           ]
         },
         {
-          "name": "_load",
+          "name": "_buildRequest",
           "description": "",
           "privacy": "protected",
           "sourceRange": {
@@ -6035,7 +6034,76 @@
               "column": 12
             },
             "end": {
-              "line": 2387,
+              "line": 2346,
+              "column": 13
+            }
+          },
+          "metadata": {},
+          "params": [
+            {
+              "name": "remote"
+            },
+            {
+              "name": "remotePathData"
+            },
+            {
+              "name": "remotePathCount"
+            },
+            {
+              "name": "remoteParams"
+            },
+            {
+              "name": "remoteParamFilter"
+            },
+            {
+              "name": "remoteParamLimit"
+            },
+            {
+              "name": "remoteParamOffset"
+            },
+            {
+              "name": "remoteParamSearch"
+            },
+            {
+              "name": "remoteParamSearchFields"
+            },
+            {
+              "name": "remoteParamSort"
+            },
+            {
+              "name": "remoteParamSerializeOptionals"
+            },
+            {
+              "name": "itemsPerPage"
+            },
+            {
+              "name": "page"
+            },
+            {
+              "name": "sort"
+            },
+            {
+              "name": "query"
+            },
+            {
+              "name": "filter"
+            },
+            {
+              "name": "serializeOptionals"
+            }
+          ]
+        },
+        {
+          "name": "_load",
+          "description": "",
+          "privacy": "protected",
+          "sourceRange": {
+            "start": {
+              "line": 2348,
+              "column": 12
+            },
+            "end": {
+              "line": 2394,
               "column": 13
             }
           },
@@ -6100,11 +6168,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2389,
+              "line": 2396,
               "column": 12
             },
             "end": {
-              "line": 2412,
+              "line": 2419,
               "column": 13
             }
           },
@@ -6121,11 +6189,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2418,
+              "line": 2425,
               "column": 12
             },
             "end": {
-              "line": 2424,
+              "line": 2431,
               "column": 13
             }
           },
@@ -6190,11 +6258,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2426,
+              "line": 2433,
               "column": 12
             },
             "end": {
-              "line": 2451,
+              "line": 2458,
               "column": 13
             }
           },
@@ -6259,11 +6327,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2458,
+              "line": 2465,
               "column": 12
             },
             "end": {
-              "line": 2460,
+              "line": 2467,
               "column": 13
             }
           },
@@ -6276,11 +6344,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2467,
+              "line": 2474,
               "column": 12
             },
             "end": {
-              "line": 2477,
+              "line": 2484,
               "column": 13
             }
           },
@@ -6298,11 +6366,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2483,
+              "line": 2490,
               "column": 12
             },
             "end": {
-              "line": 2496,
+              "line": 2503,
               "column": 13
             }
           },
@@ -6315,11 +6383,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2503,
+              "line": 2510,
               "column": 12
             },
             "end": {
-              "line": 2534,
+              "line": 2541,
               "column": 13
             }
           },
@@ -6337,11 +6405,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2539,
+              "line": 2546,
               "column": 12
             },
             "end": {
-              "line": 2544,
+              "line": 2551,
               "column": 13
             }
           },
@@ -6354,11 +6422,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2549,
+              "line": 2556,
               "column": 12
             },
             "end": {
-              "line": 2551,
+              "line": 2558,
               "column": 13
             }
           },
@@ -6375,11 +6443,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2564,
+              "line": 2571,
               "column": 12
             },
             "end": {
-              "line": 2610,
+              "line": 2617,
               "column": 13
             }
           },
@@ -6397,11 +6465,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2625,
+              "line": 2632,
               "column": 12
             },
             "end": {
-              "line": 2636,
+              "line": 2643,
               "column": 13
             }
           },
@@ -6428,11 +6496,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2642,
+              "line": 2649,
               "column": 12
             },
             "end": {
-              "line": 2649,
+              "line": 2656,
               "column": 13
             }
           },
@@ -6452,11 +6520,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2651,
+              "line": 2658,
               "column": 12
             },
             "end": {
-              "line": 2658,
+              "line": 2665,
               "column": 13
             }
           },
@@ -6476,11 +6544,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2667,
+              "line": 2674,
               "column": 12
             },
             "end": {
-              "line": 2669,
+              "line": 2676,
               "column": 13
             }
           },
@@ -6502,11 +6570,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2680,
+              "line": 2687,
               "column": 12
             },
             "end": {
-              "line": 2682,
+              "line": 2689,
               "column": 13
             }
           },
@@ -6538,11 +6606,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2684,
+              "line": 2691,
               "column": 12
             },
             "end": {
-              "line": 2695,
+              "line": 2702,
               "column": 13
             }
           },
@@ -6562,11 +6630,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2705,
+              "line": 2712,
               "column": 12
             },
             "end": {
-              "line": 2707,
+              "line": 2714,
               "column": 13
             }
           },
@@ -6596,11 +6664,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2716,
+              "line": 2723,
               "column": 12
             },
             "end": {
-              "line": 2718,
+              "line": 2725,
               "column": 13
             }
           },
@@ -6627,11 +6695,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2727,
+              "line": 2734,
               "column": 12
             },
             "end": {
-              "line": 2729,
+              "line": 2736,
               "column": 13
             }
           },
@@ -6651,11 +6719,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2738,
+              "line": 2745,
               "column": 12
             },
             "end": {
-              "line": 2740,
+              "line": 2747,
               "column": 13
             }
           },
@@ -6676,11 +6744,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2750,
+              "line": 2757,
               "column": 12
             },
             "end": {
-              "line": 2752,
+              "line": 2759,
               "column": 13
             }
           },
@@ -6707,11 +6775,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2763,
+              "line": 2770,
               "column": 12
             },
             "end": {
-              "line": 2776,
+              "line": 2783,
               "column": 13
             }
           },
@@ -6736,11 +6804,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2786,
+              "line": 2793,
               "column": 12
             },
             "end": {
-              "line": 2792,
+              "line": 2799,
               "column": 13
             }
           },
@@ -6767,11 +6835,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2800,
+              "line": 2807,
               "column": 12
             },
             "end": {
-              "line": 2810,
+              "line": 2817,
               "column": 13
             }
           },
@@ -6793,11 +6861,11 @@
           "privacy": "private",
           "sourceRange": {
             "start": {
-              "line": 2820,
+              "line": 2827,
               "column": 12
             },
             "end": {
-              "line": 2831,
+              "line": 2838,
               "column": 13
             }
           },
@@ -6813,11 +6881,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2836,
+              "line": 2843,
               "column": 12
             },
             "end": {
-              "line": 2839,
+              "line": 2846,
               "column": 13
             }
           },
@@ -6830,11 +6898,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2844,
+              "line": 2851,
               "column": 12
             },
             "end": {
-              "line": 2847,
+              "line": 2854,
               "column": 13
             }
           },
@@ -6847,11 +6915,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 2853,
+              "line": 2860,
               "column": 12
             },
             "end": {
-              "line": 2855,
+              "line": 2862,
               "column": 13
             }
           },
@@ -6868,12 +6936,12 @@
           "column": 8
         },
         "end": {
-          "line": 2856,
+          "line": 2863,
           "column": 9
         }
       },
       "privacy": "public",
-      "superclass": "Polymer.Element",
+      "superclass": "HTMLElement",
       "name": "ActindoGrid",
       "attributes": [
         {
