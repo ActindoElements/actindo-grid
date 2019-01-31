@@ -89,7 +89,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridCellContent",
       "attributes": [
         {
@@ -332,7 +332,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridSearch",
       "attributes": [
         {
@@ -538,7 +538,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterInOprionInput",
       "attributes": [
         {
@@ -1040,7 +1040,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterEdit",
       "attributes": [
         {
@@ -1342,7 +1342,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilter",
       "attributes": [
         {
@@ -1473,7 +1473,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterBetweenInput",
       "attributes": [
         {
@@ -1759,7 +1759,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterInInput",
       "attributes": [
         {
@@ -2117,7 +2117,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterItem",
       "attributes": [
         {
@@ -2373,7 +2373,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterTag",
       "attributes": [
         {
@@ -2568,7 +2568,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterEqualDate",
       "attributes": [
         {
@@ -2668,7 +2668,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterBetweenDate",
       "attributes": [
         {
@@ -2723,7 +2723,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridError",
       "attributes": [],
       "events": [],
@@ -2812,7 +2812,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterConfigurator",
       "attributes": [
         {
@@ -3207,7 +3207,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterForm",
       "attributes": [
         {
@@ -3436,7 +3436,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterBoolean",
       "attributes": [
         {
@@ -3825,7 +3825,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterColumns",
       "attributes": [
         {
@@ -5215,7 +5215,8 @@
           "metadata": {},
           "params": [
             {
-              "name": "debounced = true"
+              "name": "debounced",
+              "defaultValue": "true"
             }
           ]
         },
@@ -6941,7 +6942,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGrid",
       "attributes": [
         {
