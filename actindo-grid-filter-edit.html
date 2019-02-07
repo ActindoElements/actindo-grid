@@ -61,7 +61,7 @@
 
             .header span:first-child
             {
-                color: var(--actindo-secondary);
+                color: var(--actindo-grey);
                 @apply(--font-subheader);
                 opacity: 0.72;
             }
@@ -72,7 +72,7 @@
                 padding: 5px 15px;
                 border-radius: 15px;
                 margin-left: 10px;
-                color: var(--actindo-light-grey-light);
+                color: var(--actindo-white);
             }
         </style>
         <paper-dialog id="alignedDialog">
@@ -325,7 +325,10 @@
                     operator: filter.operator,
                     value: filter.value
                 });
-
+                if( this.$.inputFilter.childNodes.length > 0 )
+                {
+                    this.$.inputFilter.childNodes[0].value = filter.value;
+                }
             }
         }
 

@@ -12,9 +12,12 @@
 <link rel="import" href="actindo-grid-filter-in-input.html">
 <link rel="import" href="actindo-grid-filter-item.html">
 <link rel="import" href="actindo-grid-filter-tag.html">
+<link rel="import" href="actindo-grid-filter-equal-date.html">
+<link rel="import" href="actindo-grid-filter-between-date.html">
 <link rel="import" href="actindo-grid-error.html">
 <link rel="import" href="actindo-grid-filter-configurator.html">
 <link rel="import" href="actindo-grid-filter-form.html">
+<link rel="import" href="actindo-grid-filter-boolean.html">
 <link rel="import" href="actindo-grid-filter-columns.html">
 
 <!--
@@ -35,16 +38,61 @@
 -->
 <dom-module id="actindo-grid">
     <template>
-        <style>
+        <style include="actindo-level-style">
             :host {
+                background: var(--background-color);
                 display: flex;
                 flex-direction: column;
                 height: 100%;
                 overflow: hidden;
                 width: 100%;
+                @apply(--style-level-0);
+
+            }
+            :host([style-level="0"])
+            {
+                background: var(--background-color);
+                --action-header-background-color: var(--actindo-green);
+                --actindo-header-text-color: var(--actindo-white);
+            }
+            :host([style-level="1"])
+            {
+                background: var(--background-color);
+                --action-header-background-color: var(--actindo-grey);
+                --actindo-header-text-color: var(--actindo-white);
             }
             :host[hidden] {
                 display: none;
+            }
+
+
+            :host([embedded])
+            {
+                border-radius: 5px;
+                border: 1px solid var(--actindo-border-light);
+            }
+
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+                padding-right: 5px;
+            }
+            ::-webkit-scrollbar-track {
+                background: transparent;
+            }
+            ::-webkit-scrollbar-track:hover {
+                background: rgba(0,0,0,0.15);
+            }
+            ::-webkit-scrollbar-thumb {
+                background-color: var(--actindo-secondary-light);
+                border-right: 2px solid var(--actindo-secondary-light);
+                border-left: 2px solid var(--actindo-secondary-light);
+            }
+
+            ::-webkit-scrollbar-thumb:hover {
+                background-color: var(--actindo-secondary);
+                border-right: 2px solid var(--actindo-secondary);
+                border-left: 2px solid var(--actindo-secondary);
             }
 
             [hidden] 
@@ -59,7 +107,6 @@
             }
                 table th {
                     border: none;
-                    color: transparent;
                     font-weight: normal;
                     line-height: 0;
                     padding: 0 0.75em;
@@ -101,13 +148,13 @@
                 }
 
                 th, td {
-                    border: solid var(--actindo-border-dark);
-                    border-width: 1px 0;
+                    border: solid var(--actindo-border-light);
+                    border-width: 1px 0 0 0;
                     overflow: hidden;
                     text-overflow: ellipsis;
                     white-space: nowrap;
                 }
-                    tr:last-of-type td,
+                    /*tr:last-of-type td,*/
                     tbody tr:first-of-type td {
                         border: 0;
                     }
@@ -116,13 +163,12 @@
                 }
                 tr td.checkbox iron-icon {
                     left: 1em;
-                    opacity: 0;
+                    display: none;
                     position: absolute;
                     top: 0.7em;
                     transition: opacity 150ms;
                 }
                 tr td.checkbox paper-checkbox {
-                    background-color: rgba(0, 0, 0, 0);
                     border-radius: 0;
                     height: 18px;
                     position: relative;
@@ -131,10 +177,12 @@
                     width: 18px;
                 }
                 tr[selected] {
-                    background-color: var(--actindo-light-grey);
+                    background-color: var(--selected-background-color);
+                    color: var(--selected-text-color);
                 }
                 #gridBody tr:hover {
-                    background-color: var(--actindo-primary-light);
+                    background-color: var(--hover-background-color);
+                    color: var(--hover-text-color);
                 }
                 tr[disabled],
                 tr[locked] td {
@@ -149,17 +197,48 @@
                     transform: scale(0.5, 0.5);
                 }
                 tr[locked] td.checkbox iron-icon {
-                    opacity: 1;
+                    display: block;
                 }
                 tr[finished] td.checkbox paper-checkbox {
-                    background-color: var(--actindo-primary);
+                    background-color: var(--selected-background-color);
+                    color: var(--selected-text-color);
                     border-radius: 50%;
                     text-indent: -5em;
                 }
+                tr[frozen] td {
+                    opacity: 0.4;
+                }
+                tr[frozen] td:last-child {
+                    opacity: 1;
+                }
+                    .frozenDisplay {
+                        background: var(--primary-text-color);
+                        border-radius: 2em;
+                        color: var(--background-color);
+                        font-weight: 500;
+                        line-height: 28px;
+                        overflow: hidden;
+                        paddding: 0;
+                        position: absolute;
+                        right: 0;
+                        transform: translate(150%, -1.08em);
+                        transition: transform 500ms;
+                        width: 0;
+                    }
+                        .frozenDisplay iron-icon {
+                            color: var(--background-color);
+                            left: 3px;
+                            margin-right: 5px;
+                            position: relative;
+                        }
+                    tr[frozen] .frozenDisplay {
+                        padding: 0 0.8em 0 0;
+                        transform: translate(-9px, -1.08em);
+                        width: auto;
+                    }
 
             div.th {
                 box-sizing: border-box;
-                color: #000;
                 line-height: 60px;
                 position: relative;
             }
@@ -203,6 +282,21 @@
             #toggleAll[partial]:after {
                 opacity: 1;
             }
+                #toggleAll:after {
+                    content: "";
+                    display: block;
+                    font-weight: bold;
+                    height: 2px;
+                    left: 6px;
+                    opacity: 0;
+                    position: absolute;
+                    top: 8px;
+                    transition: opacity 200ms;
+                    width: 6px;
+                }
+                #toggleAll[partial]:after {
+                    opacity: 1;
+                }
 
             input[type="checkbox"] {
                 cursor: pointer;
@@ -227,7 +321,7 @@
                 left:0;
                 right: 0;
                 bottom: 0;
-                background-color: white;
+                background-color: var(--background-color);
                 opacity: 0.72;
                 display: flex;
                 align-items: center;
@@ -238,7 +332,6 @@
             #gridBody {
                 overflow: auto;
                 position: relative;
-                background-color: #fff;
                 display: flex;
                 flex-grow: 1;
                 flex-direction: column;
@@ -260,8 +353,13 @@
             }
             #toolbar.actions-true {
                 /*background-position: 50% 50%;*/
-                background: var(--actindo-primary);
-                color: #fff;
+                background: var(--action-header-background-color);
+                color: var(--actindo-header-text-color);
+            }
+
+            #toolbar.actions-true > div
+            {
+                @apply(--font-menu);
             }
 
             .sizer {
@@ -280,7 +378,7 @@
 
             #paging {
                 align-items: center;
-                border-top: 1px solid var(--actindo-border-dark);
+                border-top: 1px solid var(--actindo-border-light);
                 display: flex;
                 justify-content: flex-end;
                 max-height: 4.15em;
@@ -304,7 +402,7 @@
 
             paper-spinner-lite
             {
-                --paper-spinner-color: var(--actindo-primary);
+                --paper-spinner-color: var(--actindo-green);
                 width: 50px;
                 height: 50px;
             }
@@ -350,24 +448,13 @@
             }
 
             paper-fab {
-                background-color: var(--actindo-primary);
+                background-color: var(--actindo-green);
                 color: white;
                 width: 60px;
                 height: 60px;
-            }
-
-            ::-webkit-scrollbar {
-                width: 5px;
-                height: 5px;
-            }
-            ::-webkit-scrollbar-track {
-                background: transparent;
-            }
-            ::-webkit-scrollbar-thumb {
-                background-color: var(--actindo-secondary);
-                border-right: 2px solid var(--actindo-secondary);
-                border-left: 2px solid var(--actindo-secondary);
-                border-radius: 3px;
+                --paper-fab-iron-icon: {
+                    transition:transform 250ms;
+                }
             }
 
             #gridContainer {
@@ -375,18 +462,85 @@
                 position: relative;
                 display: flex;
                 flex-direction: column;
-                z-index: 1;
                 flex-grow: 1;
             }
-            #createButton {
+            #createButton, #multiActionsContainer {
                 position: absolute;
                 bottom: 16px;
                 right: 16px;
             }
+
+            #multiActionsContainer
+            {
+                display: flex;
+                z-index: 101;
+                flex-direction: column;
+                align-items: flex-end;
+                justify-content: flex-end;
+            }
+
+            #multiActionsContainer .actionContainer
+            {
+                display: flex;
+                margin-bottom: 16px;
+                align-items: center;
+                transition: opacity 200ms linear;
+                opacity: 1
+            }
+
+            #multiActionsContainer .actionContainer.invisible
+            {
+                opacity: 0;
+            }
+
+            #multiActionsContainer > div.invisible
+            {
+                display: none;
+            }
+
+            #multiActionsRepeatContainer
+            {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                align-items: flex-end;
+            }
+
+            #multiActionsRepeatContainer paper-fab
+            {
+                width: 48px;
+                height: 48px;
+                margin-right: 6px;
+            }
+
+            paper-fab.active
+            {
+                --paper-fab-iron-icon: {
+                    transform:rotate(45deg) scale(1.2);
+                    transition:transform 250ms;
+                }
+            }
+
+            #multiActionsContainer .actionContainer paper-fab
+            {
+                color: var(--actindo-secondary);
+                background-color: var(--actindo-light-grey-dark);
+                margin-left: 16px;
+            }
+
+            #multiActionsContainer .actionContainer > div
+            {
+                color: var(--actindo-secondary);
+                background-color: var(--actindo-light-grey-dark);
+                padding: 5px;
+                border-radius: 3px;
+                @apply(--paper-material-elevation-2);
+            }
+
             #gridHeader {
                 overflow-x: scroll;
                 position: relative;
-                border-bottom: 1px solid var(--actindo-border-dark);
+                border-bottom: 1px solid var(--border-color);
                 max-height: 4.7em;
                 min-height: 4.7em;
                 z-index: 9;
@@ -400,11 +554,31 @@
             }
             #rowsPerPage > span {
                 margin-right: 10px;
-            }
-        </style>
 
+            }
+
+
+            div.actionsoverlay
+            {
+                position: fixed;
+                top: 0;
+                bottom: 0;
+                right: 0;
+                left: 0;
+                background-color: var(--actindo-secondary-dark);
+                opacity: 0.7;
+                z-index: 101;
+            }
+            div.actionsoverlay.invisible
+            {
+                display:none;
+            }
+
+        </style>
+        <div id="multiActionsOverlay" class="actionsoverlay invisible">
+        </div>
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
-            <div hidden$="[[!selectedItems.length]]">[[selectedItems.length]] gewählt</div>
+            <div hidden$="[[!selectedItems.length]]">[[header]] ([[selectedItems.length]] gewählt)</div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
                 <template is="dom-if" if="[[title]]">
                     <div class="header-title">[[title]]</div>
@@ -468,14 +642,16 @@
 
         <template is="dom-if" if="[[_showFilterArea]]">
             <actindo-grid-filter
+                    style-level="[[styleLevel]]"
                 filter-list="{{filterList}}"
-                filter-columns="{{_filterColumns}}" 
+                filter-columns="{{_filterColumns}}"
+                on-inactive-filter-changed="_inactiveFilterChanged"
             >
             </actindo-grid-filter>
         </template>
 
         <template is="dom-if" if="[[_showColumnsArea]]">
-            <actindo-grid-filter-columns columns="{{_columns}}">
+            <actindo-grid-filter-columns style-level="[[styleLevel]]" columns="{{_columns}}">
             </actindo-grid-filter-columns>
         </template>
 
@@ -490,14 +666,13 @@
                                 </th>
                             </template>
                             <template is="dom-repeat" items="{{_columns}}" filter="_isColumnVisibile" observe="hidden" id="headerRepeat">
-                                <th data-index$="[[index]]" class$="c[[index]] sortable-[[item.sortable]] is-sorted-[[_isSortedBy(item, sort)]]">
+                                <th data-index$="[[index]]" field-name$="[[item.field]]" class$="c[[index]] sortable-[[item.sortable]] is-sorted-[[_isSortedBy(item, sort)]]">
                                     <div class="th">
                                         <span>[[item.label]]</span>
                                         <template is="dom-if" if="[[_evaluatesTrue(item.resizable)]]">
                                             <div class="sizer"></div>
                                         </template>
                                     </div>
-                                    [[item.label]]
                                 </th>
                             </template>
                         </tr>
@@ -509,11 +684,13 @@
                 <table id="table" class$="disable-tap-row-select-[[disableTapRowToSelect]]">
                     <tbody>
                     <template is="dom-repeat" items="[[items]]" as="row">
-                        <tr on-tap="_onRowTap"
+                        <tr on-click="_onRowTap"
+                            on-dblclick="_onRowTap"
                             disabled$="[[_propertyEvaluatesTrue(disabledField, row.*)]]"
                             selected$="[[_isItemSelected(row, selectedItems.*)]]"
                             finished$="[[_propertyEvaluatesTrue(finishedField, row.*)]]"
-                            locked$="[[_propertyEvaluatesTrue(lockedField, row.*)]]">
+                            locked$="[[_propertyEvaluatesTrue(lockedField, row.*)]]"
+                            frozen$="[[_propertyEvaluatesTrue(frozenByField, row.*)]]">
                             <template is="dom-if" if="[[_stringEquals(selectionMode, 'multi', 'single')]]">
                                 <td class="checkbox">
                                     <paper-checkbox checked="[[_isItemSelected(row, selectedItems.*)]]"></paper-checkbox>
@@ -521,8 +698,9 @@
                                 </td>
                             </template>
                             <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
-                                <td class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                                <td field-name$="[[column.field]]" class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
                             </template>
+                            <td><div class="frozenDisplay"><iron-icon icon="info"></iron-icon> [[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
                         </tr>
                     </template>
 
@@ -544,6 +722,21 @@
             </template>
             <template is="dom-if" if="[[showCreateButton]]">
                 <paper-fab id="createButton" on-click="_onCreateClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
+            </template>
+            <template is="dom-if" if="[[showMultiActions]]">
+                <div id="multiActionsContainer">
+                    <div id="multiActionsRepeatContainer" class="invisible"> <!-- we need it for display: none otherwise opacity effect does not work -->
+                        <template is="dom-repeat" items="[[multiActions]]">
+                            <div class="actionContainer invisible">
+                                <template is="dom-if" if="[[item.label]]">
+                                    <div>[[item.label]]</div>
+                                </template>
+                                <paper-fab icon="[[item.icon]]" on-click="_onMultiActionClick"></paper-fab>
+                            </div>
+                        </template>
+                    </div>
+                    <paper-fab id="multiActionsButton" on-click="_onMultiActionsClick" icon="add" disabled="[[disableCreateButton]]"></paper-fab>
+                </div>
             </template>
         </div>
 
@@ -577,6 +770,13 @@
 
             static get properties() {
                 return {
+
+                    styleLevel: {
+                        type: Number,
+                        value: 0,
+                        reflectToAttribute: true
+                    },
+
                     /**
                      * contains the columns and their configuration.
                      * * label: the name of this column, used in the header
@@ -611,7 +811,8 @@
                         type: Array,
                         value: function() {
                         	return [];
-                        }
+                        },
+                        notify: true
                     },
 
                     /**
@@ -658,7 +859,8 @@
                         value: function() {
                         	return {};
                         },
-                        notify: true
+                        notify: true,
+                        observer: "_onSortChanged"
                     },
 
                     /**
@@ -677,7 +879,8 @@
                         type: Array,
                         value: function() {
                             return [];
-                        }
+                        },
+                        notify: true
                     },
 
                     /**
@@ -881,6 +1084,24 @@
                         value: false
                     },
 
+                    showMultiActions: {
+                        type: Boolean,
+                        computed: "_showMultiActions(multiActions.length)"
+                    },
+
+                    _multiActionsActive: {
+                        type: Boolean,
+                        value: false,
+                        observer:"_multiActionsActiveChanged"
+                    },
+
+                    /**
+                     * array of multi actions in list; example of a single action {icon: "add", label: "create", "event": "create"}
+                     */
+                    multiActions: {
+                        type: Array,
+                    },
+
                     disableCreateButton: {
                         type: Boolean,
                         value: false
@@ -904,7 +1125,8 @@
                         type: Array,
                         value: function() {
                         	return [];
-                        }
+                        },
+                        notify: true
                     },
 
                     /**
@@ -1048,8 +1270,64 @@
                      _isFirstTimeRenderLayout: {
                         type: Boolean,
                         value: true
+                    },
+
+                     /**
+                      * how rows can be click.
+                      * "double" will fire click event when user double click on row, a single click still allows to select a row
+                      * "single" will fire click event when user click on row, to select a row should select on checkbox
+                      * Any other value will disable row-click-actions
+                      */
+                    rowClickMode: {
+                        type: String
+                    },
+
+                    /**
+                     * this field contains an identifier of some sort that uniqely identifies the entity (the "class", not the object!)
+                     */
+                    entityIdentifyingField: {
+                        type: String,
+                        value: '_E'
+                    },
+
+                    /**
+                     * collection of all values of "entityIdentifyingField" currently in this grid (usually this will only be 1
+                     * but you may have grids displaying objects of different types)
+                     */
+                    _containedEntities: {
+                        type: Array,
+                        value: function() {
+                            return [];
+                        }
+                    },
+
+                    /**
+                     * if an event with this name is fired on `document`, that event is caught and parsed for updates:
+                     * If it contains an item that identifies as the same item that this grid is currently showing, that item
+                     * is updated locally. It is regarded as "the same item" if the values of the "entityIdentifyingField"
+                     * and the value of the "_identifyingColumn.field" match.
+                     *
+                     * @see entityIdentifyingField
+                     */
+                    itemUpdateEventName: {
+                        type: String,
+                        value: 'actindo-entity-update'
+                    },
+
+                    /**
+                     * if an item has a property with this name that evaluates to true, it is considered frozen and displayed
+                     * accordingly. The contents of this field is displayed as "locker" (i.e.: locked by [[frozenByName]])
+                     */
+                    frozenByField: {
+                        type: String,
+                        value: 'frozenByName'
                     }
                 }
+            }
+
+            _getStyleLevelUp(styleLevel)
+            {
+                return Number(styleLevel)+1;
             }
 
             /*
@@ -1088,6 +1366,10 @@
              * reloads the grid data from the remote
              */
             refresh(debounced = true) {
+                if( !this.remote )
+                {
+                    return;
+                }
 
                 if (!debounced)
                 {
@@ -1133,6 +1415,88 @@
                 );
             }
 
+            /**
+             * Removes all filters
+             */
+            clearFilters()
+            {
+                this.set( "filterList", [] );
+            }
+
+            /**
+             * Returns list of all filters (active/inactive)
+             * @return {Array}
+             */
+            getFilters()
+            {
+                return this.filterList;
+            }
+
+            /**
+             * Adds a filter
+             * @param {String} field
+             * @param {String} operator
+             * @param {*} value
+             * @param {Boolean} active
+             * @return {Boolean} success
+             */
+            addFilter( field, operator, value, active )
+            {
+                const index = this._columnIndexByFieldName[field];
+                if( index === undefined || !this._columns[index].filterable )
+                {
+                    return false;
+                }
+                this.push( "filterList", {
+                    property: field,
+                    operator: operator,
+                    value: value,
+                    active: active
+                } );
+                return true;
+            }
+
+            /**
+             * Returns array containing all fields that are visible
+             * @return {Array}
+             */
+            getVisibleFields()
+            {
+                let ret = [];
+                for(let i=0;i<this._columns.length;i++)
+                {
+                    let column = this._columns[i];
+                    if( column.hidden === false )
+                    {
+                        ret.push( column.field );
+                    }
+                }
+            }
+
+            /**
+             * @param {String} fieldName
+             * Shows column with corresponding fieldName if existing
+             */
+            showColumnByFieldName( fieldName )
+            {
+                if( this._columnIndexByFieldName[fieldName] !== undefined )
+                {
+                    this.set( '_columns.'+this._columnIndexByFieldName[fieldName]+'.hidden', false );
+                }
+            }
+
+            /**
+             * Hides column with corresponding fieldName if visible
+             */
+            hideColumnByFieldName( fieldName )
+            {
+                if( this._columnIndexByFieldName[fieldName] !== undefined)
+                {
+                    this.set( '_columns.'+this._columnIndexByFieldName[fieldName]+'.hidden', true );
+                }
+            }
+
+
             /*
              * lifecycle and initialization
              */
@@ -1155,6 +1519,25 @@
                 window.setTimeout(function() {
                     me._initColumnResizing();
                 }, 0);
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                if(this.itemUpdateEventName)
+                {
+                    this._updateListener = this._onItemUpdate.bind(this);
+                    document.addEventListener(this.itemUpdateEventName, this._updateListener);
+                }
+            }
+
+            disconnectedCallback() {
+                super.disconnectedCallback();
+
+                if(this._updateListener)
+                {
+                    document.removeEventListener(this._updateListener);
+                }
             }
 
             /**
@@ -1180,11 +1563,19 @@
                         const betweenKey = ActindoGridFilterHelper.operators.between.key;
                         const inKey = ActindoGridFilterHelper.operators.in.key;
                         const equalInOptionKey = ActindoGridFilterHelper.operators.equal_in_option.key;
+                        const equalBooleanKey = ActindoGridFilterHelper.operators.equal_boolean.key;
 
                         switch(operator.key)
                         {
                             case betweenKey:
-                                element = document.createElement('actindo-grid-filter-between-input');
+                                if (properties.inputType === 'Date')
+                                {
+                                    element = document.createElement('actindo-grid-filter-between-date');
+                                }
+                                else
+                                {
+                                    element = document.createElement('actindo-grid-filter-between-input');
+                                }
                                 break;
                             case inKey:
                                 element = document.createElement('actindo-grid-filter-in-input');
@@ -1192,15 +1583,78 @@
                             case equalInOptionKey:
                                 element = document.createElement('actindo-grid-filter-in-option-input');
                                 break;
+                            case equalBooleanKey:
+                                element = document.createElement('actindo-grid-filter-boolean');
+                                element.style = "position:relative; top: -10px";
+                                break;
                             default:
-                                element = document.createElement('paper-input');
+                                if (properties.inputType === 'Date')
+                                {
+                                    element = document.createElement('actindo-grid-filter-equal-date');
+                                }
+                                else
+                                {
+                                    element = document.createElement('paper-input');
+                                }
                                 break;
                         }
-                        element.label = 'Value';
+                        if( !element.label )
+                        {
+                            element.label = 'Value';
+                        }
                         Object.assign(element, properties);
                         return element;
                     }
                 };
+            }
+
+            /**
+             * Moves columns to new position
+             * @param {String} fieldName
+             * @param {Number} newIndex
+             */
+            setColumnToPositionIndex( fieldName, newIndex )
+            {
+                //Important because we can ensure that async updated _columnIndexByFieldName is correct
+                window.setTimeout(
+                    () => {
+                        const oldIndex = this._columnIndexByFieldName[fieldName];
+                        if( oldIndex !== undefined && oldIndex !== false )
+                        {
+                            this.splice( '_columns', newIndex, 0, this.splice( '_columns', oldIndex, 1)[0]);
+                        }
+                    }, 0
+                );
+            }
+
+            /**
+             * Get width in px of a column
+             * @return {String}
+             */
+            getColumnWidth( fieldName )
+            {
+                const dom = Polymer.dom(this.root);
+                fieldName = fieldName.replace( /\./g, "\\." );
+                const headerColumns = dom.querySelector('#gridHeader th[field-name='+fieldName+']');
+                let paddingLeftRight =
+                    parseFloat(window.getComputedStyle(headerColumns,null).getPropertyValue( 'padding-left' ))
+                    +parseFloat(window.getComputedStyle(headerColumns,null).getPropertyValue( 'padding-right' ));
+                return headerColumns ? headerColumns.clientWidth - paddingLeftRight : null;
+            }
+
+            /**
+             * @param {String} fieldName field of the column to be resized
+             * @param {Number} width in px
+             */
+            setColumnWidth( fieldName, width )
+            {
+                if( this._columnIndexByFieldName[fieldName] !== undefined && this._columns[this._columnIndexByFieldName[fieldName]].resizable === true )
+                {
+                    const dom = Polymer.dom(this.root);
+                    fieldName = fieldName.replace( /\./g, "\\." );
+                    let resizingColumns = dom.querySelectorAll('td[field-name='+fieldName+'],th[field-name='+fieldName+']');
+                    this._resizeColumn( resizingColumns, width );
+                }
             }
 
             _onRefreshTap()
@@ -1243,21 +1697,39 @@
                 this.scrollingItem = 'body';
             }
 
+
+            /**
+             * @private
+             */
+            _showMultiActions(multiActionsLength)
+            {
+                return multiActionsLength > 0;
+            }
+
             /**
              * @private
              */
             _positionCreateButton() {
-                if (!this.showCreateButton) return;
+                let id = null;
+                if( this.showCreateButton )
+                {
+                    id = 'createButton';
+                }
+                if( this.showMultiActions )
+                {
+                    id = 'multiActionContainer';
+                }
+                if (!id) return;
 
                 const dom = Polymer.dom(this.root);
                 const gridBody = dom.querySelector('#gridBody');
 
                 if (gridBody.scrollWidth > gridBody.clientWidth) {
-                    this.shadowRoot.querySelector('#createButton').style.bottom = '21px';
+                    this.shadowRoot.querySelector('#'+id).style.bottom = '21px';
                 }
 
                 if (gridBody.scrollHeight > gridBody.clientHeight) {
-                    this.shadowRoot.querySelector('#createButton').style.right = '21px';
+                    this.shadowRoot.querySelector('#'+id).style.right = '21px';
                 }
             }
 
@@ -1276,6 +1748,7 @@
                     if (this._xhr) {
                         return;
                     }
+
 
                     const totalVisibleColumns = this._displayColumns.length;
                     const headerColumns = dom.querySelectorAll('#gridHeaderTable th[data-index]');
@@ -1325,11 +1798,15 @@
                         if (!headerColumnWidth || !rowColumnWidth) {
                             return;
                         }
-
+                        window.clearInterval(interval);
+                        const field = this._displayColumns[i].field;
+                        if( this.widthByFieldName && this.widthByFieldName[field] )
+                        {
+                            this.setColumnWidth( field, this.widthByFieldName[field] );
+                            continue;
+                        }
                         // If first time render and the column configuration has min-width
-                        if ((i < this._displayColumns.length)
-                            && this._displayColumns[i].minWidth
-                            && this._isFirstTimeRenderLayout)
+                        else if (this._displayColumns[i].minWidth && this._isFirstTimeRenderLayout)
                         {
                             width = this._displayColumns[i].minWidth - 19.5;
                         } else if (headerColumnWidth > rowColumnWidth) {
@@ -1344,7 +1821,7 @@
                         headerColumns[i].setAttribute('style', styleString);
                         rowColumns[i].setAttribute('style', styleString);
 
-                        window.clearInterval(interval);
+                        this.widthByFieldName = {};
                     }
 
                     // Set checkbox width
@@ -1372,6 +1849,10 @@
 
                     this._positionCreateButton();
                     this._isProcessingInitLayout = false;
+                    for( let i = 0; i < this._displayColumns.length ; i++ )
+                    {
+                        this.widthByFieldName[this._displayColumns[i].field] = this.getColumnWidth( this._displayColumns[i].field );
+                    }
                 }, 50);
             }
 
@@ -1399,12 +1880,14 @@
                 document.addEventListener('mousemove', function(e) {
                     if (me.resizingColumns && me.resizingColumns.length) {
                         let paddedWidth = Math.max(me.resizingColumnOffset + e.pageX, 32);
-                        let width = paddedWidth - 19.5; // -19.5 is the width of the columns left/right padding
-                        let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
-
-                        for (let i = 0, c = me.resizingColumns.length; i < c; i++) {
-                            me.resizingColumns[i].setAttribute('style', styleText);
+                        if( !me._paddingLeftRight )
+                        {
+                            me._paddingLeftRight =
+                                parseFloat(window.getComputedStyle(me.resizingColumns[0],null).getPropertyValue( 'padding-left' ))
+                                +parseFloat(window.getComputedStyle(me.resizingColumns[0],null).getPropertyValue( 'padding-right' ));
                         }
+                        let width = paddedWidth - me._paddingLeftRight;
+                        me._resizeColumn( me.resizingColumns, width );
                     }
                 });
 
@@ -1417,9 +1900,75 @@
                 });
             }
 
+            /**
+             * Performs column resizing;
+             * @param {Array} list of table cells of that column in all rows and header
+             * @param {Number} width in px
+             */
+            _resizeColumn( list, width )
+            {
+                if( typeof this.widthByFieldName !== 'object' )
+                {
+                    this.widthByFieldName = {};
+                }
+                let styleText = 'width: ' + width + 'px; min-width: ' + width + 'px; max-width: ' + width + 'px;';
+                for (let i = 0, c = list.length; i < c; i++) {
+                    list[i].setAttribute('style', styleText);
+                    if( i === 0 ) //Once is enough
+                    {
+                        this.widthByFieldName[list[i].getAttribute( 'field-name' )] = width;
+                    }
+                }
+                this._resizeDebouncer = Polymer.Debouncer.debounce( //Important to resize because called by mousemove event
+                    this._resizeDebouncer,
+                    Polymer.Async.timeOut.after(500),
+                    () => {
+                    this.dispatchEvent(  new CustomEvent( "after-resize" ) );
+                } )
+            }
+
+            /**
+             * Initialize sorting
+             * @param {String} fieldName
+             * @param {String} order ASC or DESC not case sensitive
+             */
+            setSortOrder( fieldName, order )
+            {
+                order = order.toLowerCase();
+                if( order !== 'asc' && order !== 'desc' )
+                {
+                    throw "Unknown sort order";
+                }
+                if( !this._columnIndexByFieldName[fieldName] === undefined )
+                {
+                    throw "Unknown field";
+                }
+                let column = this._columns[this._columnIndexByFieldName[fieldName]];
+                if( !column.sortable )
+                {
+                    throw "Column not sortable"
+                }
+                this.set( "sort", {field:fieldName, order: order === 'asc' } );
+            }
+
+            removeSorting()
+            {
+                this.set( 'sort', {} );
+            }
+
             /*
              * event callbacks
              */
+
+            _onSortChanged()
+            {
+                this.dispatchEvent( new CustomEvent( 'sort-changed' ) );
+            }
+
+            _inactiveFilterChanged()
+            {
+                this.dispatchEvent( new CustomEvent( "inactive-filter-changed", {} ) );
+            }
 
             /**
              * called when the table head is tapped. Check if the tapped column is sortable and if so, sort by it
@@ -1491,6 +2040,11 @@
                 this.firstPage();
             }
 
+            _isCheckBox(e)
+            {
+                return e.target.tagName === 'PAPER-CHECKBOX' || e.target.className === "checkbox";
+            }
+
             /**
              * called when a row in the table is tapped. If row tapping should select the row and a selection mode
              * is active, the tapped row is selected
@@ -1498,12 +2052,22 @@
              */
             _onRowTap(e) {
                 e.stopPropagation();
-                if(!this.selectionMode || (e.target.tagName !== 'PAPER-CHECKBOX' && this.disableTapRowToSelect))
+                let index = e.model.index;
+                let row = this.items[index];
+                if (this.rowClickMode === 'single' && !this._isCheckBox(e))
+                {
+                    this.dispatchEvent( new CustomEvent( "row-click", {detail: row } ) );
+                    return;
+                }
+                if (this.rowClickMode === 'double' && e.type === 'dblclick')
+                {
+                    this.dispatchEvent( new CustomEvent( "row-click", {detail: row } ) );
+                    return;
+                }
+                if(!this.selectionMode || (!this._isCheckBox(e) && this.disableTapRowToSelect))
                 {
                     return;
                 }
-                let index = e.model.index;
-                let row = this.items[index];
 
                 if(this._propertyEvaluatesTrue(this.disabledField, this.items[index])) {
                     // field is disabled, no interaction possible
@@ -1681,11 +2245,12 @@
              */
             _onColumnConfigurationChanged(columns)
             {
-                const column = columns.value;
+                let displayColumns = this._columns.filter(item => item.hidden === false);
 
-                if (typeof columns.value !== 'object')
+                this._columnIndexByFieldName = {};
+                for(let i=0;i<columns.base.length;i++)
                 {
-                    return;
+                    this._columnIndexByFieldName[columns.base[i].field] = i;
                 }
 
                 let displayColumns = this._columns.filter(item => item.hidden === false);
@@ -1765,18 +2330,19 @@
                 }
 
                 this._columns = columns;
+                this._columnIndexByFieldName = {};
+                for(let i=0;i<columns.length;i++)
+                {
+                    this._columnIndexByFieldName[columns[i].field] = i;
+                }
                 this._filterColumns = filterColumns;
                 this._serializeOptionals = serializeOptionals;
 
             }
 
-            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
-            {
-
-
+            _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals) {
                 let me = this;
-                let request = remoteParams;
-                this._error = false;
+                let request = JSON.parse( JSON.stringify( remoteParams ) );
                 if( !this.pagingDisabled )
                 {
                     // pagination
@@ -1800,7 +2366,13 @@
                     });
                 }
 
+                if( remoteParams[remoteParamFilter] !== undefined && Array.isArray( remoteParams[remoteParamFilter] ) ) //Take into account any filters that are hardcoded
+                {
+                    request[remoteParamFilter] = request[remoteParamFilter].concat( remoteParams[remoteParamFilter] );
+                }
+
                 request[this.remoteParamSerializeOptionals] = serializeOptionals;
+
 
                 // searching
                 if(query.length) {
@@ -1813,6 +2385,23 @@
                         }
                     }
                 }
+                else {
+                    request[remoteParamSearch] = "";
+                }
+
+                return request;
+            }
+
+            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
+            {
+
+                if( !remote )
+                {
+                    return;
+                }
+                let me = this;
+                let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals);
+                this._error = false;
 
                 if( this._xhr )
                 {
@@ -1831,6 +2420,12 @@
                             let data = JSON.parse(me._xhr.responseText);
                             me._setTotalItems(Polymer.Path.get(data, remotePathCount));
                             me.items = Polymer.Path.get(data, remotePathData);
+                            me._containedEntities = me.items.map(function(item) {
+                                return Polymer.Path.get(item, me.entityIdentifyingField);
+                            }).filter(function(value, index, self) {
+                                return self.indexOf(value) === index;
+                            });
+                            me.dispatchEvent( new CustomEvent( "after-load", {detail: data} ) );
                         }
                         else if( me._xhr.status !== 0 )
                         {
@@ -1919,6 +2514,80 @@
             }
 
             /**
+             * Callback of click event of an action button
+             * @param {Event} e
+             * @private
+             */
+            _onMultiActionClick(e)
+            {
+                this.dispatchEvent(new CustomEvent(e.model.get('item.event'), {
+                    detail: {
+                        event: e,
+                        model: e.model,
+                        item: e.model.item
+                    }
+                }));
+                this._onMultiActionsClick(); //trigger closing
+            }
+
+            /**
+             * Callback of click event of + button of multi actions
+             * @private
+             */
+            _onMultiActionsClick()
+            {
+                this._multiActionsActive = !this._multiActionsActive;
+                //trigger the fab rotation
+                const fab = Polymer.dom(this.root).querySelector('#multiActionsButton');
+                if( this._multiActionsActive )
+                {
+                    fab.classList.add("active");
+                }
+                else
+                {
+                    fab.classList.remove("active");
+                }
+            }
+
+            /**
+             * Observer of _multiActionsActive property; handles animation timings
+             * @param {Boolean} newValue
+             * @private
+             */
+            _multiActionsActiveChanged( newValue )
+            {
+                const elements = Polymer.dom( this.root ).querySelectorAll( "div.actionContainer" );
+                const overlay = Polymer.dom( this.root ).querySelector('#multiActionsOverlay');
+                const container = Polymer.dom( this.root ).querySelector('#multiActionsRepeatContainer');
+                const offset = 100;
+                if( newValue )
+                {
+                    overlay.classList.remove( "invisible" );
+                    container.classList.remove( "invisible" );
+                    for(let i=0;i<elements.length;i++)
+                    {
+                        window.setTimeout( () => { elements[i].classList.remove( "invisible" ) }, (elements.length-i)*offset );
+                    }
+                }
+                else
+                {
+                    for(let i=0;i<elements.length;i++)
+                    {
+                        window.setTimeout( () => {
+                            elements[i].classList.add( "invisible" );
+                            if( i === elements.length-1 )
+                            {
+                                window.setTimeout( () => {
+                                    overlay.classList.add("invisible");
+                                    container.classList.add( "invisible" );
+                                    }, offset );
+                            }
+                        }, i*offset );
+                    }
+                }
+            }
+
+            /**
              * @private
              */
             _onItemsPerPageChanged() {
@@ -1933,6 +2602,65 @@
              */
             _isItemsPerPageSelected(selectedItem) {
                 return this._itemsPerPage === selectedItem;
+            }
+
+            /**
+             * this is called when we receive updated data (i.e. any entity was changed - system wide). Now we'll check
+             * if that entity is currently being displayed in this grid, and if it is, we change all the updated data
+             * so this grid reflects the changes.
+             * To check if the received entity is an item in our grid, we check if both "entityIdentifyingField" and
+             * "_identifyingColumn.field" exist on the received entity and in one of our grid items. If both match, it's
+             * the same entity and we update it.
+             *
+             * @private
+             * @param {{detail: {}}} e
+             */
+            _onItemUpdate(e) {
+                let data = e.detail; // contains the updated entity
+
+                if(!this.entityIdentifyingField || !this._identifyingColumn)
+                {
+                    // we're not fully configured t3o check identities
+                    return;
+                }
+                let entityField = this.entityIdentifyingField;
+                let idField = this._identifyingColumn.field;
+
+                if(!data.hasOwnProperty(entityField) || !data.hasOwnProperty(idField))
+                {
+                    // received entity does not contain the fields we need for our identity check
+                    return;
+                }
+
+                if(-1 === this._containedEntities.indexOf(data[entityField]))
+                {
+                    // our grid does not contain items of the same type as the received entity
+                    return;
+                }
+
+                // walk through all items
+                for(let i = 0, c = this.items.length; i < c; i++)
+                {
+                    let item = this.items[i];
+                    if(!item.hasOwnProperty(entityField) || !item.hasOwnProperty(idField))
+                    {
+                        // item does not contain the fields we need for our identity check
+                        continue;
+                    }
+
+                    if(item[entityField] === data[entityField] && item[idField] === data[idField])
+                    {
+                        // we have lift-off, we're actually displaying the received entity, update it!
+                        for(let key in data)
+                        {
+                            if(data.hasOwnProperty(key))
+                            {
+                                this.set('items.' + i + '.' + key, data[key]);
+                            }
+                        }
+                        break;
+                    }
+                }
             }
 
             /*
@@ -2005,6 +2733,19 @@
              */
             _canPageForward(page, itemsPerPage, totalItems) {
                 return this._getItemsTo(page, itemsPerPage, totalItems) < totalItems;
+            }
+
+            _displayFrozenInfo(item, frozenByField) {
+                if(item.base[frozenByField])
+                {
+                    let name = item.base[frozenByField];
+                    if(name.split('-')[1]) { // only show userName if we get "loginName - userName"
+                        name = name.split('-')[1];
+                    }
+                    return 'in Bearbeitung durch ' + item.base[frozenByField].split('-')[1];
+                }
+
+                return '';
             }
 
             /**
