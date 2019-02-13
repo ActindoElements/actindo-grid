@@ -1,4 +1,4 @@
-<dom-module id="actindo-grid-filter-in-input">
+<dom-module id="actindo-grid-filter-in-input2">
     <template>
         <style>
             input {
@@ -24,7 +24,7 @@
                 display: flex;
                 flex-wrap: wrap;
             }
-            actindo-grid-filter-tag
+            actindo-grid-filter-tag2
             {
                 --filter-tag-container: {
                     background-color: var(--actindo-primary);
@@ -46,14 +46,14 @@
             <label hidden$="[[_computeLabelVisibility(label)]]" aria-hidden="true" for="input"  slot="label">[[label]]</label>
             <div slot="input" class="container">
                 <template is="dom-repeat" items="{{value}}" as="item">
-                    <actindo-grid-filter-tag
+                    <actindo-grid-filter-tag2
                         active="{{active}}"
                         on-remove="_remove"
                         no-self-remove
                         no-check-box
                     >
                         <div slot="content">[[item]]</div>
-                    </actindo-grid-filter-tag>
+                    </actindo-grid-filter-tag2>
                 </template>
                 <iron-a11y-keys keys="enter backspace" on-keys-pressed="_onKeyPress">
                     <iron-input id="input" bind-value="{{_inputValue}}">
@@ -66,8 +66,8 @@
     </template>
 
     <script>
-        class ActindoGridFilterInInput extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter-in-input'; }
+        class ActindoGridFilterInInput2 extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-in-input2'; }
 
             static get properties() {
                 return {
@@ -149,6 +149,6 @@
                 return value.toString();
             }
         }
-        customElements.define(ActindoGridFilterInInput.is, ActindoGridFilterInInput);
+        customElements.define(ActindoGridFilterInInput2.is, ActindoGridFilterInInput2);
     </script>
 </dom-module>

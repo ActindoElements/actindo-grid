@@ -76,16 +76,12 @@
             String: [
                 operators.like,
                 operators.equal,
-                operators.in
             ],
             Boolean: [
                 operators.equal_boolean
             ],
             Number: numberOperators,
-            Date: [
-                operators.equal,
-                operators.between
-            ],
+            Date: relationalOperators,
             default: [
                 operators.matches
             ],
