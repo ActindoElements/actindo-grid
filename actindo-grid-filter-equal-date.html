@@ -11,7 +11,9 @@
         <div class="container">
             <actindo-date-picker
                 label="Select date"
-                value="{{value}}"
+                id="datepicker"
+                value="{{displayValue}}"
+                on-value-changed="_onDateSelect"
             ></actindo-date-picker>
         </div>
     </template>
@@ -22,15 +24,28 @@
 
             static get properties() {
                 return {
+                    displayValue: {
+                        type: String
+                    },
                     value: {
                         type: String,
-                        notify: true
+                        notify: true,
+                        observer: '_onDateSelect'
                     }
                 }
             }
             getDisplayValue(value)
             {
                  return `${value}`;
+            }
+            
+            _onDateSelect() {
+                if(this.$.datepicker._date)
+                {
+                    let date = this.$.datepicker._date;
+                    date.setHours(12);
+                    this.value = date.toISOString().substr(0, 10);
+                }
             }
         }
         customElements.define(ActindoGridFilterEqualDate2.is, ActindoGridFilterEqualDate2);

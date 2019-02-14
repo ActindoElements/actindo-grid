@@ -71,7 +71,6 @@
             operators.greater_or_equal,
             operators.not_equal_to
         ];
-        const numberOperators = relationalOperators.concat(operators.in);
         const operatorList =  {
             String: [
                 operators.like,
@@ -80,7 +79,7 @@
             Boolean: [
                 operators.equal_boolean
             ],
-            Number: numberOperators,
+            Number: relationalOperators,
             Date: relationalOperators,
             default: [
                 operators.matches
