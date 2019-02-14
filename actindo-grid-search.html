@@ -1,6 +1,6 @@
-<!--<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">-->
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
 
-<dom-module id="actindo-grid-search2">
+<dom-module id="actindo-grid-search">
     <template>
         <style>
             :host([collapsed]) #input {
@@ -20,8 +20,8 @@
     </template>
 
     <script>
-        class ActindoGridSearch2 extends Polymer.Element {
-            static get is() { return 'actindo-grid-search2'; }
+        class ActindoGridSearch extends Polymer.Element {
+            static get is() { return 'actindo-grid-search'; }
 
             static get properties() {
                 return {
@@ -121,6 +121,6 @@
             }
         }
 
-        customElements.define(ActindoGridSearch2.is, ActindoGridSearch2);
+        customElements.define(ActindoGridSearch.is, ActindoGridSearch);
     </script>
 </dom-module>

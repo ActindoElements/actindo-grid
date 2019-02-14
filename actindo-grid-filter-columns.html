@@ -1,4 +1,4 @@
-<dom-module id="actindo-grid-filter-columns2">
+<dom-module id="actindo-grid-filter-columns">
     <template>
         <style include="actindo-level-style">
 
@@ -50,7 +50,7 @@
             {
                 margin-right: 5px;
             }
-            actindo-grid-filter-tag2
+            actindo-grid-filter-tag
             {
                 --filter-tag-container: {
                     cursor: move;
@@ -73,7 +73,7 @@
             <sortable-js class="content" on-end="_onDragFinish" handle=".item">
                 <template is="dom-repeat" items="{{_displayColumns}}" as="item" indexAs="index">
                     <div class="item">
-                        <actindo-grid-filter-tag2
+                        <actindo-grid-filter-tag
                             active="{{active}}"
                             noCheckBox="[[true]]"
                             on-remove="_onRemove"
@@ -84,7 +84,7 @@
                                 <span class="index">[[_getColumnPosition(_columnPosition.*, item.field)]]</span>
                                 <span class="name">[[item.label]]</span>
                             </div>
-                        </actindo-grid-filter-tag2>
+                        </actindo-grid-filter-tag>
                     </div>
                 </template>
             </sortable-js>
@@ -115,8 +115,8 @@
     </template>
 
     <script>
-        class ActindoGridFilterColumns2 extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter-columns2'; }
+        class ActindoGridFilterColumns extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-columns'; }
 
             static get properties() {
                 return {
@@ -267,6 +267,6 @@
             }
         }
 
-        customElements.define(ActindoGridFilterColumns2.is, ActindoGridFilterColumns2);
+        customElements.define(ActindoGridFilterColumns.is, ActindoGridFilterColumns);
     </script>
 </dom-module>
