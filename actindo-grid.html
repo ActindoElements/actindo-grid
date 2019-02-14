@@ -2089,7 +2089,11 @@
                         let selected = [];
                         for(let i = 0, c = this.items.length; i < c; i++)
                         {
-                            selected.push(this.items[i]);
+                            const isLocked = Polymer.Path.get(this.items[i], this.lockedField);
+                            if (!isLocked) {
+                                selected.push(this.items[i]);
+                            }
+                            
                         }
                         this.set('selectedItems', selected);
                     }
