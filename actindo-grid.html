@@ -1,7 +1,7 @@
-<link rel="import" href="../../bower_components/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">
-<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">
-<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">
+<!--<link rel="import" href="../../bower_components/paper-spinner/paper-spinner-lite.html">-->
+<!--<link rel="import" href="../../bower_components/iron-icon/iron-icon.html">-->
+<!--<link rel="import" href="../../bower_components/paper-icon-button/paper-icon-button.html">-->
+<!--<link rel="import" href="../../bower_components/paper-checkbox/paper-checkbox.html">-->
 <link rel="import" href="actindo-grid-cell-content.html">
 <link rel="import" href="actindo-grid-search.html">
 <link rel="import" href="actindo-grid-filter-helper.html">
@@ -36,7 +36,7 @@
 - hidden columns that can be shown manually
 
 -->
-<dom-module id="actindo-grid">
+<dom-module id="actindo-grid2">
     <template>
         <style include="actindo-level-style">
             :host {
@@ -581,20 +581,20 @@
             
             <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
                 <slot name="noSelectionActions"></slot>
-                <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
+                <actindo-grid-search2 query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search2>
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="_onRefreshTap"></paper-icon-button>
 
                 <template is="dom-if" if="[[_isHeaderSingleMode()]]">
-                    <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                    <actindo-grid-filter-configurator2 on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
                         <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
                         <span slot="content">Columns ([[_displayColumns.length]])</span>
-                    </actindo-grid-filter-configurator>
+                    </actindo-grid-filter-configurator2>
 
                     <template is="dom-if" if="[[_filterColumns.length]]">
-                        <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
+                        <actindo-grid-filter-configurator2 on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
                             <span slot="content">Filter ([[filterList.length]])</span>
-                        </actindo-grid-filter-configurator>
+                        </actindo-grid-filter-configurator2>
                     </template>
                 </template>
             </div>
@@ -606,34 +606,34 @@
                     <slot name="secondLineContent"></slot>
                 </div>
                 <div class="header-second-line-icons">
-                    <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                    <actindo-grid-filter-configurator2 on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
                         <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
                         <span slot="content">Columns ([[_displayColumns.length]])</span>
-                    </actindo-grid-filter-configurator>
+                    </actindo-grid-filter-configurator2>
 
                     <template is="dom-if" if="[[_filterColumns.length]]">
-                        <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
+                        <actindo-grid-filter-configurator2 on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
                             <span slot="content">Filter ([[filterList.length]])</span>
-                        </actindo-grid-filter-configurator>
+                        </actindo-grid-filter-configurator2>
                     </template>
                 </div>
             </div>
         </template>
 
         <template is="dom-if" if="[[_showFilterArea]]">
-            <actindo-grid-filter
+            <actindo-grid-filter2
                     style-level="[[styleLevel]]"
                 filter-list="{{filterList}}"
                 filter-columns="{{_filterColumns}}"
                 on-inactive-filter-changed="_inactiveFilterChanged"
             >
-            </actindo-grid-filter>
+            </actindo-grid-filter2>
         </template>
 
         <template is="dom-if" if="[[_showColumnsArea]]">
-            <actindo-grid-filter-columns style-level="[[styleLevel]]" columns="{{_columns}}">
-            </actindo-grid-filter-columns>
+            <actindo-grid-filter-columns2 style-level="[[styleLevel]]" columns="{{_columns}}">
+            </actindo-grid-filter-columns2>
         </template>
 
         <div id="gridContainer">
@@ -683,14 +683,14 @@
                                 </td>
                             </template>
                             <template is="dom-repeat" items="{{_columns}}" as="column" filter="_isColumnVisibile" observe="hidden">
-                                <td field-name$="[[column.field]]" class$="c[[index]] row-column"><actindo-grid-cell-content row="[[row]]" column="[[column]]"></actindo-grid-cell-content></td>
+                                <td field-name$="[[column.field]]" class$="c[[index]] row-column"><actindo-grid-cell-content2 row="[[row]]" column="[[column]]"></actindo-grid-cell-content2></td>
                             </template>
                             <td><div class="frozenDisplay"><iron-icon icon="info"></iron-icon> [[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
                         </tr>
                     </template>
                     
                     <template is="dom-if" if="[[_error]]">
-                        <actindo-grid-error></actindo-grid-error>
+                        <actindo-grid-error2></actindo-grid-error2>
                     </template>
                     </tbody>
                 </table>
@@ -750,8 +750,8 @@
         </template>
     </template>
     <script>
-        class ActindoGrid extends Polymer.Element {
-            static get is() { return 'actindo-grid'; }
+        class ActindoGrid2 extends Polymer.Element {
+            static get is() { return 'actindo-grid2'; }
 
             static get properties() {
                 return {
@@ -1554,27 +1554,27 @@
                             case betweenKey:
                                 if (properties.inputType === 'Date')
                                 {
-                                    element = document.createElement('actindo-grid-filter-between-date');
+                                    element = document.createElement('actindo-grid-filter-between-date2');
                                 }
                                 else
                                 {
-                                    element = document.createElement('actindo-grid-filter-between-input');
+                                    element = document.createElement('actindo-grid-filter-between-input2');
                                 }
                                 break;
                             case inKey:
-                                element = document.createElement('actindo-grid-filter-in-input');
+                                element = document.createElement('actindo-grid-filter-in-input2');
                                 break;
                             case equalInOptionKey:
-                                element = document.createElement('actindo-grid-filter-in-option-input');
+                                element = document.createElement('actindo-grid-filter-in-option-input2');
                                 break;
                             case equalBooleanKey:
-                                element = document.createElement('actindo-grid-filter-boolean');
+                                element = document.createElement('actindo-grid-filter-boolean2');
                                 element.style = "position:relative; top: -10px";
                                 break;
                             default:
                                 if (properties.inputType === 'Date')
                                 {
-                                    element = document.createElement('actindo-grid-filter-equal-date');
+                                    element = document.createElement('actindo-grid-filter-equal-date2');
                                 }
                                 else
                                 {
@@ -2863,6 +2863,6 @@
             }
         }
 
-        customElements.define(ActindoGrid.is, ActindoGrid);
+        customElements.define(ActindoGrid2.is, ActindoGrid2);
     </script>
 </dom-module>
