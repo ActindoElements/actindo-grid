@@ -1,6 +1,6 @@
-<!--<link rel="import" href="../actindo-date-picker/actindo-date-picker.html">-->
+<link rel="import" href="../actindo-date-picker/actindo-date-picker.html">
 
-<dom-module id="actindo-grid-filter-equal-date2">
+<dom-module id="actindo-grid-filter-equal-date">
     <template>
         <style>
             .container
@@ -19,8 +19,8 @@
     </template>
 
     <script>
-        class ActindoGridFilterEqualDate2 extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter-equal-date2'; }
+        class ActindoGridFilterEqualDate extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-equal-date'; }
 
             static get properties() {
                 return {
@@ -48,6 +48,6 @@
                 }
             }
         }
-        customElements.define(ActindoGridFilterEqualDate2.is, ActindoGridFilterEqualDate2);
+        customElements.define(ActindoGridFilterEqualDate.is, ActindoGridFilterEqualDate);
     </script>
 </dom-module>

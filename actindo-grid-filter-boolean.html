@@ -1,5 +1,5 @@
-<!--<link rel="import" href="../actindo-toggle-button/actindo-toggle-button.html">-->
-<dom-module id="actindo-grid-filter-boolean2">
+<link rel="import" href="../actindo-toggle-button/actindo-toggle-button.html">
+<dom-module id="actindo-grid-filter-boolean">
     <template>
         <style>
 
@@ -7,11 +7,11 @@
         <paper-toggle-button checked="{{checked}}"></paper-toggle-button>
     </template>
     <script>
-        class ActindoGridFilterBoolean2 extends Polymer.Element
+        class ActindoGridFilterBoolean extends Polymer.Element
         {
             static get is()
             {
-                return "actindo-grid-filter-boolean2";
+                return "actindo-grid-filter-boolean";
             }
             static get properties()
             {
@@ -38,6 +38,6 @@
                 return value ? "true" : "false";
             }
         }
-        customElements.define( ActindoGridFilterBoolean2.is, ActindoGridFilterBoolean2 )
+        customElements.define( ActindoGridFilterBoolean.is, ActindoGridFilterBoolean )
     </script>
 </dom-module>

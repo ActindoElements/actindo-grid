@@ -1,4 +1,4 @@
-<dom-module id="actindo-grid-filter-item2">
+<dom-module id="actindo-grid-filter-item">
     <template>
         <style include="actindo-level-style">
 
@@ -25,7 +25,7 @@
                 height: 100%;
                 padding: 1px;
             }
-            actindo-grid-filter-tag2
+            actindo-grid-filter-tag
             {
                 --filter-tag-container: {
                     background-color: var(--actindo-primary);
@@ -51,7 +51,7 @@
         </style>
         <div class="container">
             
-            <actindo-grid-filter-tag2
+            <actindo-grid-filter-tag
                     style-level="[[styleLevel]]"
                 active="{{active}}"
                 no-check-box="[[_tagNoCheckBox]]"
@@ -63,9 +63,9 @@
                     <paper-icon-button icon="icons:arrow-drop-down"></paper-icon-button>
                 </paper-button>
                 
-            </actindo-grid-filter-tag2>
+            </actindo-grid-filter-tag>
 
-            <actindo-grid-filter-edit2
+            <actindo-grid-filter-edit
                 editing
                 active="[[active]]"
                 filter="[[filter]]"
@@ -74,13 +74,13 @@
                 filter-name="[[_label]]"
                 id="edit"
             >
-            </actindo-grid-filter-edit2>
+            </actindo-grid-filter-edit>
         </div>
     </template>
     <script>
 
-        class ActindoGridFilterItem2 extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter-item2'; }
+        class ActindoGridFilterItem extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-item'; }
 
             static get properties() {
                 return {
@@ -210,7 +210,7 @@
             }
         }
 
-        customElements.define(ActindoGridFilterItem2.is, ActindoGridFilterItem2);
+        customElements.define(ActindoGridFilterItem.is, ActindoGridFilterItem);
 
     </script>
 </dom-module>

@@ -1,4 +1,4 @@
-<dom-module id="actindo-grid-filter2">
+<dom-module id="actindo-grid-filter">
     <template>
         <style include="actindo-level-style">
 
@@ -61,20 +61,20 @@
         <div class="container" id="container">
             <div class="content">
                 <template is="dom-repeat" items="{{filterList}}" as="item">
-                    <actindo-grid-filter-item2
+                    <actindo-grid-filter-item
                         on-remove="_removeFilter"
                         on-edit="_editFilter"
                         columns="[[filterColumns]]"
                         filter="{{item}}">
-                    </actindo-grid-filter-item2>
+                    </actindo-grid-filter-item>
                 </template>
             </div>
             <div class="actions">
-                <actindo-grid-filter-form2
+                <actindo-grid-filter-form
                     columns="[[filterColumns]]"
                     on-save="_createNewFilter"
                     id="dialog">
-                </actindo-grid-filter-form2>
+                </actindo-grid-filter-form>
             </div>
             <template is="dom-if" if="[[filterList.length]]">
                 <paper-icon-button on-click="_deleteMultiple" icon="delete" class="clear-icon">
@@ -85,8 +85,8 @@
     </template>
 
     <script>
-        class ActindoGridFilter2 extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter2'; }
+        class ActindoGridFilter extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter'; }
 
             static get properties() {
                 return {
@@ -154,6 +154,6 @@
             }
         }
 
-        customElements.define(ActindoGridFilter2.is, ActindoGridFilter2);
+        customElements.define(ActindoGridFilter.is, ActindoGridFilter);
     </script>
 </dom-module>
