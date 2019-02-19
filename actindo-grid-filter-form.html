@@ -228,6 +228,11 @@
             {
                 let {property, operator, value} = this;
 
+                if (!property || !operator || !value)
+                {
+                    return;
+                }
+
                 this.dispatchEvent( new CustomEvent("save", {detail: {
                     property: property,
                     operator: operator,
