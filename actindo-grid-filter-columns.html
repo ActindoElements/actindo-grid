@@ -61,6 +61,12 @@
                 };
                 
             }
+            actindo-grid-filter-tag.not-allowed-removing-true
+            {
+                --filter-tag-content: {
+                    padding-right: 15px;
+                };
+            }
            
             .item span.index
             {
@@ -74,10 +80,12 @@
                 <template is="dom-repeat" items="{{_displayColumns}}" as="item" indexAs="index">
                     <div class="item">
                         <actindo-grid-filter-tag
+                            class$="not-allowed-removing-[[_notAllowedRemoving]]"
                             active="{{active}}"
                             noCheckBox="[[true]]"
                             on-remove="_onRemove"
                             no-self-remove
+                            no-remove-button="[[_notAllowedRemoving]]"
                             id="[[item.field]]"
                         >
                             <div class="tag-content" slot="content">
@@ -168,8 +176,11 @@
                     _loaded: {
                         type: Boolean,
                         value: false
+                    },
+                    _notAllowedRemoving: {
+                        type: Boolean,
+                        computed: '_isNotAllowedRemoving(_displayColumns.length)'
                     }
-                    
                 };
             }
 
@@ -240,7 +251,7 @@
             {
                 const fieldValue = event.detail.id;
                 const index = this._displayColumns.findIndex(item => item.field === fieldValue);
-                
+
                 if(index != -1)
                 {
                     const column = this.splice('_displayColumns', index, 1)[0];
@@ -264,6 +275,11 @@
                 }
                 this._displayColumns.splice(e.newIndex, 0, this._displayColumns.splice(e.oldIndex, 1)[0]);
                 this._updateColumnPosition(this._displayColumns);
+            }
+
+            _isNotAllowedRemoving(displayColumnsLength)
+            {
+                return displayColumnsLength === 1;
             }
         }
 
