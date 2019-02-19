@@ -2043,6 +2043,7 @@
                     {
                         const lastSelectedIndex = this._lastSelectedIndizes[this._lastSelectedIndizes.length-1];
                         //While holding shift we have to select all between last selected and the current pressed; any selections made without releasing the shift key afterwards have to be undone; finder behaviour
+                        //@todo increase performance we should only remove those that really have to be removed
                         for(let i=0;i<this.lastAddedWhileShift.length;i++)
                         {
                             const indexInSelected = this.selectedItems.indexOf( this.lastAddedWhileShift[i] );
