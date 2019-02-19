@@ -60,6 +60,8 @@
                     {
                         switch(column.type) {
                             case Number:
+                                node = value ? document.createTextNode(value.toLocaleString()) : document.createTextNode('');
+                                break;
                             case Date:
                                 // Use long format with date and time by default:
                                 // - February 18, 2019 2:15 PM
