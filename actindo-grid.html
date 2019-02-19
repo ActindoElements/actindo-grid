@@ -690,7 +690,7 @@
                     </template>
                     
                     <template is="dom-if" if="[[_error]]">
-                        <actindo-grid-error></actindo-grid-error>
+                        <actindo-grid-error id="errorComponent"></actindo-grid-error>
                     </template>
                     </tbody>
                 </table>
@@ -2387,10 +2387,11 @@
                         }
                         else if( me._xhr.status !== 0 )
                         {
-
-                            me._xhr = null;
+                            console.error(me._xhr.response);
                             me._error = true;
-                            console.error(me.xhr.response);
+                            let message = me._xhr.responseText;
+                            window.setTimeout(() => { Polymer.dom(me.root).querySelector('#errorComponent').message = message; }, 0);
+
                         }
                         me._xhr = null;
                     }
