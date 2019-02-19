@@ -1,4 +1,4 @@
-<dom-module id="actindo-grid-filter-columns">
+<dom-module id="actindo-grid-filter-columns2">
     <template>
         <style include="actindo-level-style">
 
@@ -123,8 +123,8 @@
     </template>
 
     <script>
-        class ActindoGridFilterColumns extends Polymer.Element {
-            static get is() { return 'actindo-grid-filter-columns'; }
+        class ActindoGridFilterColumns2 extends Polymer.Element {
+            static get is() { return 'actindo-grid-filter-columns2'; }
 
             static get properties() {
                 return {
@@ -170,13 +170,7 @@
                     _columnPosition: {
                         type: Object
                     },
-                    /**
-                     * Internal property, columns properties first loaded 
-                     */
-                    _loaded: {
-                        type: Boolean,
-                        value: false
-                    },
+
                     _notAllowedRemoving: {
                         type: Boolean,
                         computed: '_isNotAllowedRemoving(_displayColumns.length)'
@@ -190,7 +184,7 @@
 
             static get observers() {
                 return [
-                    '_onColumnsChanged(columns.*)'
+                    '_onColumnsChanged(columns.*, displayColumns.*)'
                 ];
             }
 
@@ -201,19 +195,15 @@
             
             _onColumnsChanged(columns)
             {
-                if (this._loaded)
-                {
-                    return;
-                }
-                const columnValue = columns.value;
+                const columnValue = columns.base;
 
                 const displayColumns = columnValue.filter(item => item.hidden === false);
                 const hiddenColumns = columnValue.filter(item => item.hidden === true);
                 this._updateColumnPosition(displayColumns);
+
                 this.setProperties({
                     _displayColumns: displayColumns,
                     _hiddenColumns: hiddenColumns,
-                    _loaded: true
                 })
             }
             
@@ -283,6 +273,6 @@
             }
         }
 
-        customElements.define(ActindoGridFilterColumns.is, ActindoGridFilterColumns);
+        customElements.define(ActindoGridFilterColumns2.is, ActindoGridFilterColumns2);
     </script>
 </dom-module>
