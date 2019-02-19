@@ -195,6 +195,8 @@
             
             _onColumnsChanged(columns)
             {
+                //This is only called when this component is shown (template-if)
+                //In most cases this component is not shown when changing the columns from the outside
                 const columnValue = columns.base;
 
                 const displayColumns = columnValue.filter(item => item.hidden === false);
