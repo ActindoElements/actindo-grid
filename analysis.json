@@ -89,7 +89,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridCellContent",
       "attributes": [
         {
@@ -332,7 +332,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridSearch",
       "attributes": [
         {
@@ -538,7 +538,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterInOprionInput",
       "attributes": [
         {
@@ -1040,7 +1040,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterEdit",
       "attributes": [
         {
@@ -1342,7 +1342,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilter",
       "attributes": [
         {
@@ -1473,7 +1473,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterBetweenInput",
       "attributes": [
         {
@@ -1759,7 +1759,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterInInput",
       "attributes": [
         {
@@ -2117,7 +2117,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterItem",
       "attributes": [
         {
@@ -2373,7 +2373,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterTag",
       "attributes": [
         {
@@ -2605,7 +2605,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterEqualDate",
       "attributes": [
         {
@@ -2755,7 +2755,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterBetweenDate",
       "attributes": [
         {
@@ -2830,7 +2830,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridError",
       "attributes": [
         {
@@ -2936,7 +2936,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterConfigurator",
       "attributes": [
         {
@@ -3331,7 +3331,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterForm",
       "attributes": [
         {
@@ -3560,7 +3560,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterBoolean",
       "attributes": [
         {
@@ -3754,37 +3754,17 @@
           }
         },
         {
-          "name": "_loaded",
-          "type": "boolean",
-          "description": "Internal property, columns properties first loaded",
-          "privacy": "protected",
-          "sourceRange": {
-            "start": {
-              "line": 175,
-              "column": 20
-            },
-            "end": {
-              "line": 178,
-              "column": 21
-            }
-          },
-          "metadata": {
-            "polymer": {}
-          },
-          "defaultValue": "false"
-        },
-        {
           "name": "_notAllowedRemoving",
           "type": "boolean",
           "description": "",
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 179,
+              "line": 173,
               "column": 20
             },
             "end": {
-              "line": 182,
+              "line": 176,
               "column": 21
             }
           },
@@ -3802,11 +3782,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 196,
+              "line": 190,
               "column": 12
             },
             "end": {
-              "line": 199,
+              "line": 193,
               "column": 13
             }
           },
@@ -3819,11 +3799,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 201,
+              "line": 195,
               "column": 12
             },
             "end": {
-              "line": 217,
+              "line": 209,
               "column": 13
             }
           },
@@ -3840,11 +3820,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 219,
+              "line": 211,
               "column": 12
             },
             "end": {
-              "line": 233,
+              "line": 225,
               "column": 13
             }
           },
@@ -3857,11 +3837,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 235,
+              "line": 227,
               "column": 12
             },
             "end": {
-              "line": 242,
+              "line": 234,
               "column": 13
             }
           },
@@ -3878,11 +3858,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 244,
+              "line": 236,
               "column": 12
             },
             "end": {
-              "line": 247,
+              "line": 239,
               "column": 13
             }
           },
@@ -3895,11 +3875,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 249,
+              "line": 241,
               "column": 12
             },
             "end": {
-              "line": 261,
+              "line": 253,
               "column": 13
             }
           },
@@ -3916,11 +3896,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 263,
+              "line": 255,
               "column": 12
             },
             "end": {
-              "line": 267,
+              "line": 259,
               "column": 13
             }
           },
@@ -3940,11 +3920,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 269,
+              "line": 261,
               "column": 12
             },
             "end": {
-              "line": 277,
+              "line": 269,
               "column": 13
             }
           },
@@ -3961,11 +3941,11 @@
           "privacy": "protected",
           "sourceRange": {
             "start": {
-              "line": 279,
+              "line": 271,
               "column": 12
             },
             "end": {
-              "line": 282,
+              "line": 274,
               "column": 13
             }
           },
@@ -3986,12 +3966,12 @@
           "column": 8
         },
         "end": {
-          "line": 283,
+          "line": 275,
           "column": 9
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGridFilterColumns",
       "attributes": [
         {
@@ -5401,7 +5381,8 @@
           "metadata": {},
           "params": [
             {
-              "name": "debounced = true"
+              "name": "debounced",
+              "defaultValue": "true"
             }
           ]
         },
@@ -7155,7 +7136,7 @@
         }
       },
       "privacy": "public",
-      "superclass": "HTMLElement",
+      "superclass": "Polymer.Element",
       "name": "ActindoGrid",
       "attributes": [
         {
