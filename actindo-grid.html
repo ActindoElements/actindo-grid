@@ -280,6 +280,7 @@
                     top: 8px;
                     transition: opacity 200ms;
                     width: 6px;
+                    background-color: var(--paper-checkbox-unchecked-color, var(--primary-text-color));
                 }
                 #toggleAll[partial]:after {
                     opacity: 1;
@@ -1122,6 +1123,15 @@
                         value: function(){return [];}
                     },
 
+
+                    /**
+                     * Holds indizes of last selected items; we need that for proper handling of shift
+                     */
+                    _lastSelectedIndizes: {
+                        type: Array,
+                        value: () => []
+                    },
+
                     /**
                      * holds the colmumn that is marked as identifying
                      */
@@ -1507,6 +1517,14 @@
 
             connectedCallback() {
                 super.connectedCallback();
+
+                this.lastAddedWhileShift = [];
+                document.addEventListener( "keyup", (e) => {
+                    if( e.key === 'Shift' )
+                    {
+                        this.lastAddedWhileShift = [];
+                    }
+                } );
 
                 if(this.itemUpdateEventName)
                 {
@@ -1996,9 +2014,89 @@
                 this.firstPage();
             }
 
+            /**
+             * @param {Event} e
+             * Checks if click target is a checkbox or the container around
+             */
             _isCheckBox(e)
             {
                 return e.target.tagName === 'PAPER-CHECKBOX' || e.target.className === "checkbox";
+            }
+
+
+            /**
+             * Handles click on an currently not selected item
+             * @param {Event} e
+             * @param {Number} index
+             */
+            _handleSelect(e, index)
+            {
+                if(this.selectionMode === 'single')
+                {
+                    this.set('selectedItems', [this.items[index]]);
+                    this.set('selectedItem', this.items[index]);
+                }
+                else //Multiselect
+                {
+                    //Shift is pressed so we have to select all between the last selected item and the one we clicked
+                    if( e.shiftKey && this._lastSelectedIndizes.length )
+                    {
+                        const lastSelectedIndex = this._lastSelectedIndizes[this._lastSelectedIndizes.length-1];
+                        //While holding shift we have to select all between last selected and the current pressed; any selections made without releasing the shift key afterwards have to be undone; finder behaviour
+                        //@todo increase performance we should only remove those that really have to be removed
+                        for(let i=0;i<this.lastAddedWhileShift.length;i++)
+                        {
+                            const indexInSelected = this.selectedItems.indexOf( this.lastAddedWhileShift[i] );
+                            if( indexInSelected !== -1 )
+                            {
+                                this.splice( "selectedItems", indexInSelected, 1 );
+                            }
+                        }
+
+                        const doSelect = (i) => {
+                            if( this.selectedItems.indexOf( this.items[i] ) === -1 )
+                            {
+                                //field locked or disabled
+                                if(
+                                    this._propertyEvaluatesTrue(this.disabledField, this.items[i]) ||
+                                    this._propertyEvaluatesTrue(this.lockedField, this.items[i])
+                                )
+                                {
+                                    return;
+                                }
+                                this.lastAddedWhileShift.push( this.items[i] );
+                                this.push( 'selectedItems', this.items[i] );
+                            }
+                        };
+
+                        this.lastAddedWhileShift = []; //No we can reset that as we have undone the selection above
+                        if( lastSelectedIndex > index )
+                        {
+                            for(let i=index;i<lastSelectedIndex;i++)
+                            {
+                                doSelect(i);
+                            }
+                        }
+                        else
+                        {
+                            for(let i=lastSelectedIndex+1;i<=index;i++)
+                            {
+                                doSelect(i);
+                            }
+                        }
+                    }
+                    else //This is normal select without looking at shift
+                    {
+                        const lastSelectedIndex = this._lastSelectedIndizes.indexOf(index);
+                        if( lastSelectedIndex > -1 )
+                        {
+                            this._lastSelectedIndizes.splice( lastSelectedIndex, 1 ); //Make sure no duplicates
+                        }
+                        this._lastSelectedIndizes.push( index );
+                        this.push('selectedItems', this.items[index]);
+                    }
+
+                }
             }
 
             /**
@@ -2010,16 +2108,21 @@
                 e.stopPropagation();
                 let index = e.model.index;
                 let row = this.items[index];
-                if (this.rowClickMode === 'single' && !this._isCheckBox(e))
+
+                const isCtrlOrMetaOrShift = e.metaKey || e.ctrlKey || e.shiftKey;
+
+                if (this.rowClickMode === 'single' && !this._isCheckBox(e) && !isCtrlOrMetaOrShift )
                 {
                     this.dispatchEvent( new CustomEvent( "row-click", {detail: row } ) );
                     return;
                 }
-                if (this.rowClickMode === 'double' && e.type === 'dblclick')
+
+                if (this.rowClickMode === 'double' && e.type === 'dblclick' && !isCtrlOrMetaOrShift )
                 {
                     this.dispatchEvent( new CustomEvent( "row-click", {detail: row } ) );
                     return;
                 }
+
                 if(!this.selectionMode || (!this._isCheckBox(e) && this.disableTapRowToSelect))
                 {
                     return;
@@ -2035,21 +2138,20 @@
                 }
 
                 let rowSelectedIndex = this.selectedItems.indexOf(row);
-                if(rowSelectedIndex > -1)
+
+                if(rowSelectedIndex > -1) //Deselect
                 {
                     this.splice('selectedItems', rowSelectedIndex, 1);
                     this.set('selectedItem', null);
+                    const lastSelectedIndex = this._lastSelectedIndizes.indexOf(index);
+                    if( lastSelectedIndex > -1 )
+                    {
+                        this._lastSelectedIndizes.splice( lastSelectedIndex, 1 );
+                    }
                 }
                 else
                 {
-                    if(this.selectionMode === 'single') {
-                        this.set('selectedItems', [this.items[index]]);
-                        this.set('selectedItem', this.items[index]);
-                    }
-                    else
-                    {
-                        this.push('selectedItems', this.items[index]);
-                    }
+                    this._handleSelect(e, index);
                 }
             }
 
@@ -2136,6 +2238,8 @@
                         me.set('selectedItem', null);
                     }
                     me.set('selectedItems', newSelectedItems);
+                    me.lastAddedWhileShift = [];
+                    me._lastSelectedIndizes = [];
                 }, 5);
                 if( this._itemsPerPage > 0 && this.totalItems && this.remote )
                 {
