@@ -61,7 +61,19 @@
                         switch(column.type) {
                             case Number:
                             case Date:
-                                node = value ? document.createTextNode(value.toLocaleString()) : document.createTextNode('');
+                                // Use long format with date and time by default:
+                                // - February 18, 2019 2:15 PM
+                                // - 18. Februar 2019 14:15
+                                let format = column.format || "LLL";
+
+                                // Use timestamp if set
+                                let strValue = '';
+                                if(value) {
+                                    let dtValue = new Date(value.toLocaleString());
+                                    strValue = moment(dtValue).format(format);
+                                }
+
+                                node = document.createTextNode(strValue);
                                 break;
                             case Boolean:
                                 node = document.createElement('iron-icon');
