@@ -16,12 +16,12 @@
             <actindo-date-picker
                 label="From"
                 id="from"
-                on-value-changed="_onFromSelect">
+                on-date-object-changed="_onFromSelect">
             </actindo-date-picker>
             <actindo-date-picker
                 label="To"
                 id="to"
-                on-value-changed="_onToSelect">
+                on-date-object-changed="_onToSelect">
             </actindo-date-picker>
         </div>
     </template>
@@ -41,24 +41,45 @@
                     }
                 }
             }
+
+            /**
+             * Get formatted date
+             * Used by actindo-grid-filter-item
+             *
+             * @param value
+             * @return {string}
+             */
             getDisplayValue(value)
             {
-                 return `${value.from} and ${value.to}`;
+                return moment(`${value.from}`).format('l')
+                    + ' .. '
+                    + moment(`${value.to}`).format('l');
             }
 
+            /**
+             * Called when date 'from' changes in date picker
+             *
+             * @private
+             */
             _onFromSelect() {
-                if(this.$.from._date)
+
+                if(this.$.from.dateObject)
                 {
-                    let date = this.$.from._date;
+                    let date = this.$.from.dateObject;
                     date.setHours(12);
                     this.set('value.from', date.toISOString().substr(0, 10));
                 }
             }
 
+            /**
+             * Called when date 'to' changes in date picker
+             *
+             * @private
+             */
             _onToSelect() {
-                if(this.$.to._date)
+                if(this.$.to.dateObject)
                 {
-                    let date = this.$.to._date;
+                    let date = this.$.to.dateObject;
                     date.setHours(12);
                     this.set('value.to', date.toISOString().substr(0, 10));
                 }
