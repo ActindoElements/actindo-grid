@@ -7,6 +7,9 @@
             {
                 display: flex;
             }
+            actindo-date-picker {
+                min-width: 120px;
+            }
             actindo-date-picker:first-child
             {
                 margin-right: 10px;
@@ -16,11 +19,13 @@
             <actindo-date-picker
                 label="From"
                 id="from"
+                value="{{displayValueFrom}}"
                 on-date-object-changed="_onFromSelect">
             </actindo-date-picker>
             <actindo-date-picker
                 label="To"
                 id="to"
+                value="{{displayValueTo}}"
                 on-date-object-changed="_onToSelect">
             </actindo-date-picker>
         </div>
@@ -32,32 +37,82 @@
 
             static get properties() {
                 return {
+                    displayValueFrom: {
+                        type: String
+                    },
+                    displayValueTo: {
+                        type: String
+                    },
                     value: {
                         type: Object,
                         notify: true,
                         value: function() {
                             return {};
-                        }
+                        },
+                        // Observe value object initialisation
+                        observer: '_onInit'
                     }
                 }
             }
 
             /**
-             * Get formatted date
-             * Used by actindo-grid-filter-item
+             * Get  displayValue
              *
-             * @param value
-             * @return {string}
+             * It is a kind of static functtion, because called sometimes without element initialisation,
+             * @see actindo-grid-filter-form and actindo-grid-filter-edit
+             *
+             * @param {Object} Date object { from: YYYY-MM-DD, to: YYYY-MM-DD }
+             *
+             * @return
              */
             getDisplayValue(value)
             {
-                return moment(`${value.from}`).format('l')
-                    + ' .. '
-                    + moment(`${value.to}`).format('l');
+                 return this.getDisplayValuePart(`${value.from}`)
+                     + ' .. '
+                     + this.getDisplayValuePart(`${value.to}`);
             }
 
             /**
-             * Called when date 'from' changes in date picker
+             * Get part of displayValue
+             *
+             * It is a kind of static functtion, because called sometimes without element initialisation,
+             * @see actindo-grid-filter-form and actindo-grid-filter-edit
+             *
+             * @param {String} Date in format YYYY-MM-DD
+             *
+             * @return {String}
+             */
+            getDisplayValuePart(value)
+            {
+                return moment(`${value}`).format('l');
+            }
+
+            /**
+             * When date object was replaced from outside and not by date picker
+             * then update display values in date pickers
+             */
+            _onInit()
+            {
+                // Break on empty
+                if (!this.value)
+                {
+                    return;
+                }
+
+                // Update FROM value in date picker
+                if (this.value.from)
+                {
+                    this.displayValueFrom = this.getDisplayValuePart(this.value.from);
+                }
+                // Update TO value in date picker
+                if (this.value.to)
+                {
+                    this.displayValueTo = this.getDisplayValuePart(this.value.to);
+                }
+            }
+
+            /**
+             * When date picker causes changes on FROM value
              *
              * @private
              */
@@ -72,7 +127,7 @@
             }
 
             /**
-             * Called when date 'to' changes in date picker
+             * When date picker causes changes on TO value
              *
              * @private
              */

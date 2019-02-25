@@ -50,6 +50,7 @@
             .content actindo-combobox
             {
                margin-right: 0.6em;
+               min-width: 90px;
             }
 
             .header
@@ -124,6 +125,7 @@
                 return {
                     /**
                      * Whether is editing or not
+                     * Which means, that one can reselect column in combobox
                      */
                     editing: {
                         type: Boolean,
@@ -139,10 +141,13 @@
                     /**
                      * contains the filter criteria, the key "property" contains the column value,
                      * the field "operator" contains operator value(=,>,like,etc...), the field "value" contains the value need to be filtered
-                     * {property: String, operator: string, value: mixed}
+                     * {property: String, operator: string, value: mixed, active: true}
                      */
                     filter: {
-                        type: Object
+                        type: Object,
+                        // This observer catches the full override of filter object, which likely means,
+                        // that this custom element was initialised or reconfigured completely
+                        observer: 'reset'
                     },
                     /**
                      * contains the column value
@@ -188,70 +193,227 @@
                 };
             }
 
+            /**
+             * Column selection changes by combobox if allowed or
+             * on custom element initialisation/display
+             *
+             * @param {Object} newColumn
+             * @param {Object} oldColumn
+             *
+             * @see columnConfiguration and columnDefaults() in actindo-grid.html
+             */
             _onSelectedColumnChanged(newColumn, oldColumn)
             {
+                // Return on corrupted columns, which happens on custom element creation
                 if (!newColumn.type)
                 {
                     return;
                 }
-                if (oldColumn.type)
+
+                // Reset operator if column changes
+                if (oldColumn && oldColumn.type)
                 {
                     this.set('operator', null);
                 }
+
+                // Reinitialize internal operators
                 this.setProperties({
                     _operators: newColumn.operators
                 });
             }
 
+            /**
+             * Operator changes by combobox or
+             * on custom element initialisation/display
+             *
+             * @param {String} opt - Operator key, like = or < etc.
+             */
             _onOperatorChanged(opt)
             {
+                // Break if no operator key given, which happens on custom element creation
                 if (!opt)
                 {
                     return;
                 }
-                const inputFilter = this.$.inputFilter;
-                let {firstChild} = inputFilter;
-                const column = this._selectedColumn;
-                const operatorObj = this._operators.find(item => item.value === opt);
-                this.getInputComponent(column, operatorObj).then(node => {
 
-                    // Check if in edit mode and first load
-                    if (!firstChild && this.editing)
-                    {
-                        node.value = this.value;
-                    }
-                    // keep if the new input component name is not changed
-                    firstChild = firstChild || {};
-                    if (firstChild.tagName === node.tagName)
-                    {
-                        return;
-                    }
-                    inputFilter.innerHTML = '';
-                    node.addEventListener("value-changed", this._onValueChanged.bind(this));
-                    inputFilter.appendChild(node);
-                });
+                // Ensure that new filtering conponent is recreated and attached
+                this.createAndAttachInputComponent().then(node => { /* Do something here eventually */ });
             }
 
-            getInputComponent(column, operator)
+            /**
+             * Return column which corresponds to this filter
+             *
+             * @return {Object}
+             */
+            getColumn()
+            {
+                // If selected column set by combobox, then use this value, which is more actual.
+                // It will be set later in lifecicle.
+                if (this._selectedColumn) {
+                    if (this._selectedColumn.type)
+                    {
+                        return this._selectedColumn;
+                    }
+                }
+
+                // Otherwise return column by filter, which is set on custom element initialisation
+                return this.columns.find(item => item.field === this.filter.property);
+            }
+
+            /**
+             * Return operator which corresponds to this filter
+             *
+             * @return {Object}
+             */
+            getOperator()
+            {
+                // If selected operator set by combobox, then use this value, which is more actual.
+                // It will be set later in lifecicle. Else use operator inside initial filter object,
+                // which is set on custom element initialisation
+                let operatorKey = this.operator || this.filter.operator;
+
+                // Return operator object from column
+                return this._operators.find(item => item.value === operatorKey);
+            }
+
+            /**
+             * Create NEW inputFilter component for appropriate operator type and attach it to local DOM
+             *
+             * @return {Promise<Node>}
+             */
+            createAndAttachInputComponent()
             {
                 return new Promise(resolve => {
+
+                    const column = this.getColumn();
+                    const operator = this.getOperator();
+
                     if (!column.customFilter)
                     {
+                        // Create new filter by data type and attach to DOM
+                        const node = this._createInputComponent(column, operator);
 
-                        const node = column.renderDefaultFilter(column.defaultFilterProperties, operator);
+                        // Attach new created inoput filter component
+                        this._attachInputComponent(node);
                         resolve(node);
-                        return;
                     }
+
+                    // Import new filter element using HTML import and attach it to DOM
                     const {importPath, component} = column.customFilter;
 
                     Polymer.importHref(importPath, (element) => {
                         const node = document.createElement(component);
                         node.element = element.element;
+
+                        // Attach new created inoput filter component
+                        this._attachInputComponent(node);
                         resolve(node);
                    });
                 });
             }
 
+            /**
+             * Attach given node as child to #inputFilter tag
+             *
+             * @private
+             *
+             * @param {Node} node - Custom element for filterin special data type,
+             *   like actindo-filter-equal-date, actindo-filter-between-date etc.
+             *
+             * @return {void}
+             */
+            _attachInputComponent(node)
+            {
+                const inputFilter = this.$.inputFilter;
+                let {firstChild} = inputFilter;
+
+                // Check if in edit mode and first load
+                if (!firstChild && this.editing)
+                {
+                    node.value = this.value;
+                }
+
+                // Keep if the new input component name is not changed
+                firstChild = firstChild || {};
+                if (firstChild.tagName === node.tagName)
+                {
+                    return;
+                }
+
+                // Append new input filter and set event listener on changes of value
+                this.$.inputFilter.innerHTML = '';
+                node.addEventListener("value-changed", this._onValueChanged.bind(this));
+                this.$.inputFilter.appendChild(node);
+            }
+
+            /**
+             * Create and return input filter component of special type
+             * without attaching it to DOM
+             *
+             * @private
+             *
+             * @param {Object} column - Column object
+             * @param {Object} operator - Operator object
+             *
+             * @return {Node}
+             */
+            _createInputComponent(column, operator)
+            {
+                return column.renderDefaultFilter(column.defaultFilterProperties, operator);
+            }
+
+            /**
+             * Get existing input filter component
+             *
+             * @private
+             *
+             * @return {Node}
+             */
+            _getInputComponent()
+            {
+                return this.$.inputFilter.firstChild;
+            }
+
+            /**
+             * Return display value from input filter component
+             *
+             * @return {String}
+             */
+            getDisplayValue()
+            {
+                // Get custom input filter component
+                let inputFilter = this._getInputComponent();
+
+                // Some of them (like actindo-filter-equal-date, -between-date) implement
+                // a "static like" method getDisplayValue
+                if (typeof inputFilter.getDisplayValue === 'function')
+                {
+                    return inputFilter.getDisplayValue(this.value);
+                }
+
+                // Otherwise take just value
+                let value = this.value;
+
+                // In special case of Object, concat values
+                if (typeof this.value === 'object')
+                {
+                    value = '';
+                    for (let v in this.value)
+                    {
+                        value += `${v}: ${this.value[v]} `;
+                    }
+                }
+                return value;
+            }
+
+            /**
+             * Fired, when value inside of input filter component changes
+             * Eventlister is set imperatively
+             *
+             * Propagates new value
+             *
+             * @param {CustomEvent} event
+             */
             _onValueChanged(event)
             {
                 // Ignore length array event
@@ -272,6 +434,13 @@
                 this.set('value', event.detail.value);
             }
 
+            /**
+             * Get label for filter button (on filter changes)
+             *
+             * @param {Object} filter
+             *
+             * @return {String}
+             */
             _getSaveLabel(filter)
             {
                 if (this.editing)
@@ -281,6 +450,9 @@
                 return 'Add';
             }
 
+            /**
+             * On click of filter (Save/Apply) button
+             */
             _save()
             {
                 let {property, operator, value} = this;
@@ -304,17 +476,26 @@
                 this.$.alignedDialog.close()
             }
 
+            /**
+             * On close of filter editing panel
+             */
             _cancel()
             {
                 this.$.alignedDialog.close()
             }
 
+            /**
+             * Open filter editing panel
+             */
             open()
             {
                 this.reset();
                 this.$.alignedDialog.open();
             }
 
+            /**
+             * Set all internal property/operator/value by this.filter
+             */
             reset()
             {
                 const filter = JSON.parse(JSON.stringify(this.filter || {}));
@@ -324,10 +505,13 @@
                     operator: filter.operator,
                     value: filter.value
                 });
-                if( this.$.inputFilter.childNodes.length > 0 )
-                {
-                    this.$.inputFilter.childNodes[0].value = filter.value;
-                }
+
+                // Attach custom input filter component with corresponding data type
+                this.createAndAttachInputComponent().then(node => {
+
+                  // Propagate value to custom input filter component
+                  node.value = filter.value;
+                });
             }
         }
 

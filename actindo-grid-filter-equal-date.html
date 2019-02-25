@@ -30,35 +30,40 @@
                     value: {
                         type: String,
                         notify: true,
+                        observer: '_onDateSelect'
                     }
                 }
             }
 
             /**
-             * Get formatted date
-             * Used by actindo-grid-filter-item
+             * Get displayValue
              *
-             * It is called like a static function. 'this' won't be available
+             * It is a kind of static functtion, because called sometimes without element initialisation,
+             * @see actindo-grid-filter-form and actindo-grid-filter-edit
              *
-             * @param value
-             * @return {string}
+             * @param {String} Date in format YYYY-MM-DD
+             *
+             * @return {String}
              */
             getDisplayValue(value)
             {
                  return moment(`${value}`).format('l');
             }
 
-            /**
-             * Called when date changes in date picker
-             *
-             * @private
-             */
             _onDateSelect() {
+                // Date time object is set by date picker
                 if(this.$.datepicker.dateObject)
                 {
                     let date = this.$.datepicker.dateObject;
                     date.setHours(12);
                     this.value = date.toISOString().substr(0, 10);
+                }
+
+                // Else it is set via property 'value',
+                else if (this.value)
+                {
+                    // Then update displayValue
+                    this.displayValue = this.getDisplayValue(this.value);
                 }
             }
         }
