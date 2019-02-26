@@ -180,33 +180,23 @@
                 this.dispatchEvent( new CustomEvent("remove", {detail: this.filter}));
             }
 
-            _getDisplayValue(node, filter)
-            {
-                if (typeof node.getDisplayValue === 'function')
-                {
-                    return node.getDisplayValue(filter.value);
-                }
-                let value = filter.value;
-                if (typeof filter.value === 'object')
-                {
-                    value = '';
-                    for (let v in filter.value)
-                    {
-                        value += `${v}: ${filter.value[v]} `;
-                    }
-                }
-                return value;
-            }
-
+            /**
+             * Generate and set new label for filter tag used in this item
+             *
+             * @paper {Object} filter - See this.filter property
+             */
             _getLabel(filter)
             {
+                // Get column and operator names
                 const column = this.columns.find(item => item.field === filter.property);
                 const operator = column.operators.find(item => item.value === filter.operator);
-                this.$.edit.getInputComponent(column, operator).then(node => {
-                    const value = this._getDisplayValue(node, this.filter);
-                    let label = `${column.label} ${operator.name} ${value}`;
-                    this.set('_label', label);
-                });
+
+                // Get value from #edit element
+                let value = this.$.edit.getDisplayValue();
+
+                // Compose and set
+                let label = `${column.label} ${operator.name} ${value}`;
+                this.set('_label', label);
             }
         }
 

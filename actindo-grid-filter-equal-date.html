@@ -13,7 +13,7 @@
                 label="Select date"
                 id="datepicker"
                 value="{{displayValue}}"
-                on-value-changed="_onDateSelect"
+                on-date-object-changed="_onDateSelect"
             ></actindo-date-picker>
         </div>
     </template>
@@ -34,17 +34,36 @@
                     }
                 }
             }
+
+            /**
+             * Get displayValue
+             *
+             * It is a kind of static functtion, because called sometimes without element initialisation,
+             * @see actindo-grid-filter-form and actindo-grid-filter-edit
+             *
+             * @param {String} Date in format YYYY-MM-DD
+             *
+             * @return {String}
+             */
             getDisplayValue(value)
             {
-                 return `${value}`;
+                 return moment(`${value}`).format('l');
             }
-            
+
             _onDateSelect() {
-                if(this.$.datepicker._date)
+                // Date time object is set by date picker
+                if(this.$.datepicker.dateObject)
                 {
-                    let date = this.$.datepicker._date;
+                    let date = this.$.datepicker.dateObject;
                     date.setHours(12);
                     this.value = date.toISOString().substr(0, 10);
+                }
+
+                // Else it is set via property 'value',
+                else if (this.value)
+                {
+                    // Then update displayValue
+                    this.displayValue = this.getDisplayValue(this.value);
                 }
             }
         }
