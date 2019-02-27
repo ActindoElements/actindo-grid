@@ -198,15 +198,17 @@
                 //This is only called when this component is shown (template-if)
                 //In most cases this component is not shown when changing the columns from the outside
                 const columnValue = columns.base;
-
                 const displayColumns = columnValue.filter(item => item.hidden === false);
                 const hiddenColumns = columnValue.filter(item => item.hidden === true);
                 this._updateColumnPosition(displayColumns);
-
-                this.setProperties({
-                    _displayColumns: displayColumns,
-                    _hiddenColumns: hiddenColumns,
-                })
+                this.set('_displayColumns', []);
+                setTimeout(()=> {
+                    this.setProperties({
+                        _displayColumns: displayColumns,
+                        _hiddenColumns: hiddenColumns,
+                    })
+                }, 0);
+                
             }
             
             _onAddColumn()
