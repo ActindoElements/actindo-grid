@@ -17,13 +17,14 @@
                 padding: 20px 30px;
                 flex-direction: column;
             }
-    
+
             .content
             {
                 display: flex;
                 flex-wrap: wrap;
                 flex-direction: row;
             }
+
             .actions
             {
                 display: flex;
@@ -31,12 +32,14 @@
                 justify-content: space-between;
                 align-items: flex-end;
             }
+
             .actions-left
             {
                 display: flex;
                 flex-direction: row;
                 align-items: flex-end;
             }
+
             .actions paper-button
             {
                 background-color: var(--actindo-green);
@@ -46,10 +49,12 @@
                 margin-bottom: 7px;
                 margin-left: 10px;
             }
+
             .item
             {
                 margin-right: 5px;
             }
+
             actindo-grid-filter-tag
             {
                 --filter-tag-container: {
@@ -61,23 +66,23 @@
                 };
                 
             }
+
             actindo-grid-filter-tag.not-allowed-removing-true
             {
                 --filter-tag-content: {
                     padding-right: 15px;
                 };
             }
-           
+
             .item span.index
             {
                 opacity: 0.3;
                 margin-right: 10px;
             }
-            
         </style>
         <div class="container" id="container">
             <sortable-js class="content" on-end="_onDragFinish" handle=".item">
-                <template is="dom-repeat" items="{{_displayColumns}}" as="item" indexAs="index">
+                <template is="dom-repeat" items="{{_displayColumns}}" as="item" indexAs="index" on-dom-change="_sortBrokenDomOrderManually">
                     <div class="item">
                         <actindo-grid-filter-tag
                             class$="not-allowed-removing-[[_notAllowedRemoving]]"
@@ -125,7 +130,6 @@
     <script>
         class ActindoGridFilterColumns extends Polymer.Element {
             static get is() { return 'actindo-grid-filter-columns'; }
-
             static get properties() {
                 return {
                     /**
@@ -133,7 +137,8 @@
                      */
                     columns: {
                         type: Array,
-                        notify: true
+                        notify: true,
+                        observer: '_onColumnsChanged'
                     },
                     styleLevel: {
                         type: Number,
@@ -170,51 +175,87 @@
                     _columnPosition: {
                         type: Object
                     },
-                    /**
-                     * Internal property, columns properties first loaded 
-                     */
-                    _loaded: {
-                        type: Boolean,
-                        value: false
-                    },
                     _notAllowedRemoving: {
                         type: Boolean,
                         computed: '_isNotAllowedRemoving(_displayColumns.length)'
                     }
                 };
             }
-
             /*
              * lifecycle and initialization
              */
-
-            static get observers() {
-                return [
-                    '_onColumnsChanged(columns.*)'
-                ];
-            }
-
             ready()
             {
                 super.ready();
             }
-            
-            _onColumnsChanged(columns)
-            {
-                if (this._loaded)
-                {
-                    return;
-                }
-                const columnValue = columns.value;
 
-                const displayColumns = columnValue.filter(item => item.hidden === false);
-                const hiddenColumns = columnValue.filter(item => item.hidden === true);
-                this._updateColumnPosition(displayColumns);
-                this.setProperties({
-                    _displayColumns: displayColumns,
-                    _hiddenColumns: hiddenColumns,
-                    _loaded: true
-                })
+            /**
+             * Polymer's dom-repeat seems to have problems in junction with Sortable.js,
+             * when changing local dom:
+             * "dom-repeat was not designed to deal with it's dom being modified by something other than itself"
+             * @see https://stackoverflow.com/questions/30878200/inform-polymer-dom-repeat-of-changes-to-local-dom
+             *
+             * Issue on GitHub exists, but closed:
+             * @see https://github.com/Polymer/polymer/issues/1906
+             *
+             * Changing order of _displayColumns after initialisation will break sort order, e.g.
+             *  - Change position of a column, then Apply
+             *  - Change posittion of a column and add new column, then Apply
+             *
+             * That's why we need to reorder DOM nodes, which are actually supposed to be sorted by Sortable.js,
+             * but its order will be broken (according to previous order).
+             *
+             * This is quite a hack and should be replaced, when GitHub issue is solved
+             */
+            _sortBrokenDomOrderManually()
+            {
+                // Get sortable-js element
+                const sortable = this.$.container.firstElementChild;
+
+                // Get dom-repeat element
+                const domRepeat = sortable.lastElementChild;
+
+                // Get items as NodeList, which a stamped for manual ordering
+                let sortableItems = sortable.querySelectorAll('.item');
+
+                // Convert NodeList to Array fo resorting
+                let sortableItemsArray = [].slice.call(sortableItems);
+
+                // Bind free variable for sorting closure
+                const thisColumnPosition = this._columnPosition;
+
+                // Reorder nodes inside of array
+                let resortedItemsArray = sortableItemsArray.sort((a, b) => {
+                    // Get columns id from DOM element
+                    return thisColumnPosition[a.firstElementChild.id] - thisColumnPosition[b.firstElementChild.id];
+                });
+
+                // Remove old item nodes from sortable-js
+                sortableItems.forEach(node => {
+                    sortable.removeChild(node);
+                });
+
+                // Add new sorted item nodes
+                resortedItemsArray.forEach(node => {
+                    sortable.insertBefore(node, domRepeat);
+                });
+            }
+
+            _onColumnsChanged(newColumns, oldColumns)
+            {
+                // This is only called when this component is shown (template-if)
+                // In most cases this component is not shown when changing the columns from the outside
+                // So ensure it is called only once on initialization
+                if (oldColumns === undefined)
+                {
+                    const displayColumns = newColumns.filter(item => item.hidden === false);
+                    const hiddenColumns = newColumns.filter(item => item.hidden === true);
+                    this._updateColumnPosition(displayColumns);
+                    this.setProperties({
+                        _displayColumns: displayColumns,
+                        _hiddenColumns: hiddenColumns,
+                    });
+                }
             }
             
             _onAddColumn()
@@ -232,7 +273,6 @@
                 }
                 
             }
-
             _updateColumnPosition(displayColumns)
             {
                 const indexList = {}; 
@@ -251,7 +291,6 @@
             {
                 const fieldValue = event.detail.id;
                 const index = this._displayColumns.findIndex(item => item.field === fieldValue);
-
                 if(index != -1)
                 {
                     const column = this.splice('_displayColumns', index, 1)[0];
@@ -282,7 +321,6 @@
                 return displayColumnsLength === 1;
             }
         }
-
         customElements.define(ActindoGridFilterColumns.is, ActindoGridFilterColumns);
     </script>
 </dom-module>
