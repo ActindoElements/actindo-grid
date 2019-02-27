@@ -215,11 +215,6 @@
                 {
                     this.set('operator', null);
                 }
-
-                // Reinitialize internal operators
-                this.setProperties({
-                    _operators: newColumn.operators
-                });
             }
 
             /**
@@ -235,6 +230,9 @@
                 {
                     return;
                 }
+
+                // Initialize internal operators list by column
+                this._operators = this.getColumn().operators;
 
                 // Ensure that new filtering conponent is recreated and attached
                 this.createAndAttachInputComponent().then(node => { /* Do something here eventually */ });
