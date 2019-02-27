@@ -2799,7 +2799,7 @@
             }
 
             _displayFrozenInfo(item, frozenByField) {
-                if(item.base[frozenByField])
+                if(item.base && item.base[frozenByField])
                 {
                     let name = item.base[frozenByField];
                     if(name.split('-')[1]) { // only show userName if we get "loginName - userName"
@@ -2919,7 +2919,7 @@
                     item = item.base;
                 }
 
-                if(item.hasOwnProperty(field)) {
+                if(item && item.hasOwnProperty(field)) {
                     return Boolean(item[field]);
                 }
 
