@@ -2386,11 +2386,6 @@
                     return column;
                 });
 
-                if(this._identifyingColumn === null && this.selectionMode) {
-                    console.warn('no identifying column given, disabling selection model', columns);
-                    this.selectionMode = null;
-                }
-
                 this._columns = columns;
                 this._columnIndexByFieldName = {};
                 for(let i=0;i<columns.length;i++)
