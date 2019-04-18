@@ -1725,13 +1725,16 @@
 
                 const dom = Polymer.dom(this.root);
                 const gridBody = dom.querySelector('#gridBody');
+                const actionButton = this.shadowRoot.querySelector('#'+id);
 
-                if (gridBody.scrollWidth > gridBody.clientWidth) {
-                    this.shadowRoot.querySelector('#'+id).style.bottom = '21px';
+                if (actionButton && (gridBody.scrollWidth > gridBody.clientWidth))
+                {
+                    actionButton.style.bottom = '21px';
                 }
 
-                if (gridBody.scrollHeight > gridBody.clientHeight) {
-                    this.shadowRoot.querySelector('#'+id).style.right = '21px';
+                if (actionButton && (gridBody.scrollHeight > gridBody.clientHeight))
+                {
+                    actionButton.style.right = '21px';
                 }
             }
 
