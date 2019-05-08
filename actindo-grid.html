@@ -2475,7 +2475,13 @@
                         if( me._xhr.status === 200 )
                         {
                             let data = JSON.parse(me._xhr.responseText);
-                            me._setTotalItems(Polymer.Path.get(data, remotePathCount));
+                            const count = Polymer.Path.get(data, remotePathCount);
+                            if( typeof count === 'number' && count < ((page-1)*itemsPerPage+1) && me.page > 1 )
+                            {
+                                me.page = 1;
+                                return;
+                            }
+                            me._setTotalItems(count);
                             me.items = Polymer.Path.get(data, remotePathData);
                             me._containedEntities = me.items.map(function(item) {
                                 return Polymer.Path.get(item, me.entityIdentifyingField);
