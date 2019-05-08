@@ -2478,7 +2478,8 @@
                             const count = Polymer.Path.get(data, remotePathCount);
                             if( typeof count === 'number' && count < ((page-1)*itemsPerPage+1) && me.page > 1 )
                             {
-                                me.page = 1;
+
+                                me.page = Math.max( 1, Math.ceil(count/itemsPerPage));
                                 return;
                             }
                             me._setTotalItems(count);
