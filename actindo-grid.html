@@ -2114,6 +2114,10 @@
 
                 const isCtrlOrMetaOrShift = e.metaKey || e.ctrlKey || e.shiftKey;
 
+                if( window.getSelection() && window.getSelection().toString().length > 0 ) //We are selecting something in the grid
+                {
+                    return;
+                }
                 if (this.rowClickMode === 'single' && !this._isCheckBox(e) && !isCtrlOrMetaOrShift )
                 {
                     this.dispatchEvent( new CustomEvent( "row-click", {detail: row } ) );
