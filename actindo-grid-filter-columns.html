@@ -286,6 +286,7 @@
             _onApply()
             {
                 this.set('columns', this._displayColumns.concat(this._hiddenColumns));
+                this.dispatchEvent(new CustomEvent("close", {}));
             }
 
             _onRemove(event)
