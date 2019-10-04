@@ -1561,7 +1561,7 @@
 
                 if(this._updateListener)
                 {
-                    document.removeEventListener(this._updateListener);
+                    document.removeEventListener(this.itemUpdateEventName, this._updateListener);
                 }
             }
 
