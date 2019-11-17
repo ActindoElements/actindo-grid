@@ -609,11 +609,12 @@
                 <paper-icon-button icon="refresh" hidden$="[[!remote]]" on-tap="_onRefreshTap"></paper-icon-button>
 
                 <template is="dom-if" if="[[_isHeaderSingleMode()]]">
-                    <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
-                        <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
-                        <span slot="content">Columns ([[_displayColumns.length]])</span>
-                    </actindo-grid-filter-configurator>
-
+                    <template is="dom-if" if="[[!hideColumnConfiguration]]">
+                        <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                            <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
+                            <span slot="content">Columns ([[_displayColumns.length]])</span>
+                        </actindo-grid-filter-configurator>
+                    </template>
                     <template is="dom-if" if="[[_filterColumns.length]]">
                         <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
@@ -630,11 +631,12 @@
                     <slot name="secondLineContent"></slot>
                 </div>
                 <div class="header-second-line-icons">
-                    <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
-                        <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
-                        <span slot="content">Columns ([[_displayColumns.length]])</span>
-                    </actindo-grid-filter-configurator>
-
+                    <template is="dom-if" if="[[!hideColumnConfiguration]]">
+                        <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
+                            <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
+                            <span slot="content">Columns ([[_displayColumns.length]])</span>
+                        </actindo-grid-filter-configurator>
+                    </template>
                     <template is="dom-if" if="[[_filterColumns.length]]">
                         <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
