@@ -591,6 +591,9 @@
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
             <div hidden$="[[!selectedItems.length]]">[[header]] ([[selectedItems.length]] gew&auml;hlt)</div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
+                <template is="dom-if" if="[[showBackIcon]]">
+                    <paper-icon-button style="opacity: 0.7;margin-left:-10px" icon="chevron-left" on-click="_onBackIconClicked"></paper-icon-button>
+                </template>
                 <template is="dom-if" if="[[title]]">
                     <div class="header-title">[[title]]</div>
                 </template>
@@ -1091,6 +1094,11 @@
                     },
 
                     showCreateButton: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    showBackIcon: {
                         type: Boolean,
                         value: false
                     },
@@ -1706,6 +1714,14 @@
                     return;
                 }
                 this.$.gridBody.scrollLeft = e.target.scrollLeft;
+            }
+
+            /**
+             * @private
+             */
+            _onBackIconClicked(e)
+            {
+               this.dispatchEvent(new CustomEvent("back-icon-clicked", {}));
             }
 
             /**
