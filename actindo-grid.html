@@ -19,6 +19,7 @@
 <link rel="import" href="actindo-grid-filter-form.html">
 <link rel="import" href="actindo-grid-filter-boolean.html">
 <link rel="import" href="actindo-grid-filter-columns.html">
+<link rel="import" href="actindo-grid-custom-render.html">
 
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
@@ -968,6 +969,14 @@
                     remotePathData: {
                         type: String,
                         value: 'data'
+                    },
+
+                    /**
+                     * Allows the backend to directly pass the columns to get grid
+                     * set this property if needed otherwise the behaviour is disabled
+                     */
+                    remotePathColumns: {
+                        type: String,
                     },
 
                     /**
@@ -2497,11 +2506,56 @@
                 return request;
             }
 
+            _createColumns(columnsResponse)
+            {
+                const ret = [];
+                return columnsResponse.map( (item) => {
+                    const ret = Object.assign({}, item);
+                    if(Array.isArray(item.filterOptions) && item.filterOptions.length)
+                    {
+                        ret.defaultFilterProperties = {
+                            inputType: 'Option',
+                            items: item.filterOptions,
+                            displayField: 'name'
+                        };
+                    }
+                    delete ret.filterOptions;
+                    if(window[item.type])
+                    {
+                        ret.type = window[item.type];
+                    }
+                    else
+                    {
+                        delete ret.type;
+                    }
+                    if(item.renderImport && item.renderComponent)
+                    {
+                        ret.render = (value, row) =>
+                        {
+                            const element = document.createElement('actindo-grid-custom-render');
+                            element.value = value;
+                            element.row = row;
+                            element.componentImport = item.renderImport;
+                            element.componentName = item.renderComponent;
+                            return element;
+                        }
+                    }
+                    delete ret.renderImport;
+                    delete ret.renderComponent;
+                    return ret;
+                } );
+            }
+
             _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
             {
 
                 if( !remote )
                 {
+                    return;
+                }
+                if(this._blockLoad)
+                {
+                    this._blockLoad = false;
                     return;
                 }
                 let me = this;
@@ -2524,6 +2578,19 @@
                         {
                             let data = JSON.parse(me._xhr.responseText);
                             const count = Polymer.Path.get(data, remotePathCount);
+
+                            if(me.remotePathColumns && Array.isArray(Polymer.Path.get(data, me.remotePathColumns)))
+                            {
+                                me._blockLoad = true;
+                                try {
+                                    me.set("columnConfiguration", me._createColumns(Polymer.Path.get(data, me.remotePathColumns)));
+                                }
+                                catch (e) {
+                                    me._blockLoad = false;
+                                }
+
+                            }
+
                             if( typeof count === 'number' && count < ((page-1)*itemsPerPage+1) && me.page > 1 )
                             {
 
@@ -2586,7 +2653,7 @@
                 if(!remote) {
                    return;
                 }
-                
+
                 this.refresh();
             }
 
@@ -2941,7 +3008,7 @@
 
                 return true;
             }
-            
+
             /**
              * checks if the grid is currently sorted by the given column
              *

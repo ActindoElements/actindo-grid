@@ -1,0 +1,40 @@
+<dom-module id="actindo-grid-custom-render">
+    <template>
+        <div id="wrapper">
+        </div>
+    </template>
+    <script>
+        class ActindoGridCustomRender extends Polymer.Element {
+            static get is()
+            {
+                return "actindo-grid-custom-render";
+            }
+
+            static get properties()
+            {
+                return {
+                }
+            }
+
+            connectedCallback()
+            {
+                super.connectedCallback();
+                Polymer.importHref( this.componentImport, () => {
+                    const element = document.createElement(this.componentName);
+                    this.$.wrapper.appendChild(element);
+                    if(typeof element.render === 'function')
+                    {
+                        element.render(this.value, this.row);
+                    }
+                    else
+                    {
+                        console.warn('Component '+this.componentName+" does not have a render function");
+                    }
+                }, () => {
+                    console.warn("Failed to load "+this.componentImport+" inside grid custom render");
+                } );
+            }
+        }
+        customElements.define(ActindoGridCustomRender.is, ActindoGridCustomRender);
+    </script>
+</dom-module>

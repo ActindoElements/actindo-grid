@@ -83,7 +83,7 @@
                                 break;
                             case String:
                             default:
-                                if( value === null )
+                                if( value === null || value === undefined)
                                 {
                                     if( column.nullMessage )
                                     {
