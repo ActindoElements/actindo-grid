@@ -20,6 +20,7 @@
 <link rel="import" href="actindo-grid-filter-boolean.html">
 <link rel="import" href="actindo-grid-filter-columns.html">
 <link rel="import" href="actindo-grid-custom-render.html">
+<link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
 
 <!--
 `<actindo-grid>` implements a highly reusable data grid to display your data.
@@ -769,11 +770,18 @@
                 [[_getItemsFrom(page, _itemsPerPage, totalItems)]]-[[_getItemsTo(page, _itemsPerPage, totalItems)]] of [[totalItems]]
                 <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
                 <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
-                <select value="{{page::change}}">
-                    <template is="dom-repeat" items="[[_pages]]">
-                        <option value="[[item]]">[[item]]</option>
-                    </template>
-                </select>
+                <template is="dom-if" if="[[_showPageDropdown(_maxPage)]]">
+                    <select value="{{page::change}}">
+                        <template is="dom-repeat" items="[[_pages]]">
+                            <option value="[[item]]">[[item]]</option>
+                        </template>
+                    </select>
+                </template>
+                <template is="dom-if" if="[[!_showPageDropdown(_maxPage)]]">
+                    <iron-a11y-keys keys="enter" on-keys-pressed="_switchPage">
+                        <input style="max-width: 4em" value="{{_pageInput::change}}"> / [[_maxPage]]
+                    </iron-a11y-keys>
+                </template>
                 <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
                 <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
             </div>
@@ -863,6 +871,23 @@
                         value: 1,
                         notify: true,
                         observer: '_onPageChanged'
+                    },
+
+                    /**
+                     * Page in the input
+                     * @private
+                     */
+                    _pageInput: {
+                        type: Number,
+                    },
+
+                    /**
+                     * max page number before we switch to input field
+                     * @private
+                     */
+                    _pageDropdownThreshold: {
+                        type: Number,
+                        value: 100
                     },
 
                     /**
@@ -1226,6 +1251,13 @@
                     _pages: {
                         type: Array,
                         value: function(){return [];}
+                    },
+
+                    /**
+                     * Number of of last page
+                     */
+                    _maxPage: {
+                        type: Number
                     },
 
                     /**
@@ -2300,12 +2332,21 @@
                 }, 5);
                 if( this._itemsPerPage > 0 && this.totalItems && this.remote )
                 {
-                    let pages = [];
-                    for(let i=1;i<=Math.ceil(this.totalItems / this._itemsPerPage);i++)
+                    const maxPage = Math.ceil(this.totalItems / this._itemsPerPage);
+                    this._maxPage = maxPage;
+                    if(maxPage > this._pageDropdownThreshold)
                     {
-                        pages.push(i);
+                        this.set("_pages", []);
                     }
-                    this.set("_pages", pages);
+                    else
+                    {
+                        let pages = [];
+                        for(let i=1;i<=maxPage;i++)
+                        {
+                            pages.push(i);
+                        }
+                        this.set("_pages", pages);
+                    }
                 }
 
             }
@@ -2317,10 +2358,21 @@
              * @private
              */
             _onPageChanged(newVal) {
+                this._pageInput = newVal;
                 if(this.totalItems > 0 && this._itemsPerPage > 0)
                 {
                     this.page = Math.max(1, Math.min(this.page, Math.ceil(this.totalItems / this._itemsPerPage)));
                 }
+            }
+
+            /**
+             * Called after pressing enter on page input
+             * @param {CustomEvent} e
+             */
+            _switchPage(e)
+            {
+                e.stopPropagation();
+                window.setTimeout( () => {this.page = this._pageInput}, 0);
             }
 
             /**
@@ -2390,7 +2442,7 @@
                 {
                     return;
                 }
-                
+
                 const optionalColumnFields = optionalColumns.map(item => item.field);
                 this.push('_serializeOptionals', ...optionalColumnFields);
             }
@@ -2949,6 +3001,18 @@
              */
             _getItemsTo(page, itemsPerPage, totalItems) {
                 return Math.min(page * itemsPerPage, totalItems);
+            }
+
+            /**
+             * Deactivates page dropdown and shows input field instead
+             *
+             * @param {Number} number of pages
+             * @return {Boolean}
+             * @private
+             */
+            _showPageDropdown(_maxPage)
+            {
+                return _maxPage <= this._pageDropdownThreshold;
             }
 
             /**
