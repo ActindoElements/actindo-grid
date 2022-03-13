@@ -229,7 +229,11 @@
             {
                 let {property, operator, value} = this;
 
-                if (!property || !operator || !value)
+                if (!property || !operator)
+                {
+                    return;
+                }
+                if(!value && ActindoGridFilterHelper.operatorsWhichRequireValue.indexOf(operator) > -1)
                 {
                     return;
                 }
