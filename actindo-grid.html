@@ -2539,6 +2539,11 @@
 
                 request[this.remoteParamSerializeOptionals] = serializeOptionals;
 
+                //query hints
+                if(!request.hasOwnProperty('hints'))
+                {
+                    request.hints = [{name:'allow_nonauthoritative',value:1}];
+                }
 
                 // searching
                 if(query.length) {
