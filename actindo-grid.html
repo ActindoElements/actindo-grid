@@ -2679,16 +2679,19 @@
                         }
                         else if( me._xhr.status !== 0 )
                         {
-                            try {
-                                const data = JSON.parse(me._xhr.responseText);
-                                if(data.errno === 10409)
-                                {
-                                    me._loadingText = data.error;
-                                    return me._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, true)
+                            if(!forceAuthorative)
+                            {
+                                try {
+                                    const data = JSON.parse(me._xhr.responseText);
+                                    if(data.errno === 10409)
+                                    {
+                                        me._loadingText = data.error;
+                                        return me._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, true);
+                                    }
                                 }
+                                catch (e)
+                                {}
                             }
-                            catch (e)
-                            {}
 
                             console.error(me._xhr.response);
                             me._error = true;
