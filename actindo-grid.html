@@ -333,6 +333,7 @@
                 background-color: var(--background-color);
                 opacity: 0.72;
                 display: flex;
+                flex-direction: column;
                 align-items: center;
                 z-index: 1;
                 justify-content: center;
@@ -733,6 +734,7 @@
             </div>
             <template is="dom-if" if="[[_xhr]]">
                 <div class="loading">
+                    <p>[[_loadingText]]</p>
                     <paper-spinner-lite active></paper-spinner-lite>
                 </div>
             </template>
@@ -2603,7 +2605,7 @@
                 } );
             }
 
-            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals)
+            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthorative)
             {
 
                 if( !remote )
@@ -2616,6 +2618,17 @@
                     return;
                 }
                 let me = this;
+                if(forceAuthorative)
+                {
+                    remoteParams = Object.assign(
+                        remoteParams,
+                        {
+                            hints: [
+                                {name: 'allow_nonauthoritative', value: false}
+                            ]
+                        }
+                    );
+                }
                 let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals);
                 this._error = false;
 
@@ -2629,6 +2642,7 @@
                 this._xhr = new XMLHttpRequest();
                 this._xhr.open("POST", remote, true);
                 this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+                this._xhr.setRequestHeader("Accept", "application/json");
                 this._xhr.onreadystatechange = function() {
                     if(me._xhr.readyState === XMLHttpRequest.DONE) {
                         if( me._xhr.status === 200 )
@@ -2665,12 +2679,24 @@
                         }
                         else if( me._xhr.status !== 0 )
                         {
+                            try {
+                                const data = JSON.parse(me._xhr.responseText);
+                                if(data.errno === 10409)
+                                {
+                                    me._loadingText = data.error;
+                                    return me._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, true)
+                                }
+                            }
+                            catch (e)
+                            {}
+
                             console.error(me._xhr.response);
                             me._error = true;
                             let message = me._xhr.responseText;
                             window.setTimeout(() => { Polymer.dom(me.root).querySelector('#errorComponent').message = message; }, 0);
 
                         }
+                        me._loadingText = '';
                         me._xhr = null;
                     }
                 };
