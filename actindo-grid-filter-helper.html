@@ -88,10 +88,14 @@
                 operators.equal_in_option
             ]
         };
+        const operatorsWhichRequireValue = [ // basically all exepct "=", "!=", "in"
+            'bt', '<', '>', '<=', '>=', 'like', 'matches'
+        ];
 
         ActindoGridFilterHelper = {
             operators: operators,
-            operatorList: operatorList
+            operatorList: operatorList,
+            operatorsWhichRequireValue: operatorsWhichRequireValue
         };
     })();
 </script>

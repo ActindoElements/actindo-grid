@@ -330,6 +330,10 @@
                 if (!firstChild && this.editing)
                 {
                     node.value = this.value;
+                    if(node.tagName.toLowerCase() === 'actindo-grid-filter-boolean')
+                    { // ugly workaround, but "value" is computed for the boolean filter. to be deprecated anyway
+                        node.checked = !!this.value;
+                    }
                 }
 
                 // Keep if the new input component name is not changed
@@ -456,7 +460,7 @@
             {
                 let {property, operator, value} = this;
 
-                if (!value) {
+                if (!value && ActindoGridFilterHelper.operatorsWhichRequireValue.indexOf(operator) > -1) {
                     return;
                 }
 
