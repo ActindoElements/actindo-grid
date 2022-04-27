@@ -2568,14 +2568,14 @@
                         request,
                         {
                             hints: [
-                                {name: 'allow_nonauthoritative', value: !forceAuthoritative}
+                                {name: 'allow_nonauthoritative', value: forceAuthoritative ? 0 : 1}
                             ]
                         }
                     );
                 }
                 else if(authoritativeQueryHintContained && forceAuthoritative)
                 {
-                    authoritativeQuery.value = false;
+                    authoritativeQuery.value = 0;
                 }
 
                 return request;
