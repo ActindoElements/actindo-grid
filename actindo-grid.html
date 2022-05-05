@@ -2508,7 +2508,7 @@
                 
             }
 
-            _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals) {
+            _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthoritative) {
                 let me = this;
                 let request = JSON.parse( JSON.stringify( remoteParams ) );
                 if( !this.pagingDisabled )
@@ -2541,12 +2541,6 @@
 
                 request[this.remoteParamSerializeOptionals] = serializeOptionals;
 
-                //query hints
-                if(!request.hasOwnProperty('hints'))
-                {
-                    request.hints = [{name:'allow_nonauthoritative',value:1}];
-                }
-
                 // searching
                 if(query.length) {
                     request[remoteParamSearch] = query;
@@ -2560,6 +2554,28 @@
                 }
                 else {
                     request[remoteParamSearch] = "";
+                }
+
+                // hints
+                let authoritativeQuery;
+                const authoritativeQueryHintContained = Array.isArray(request.hints)
+                    ? authoritativeQuery = request.hints.find(hint => hint.name === 'allow_nonauthoritative')
+                    : false;
+
+                if(!authoritativeQueryHintContained) {
+                    request = Object.assign(
+                        {},
+                        request,
+                        {
+                            hints: [
+                                {name: 'allow_nonauthoritative', value: forceAuthoritative ? 0 : 1}
+                            ]
+                        }
+                    );
+                }
+                else if(authoritativeQueryHintContained && forceAuthoritative)
+                {
+                    authoritativeQuery.value = 0;
                 }
 
                 return request;
@@ -2605,7 +2621,7 @@
                 } );
             }
 
-            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthorative)
+            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthoritative)
             {
 
                 if( !remote )
@@ -2618,18 +2634,7 @@
                     return;
                 }
                 let me = this;
-                if(forceAuthorative)
-                {
-                    remoteParams = Object.assign(
-                        remoteParams,
-                        {
-                            hints: [
-                                {name: 'allow_nonauthoritative', value: false}
-                            ]
-                        }
-                    );
-                }
-                let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals);
+                let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthoritative);
                 this._error = false;
 
                 if( this._xhr )
@@ -2679,7 +2684,9 @@
                         }
                         else if( me._xhr.status !== 0 )
                         {
-                            if(!forceAuthorative)
+                            const authoritativeDataQueried = Array.isArray(request.hints)
+                                && request.hints.filter(hint => hint.name === 'allow_nonauthoritative' && !hint.value).length;
+                            if(!authoritativeDataQueried) // only if we did not force authoritative data: check if we received stale data
                             {
                                 try {
                                     const data = JSON.parse(me._xhr.responseText);
