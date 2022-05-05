@@ -97,7 +97,7 @@
                 border-left: 2px solid var(--actindo-secondary);
             }
 
-            [hidden] 
+            [hidden]
             {
                 display: none !important;
             }
@@ -436,7 +436,7 @@
                 align-items: center;
                 @apply(--header-title-style);
             }
-            
+
             #actions
             {
                 display: flex;
@@ -608,7 +608,7 @@
             <div hidden$="[[!_arrayLengthGT(selectedItems.*, 1)]]">
                 <slot name="multiActions"></slot>
             </div>
-            
+
             <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
                 <slot name="noSelectionActions"></slot>
                 <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
@@ -720,7 +720,7 @@
                             <td><div class="frozenDisplay"><iron-icon icon="info"></iron-icon> [[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
                         </tr>
                     </template>
-                    
+
                     <template is="dom-if" if="[[_error]]">
                         <actindo-grid-error id="errorComponent"></actindo-grid-error>
                     </template>
@@ -732,7 +732,7 @@
                     </template>
                 </template>
             </div>
-            <template is="dom-if" if="[[_xhr]]">
+            <template is="dom-if" if="[[_domainIsLoading(_xhr, _xhrDomain, 'data')]]">
                 <div class="loading">
                     <p>[[_loadingText]]</p>
                     <paper-spinner-lite active></paper-spinner-lite>
@@ -770,24 +770,52 @@
                 </div>
 
                 [[_getItemsFrom(page, _itemsPerPage, totalItems)]]-[[_getItemsTo(page, _itemsPerPage, totalItems)]] of [[totalItems]]
+                <div style="display: flex; align-items: center" hidden="[[totalItemsTrueCount]]">
+                    <span>&nbsp;or more</span>
+
+                    <paper-icon-button icon="info"
+                                       on-tap="openTrueCountDialog"
+                                       hidden="[[_domainIsLoading(_xhr, _xhrDomain, 'count')]]"
+                                       style="color: var(--actindo-primary)">
+                    </paper-icon-button>
+
+                    <paper-spinner-lite hidden="[[!_domainIsLoading(_xhr, _xhrDomain, 'count')]]"
+                                        active="[[_domainIsLoading(_xhr, _xhrDomain, 'count')]]"
+                                        style="height: 24px; width: 24px; margin: 0 8px;">
+                    </paper-spinner-lite>
+
+                    <paper-tooltip position="left">
+                        The actual count was not determined. Tap the button to calculate the exact number of rows.
+                    </paper-tooltip>
+                </div>
+
                 <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
                 <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
-                <template is="dom-if" if="[[_showPageDropdown(_maxPage)]]">
+                <template is="dom-if" if="[[_showPageDropdown(_maxPage, totalItemsTrueCount)]]">
                     <select value="{{page::change}}">
                         <template is="dom-repeat" items="[[_pages]]">
                             <option value="[[item]]">[[item]]</option>
                         </template>
                     </select>
                 </template>
-                <template is="dom-if" if="[[!_showPageDropdown(_maxPage)]]">
+                <template is="dom-if" if="[[!_showPageDropdown(_maxPage, totalItemsTrueCount)]]">
                     <iron-a11y-keys keys="enter" on-keys-pressed="_switchPage">
-                        <input style="max-width: 4em" value="{{_pageInput::change}}"> / [[_maxPage]]
+                        <input style="width: 2.2em" value="{{_pageInput::change}}">
+                        <span hidden="[[!totalItemsTrueCount]]">/ [[_maxPage]]</span>
                     </iron-a11y-keys>
                 </template>
                 <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
                 <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
             </div>
         </template>
+
+        <paper-dialog id="trueCountDialog">
+            <p>Determining the actual number of rows can take some time. Are you sure you want to continue?</p>
+            <div style="display: flex; justify-content: flex-end">
+                <paper-button dialog-dismiss style="color: inherit;">Cancel</paper-button>
+                <paper-button dialog-confirm autofocus on-tap="queryTrueCount">Accept</paper-button>
+            </div>
+        </paper-dialog>
     </template>
     <script>
         class ActindoGrid extends Polymer.Element {
@@ -941,6 +969,17 @@
                     totalItems: {
                         type: Number,
                         value: 0,
+                        notify: true,
+                        readOnly: true
+                    },
+
+                    /**
+                     * indicates if the current `totalItems` value is the true count or not (it may be false in case the
+                     * actual total number of items is unknown)
+                     */
+                    totalItemsTrueCount: {
+                        type: Boolean,
+                        value: true,
                         notify: true,
                         readOnly: true
                     },
@@ -1119,7 +1158,7 @@
                         },
                         notify: true
                     },
-                    
+
                     /**
                      * if this is enabled and a selection mode is active, tapping a row will not select it. Rows can then
                      * only be selected by explicitely checking their checkboxes
@@ -1236,6 +1275,21 @@
                      * current xhr request
                      */
                     _xhr: {
+                        type: Object
+                    },
+
+                    /**
+                     * what kind of data the current _xhr is loading, either of: "data", "count"
+                     */
+                    _xhrDomain: {
+                        type: String,
+                    },
+
+                    /**
+                     * the last request that was sent to the server that we received a response for (a new one might
+                     * be inflight!)
+                     */
+                    _lastRequest: {
                         type: Object
                     },
 
@@ -1427,10 +1481,41 @@
             }
 
             /**
+             * opens the dialog to have the user confirm that he really wants to query the true number of items
+             */
+            openTrueCountDialog() {
+                this.$.trueCountDialog.opened = true;
+            }
+
+            /**
              * loads the previous page
              */
             previousPage() {
                 this.page = Math.max(1, this.page - 1);
+            }
+
+            queryTrueCount() {
+                this._load(
+                    this.remote,
+                    this.remotePathData,
+                    this.remotePathCount,
+                    this.remoteParams,
+                    this.remoteParamFilter,
+                    this.remoteParamLimit,
+                    this.remoteParamOffset,
+                    this.remoteParamSearch,
+                    this.remoteParamSearchFields,
+                    this.remoteParamSort,
+                    this.remoteParamSerializeOptionals,
+                    this._itemsPerPage,
+                    this.page,
+                    this.sort,
+                    this.query,
+                    this.filterList,
+                    this._serializeOptionals,
+                    true,
+                    true
+                );
             }
 
             /**
@@ -1899,7 +1984,7 @@
                         } else {
                             width = rowColumnWidth - 19.5;
                         }
-                        
+
                         const styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
                         headerColumns[i].setAttribute('style', styleString);
                         rowColumns[i].setAttribute('style', styleString);
@@ -2286,7 +2371,7 @@
                             if (!isLocked) {
                                 selected.push(this.items[i]);
                             }
-                            
+
                         }
                         this.set('selectedItems', selected);
                     }
@@ -2505,16 +2590,16 @@
                 }
                 this._filterColumns = filterColumns;
                 this._serializeOptionals = serializeOptionals;
-                
+
             }
 
-            _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals) {
+            _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthoritative, trueCount) {
                 let me = this;
                 let request = JSON.parse( JSON.stringify( remoteParams ) );
                 if( !this.pagingDisabled )
                 {
                     // pagination
-                    request[remoteParamLimit] = itemsPerPage;
+                    request[remoteParamLimit] = trueCount ? 0 : itemsPerPage;
                     request[remoteParamOffset] = (page - 1) * itemsPerPage;
                 }
 
@@ -2562,6 +2647,38 @@
                     request[remoteParamSearch] = "";
                 }
 
+                // hints
+                if(!Array.isArray(request.hints))
+                {
+                    request.hints = [];
+                }
+
+                const queryHints = {
+                    allow_nonauthoritative: {
+                        default: 1,
+                        force: trueCount ? 0 : (forceAuthoritative ? 1 : undefined)
+                    },
+                    true_count: {
+                        default: 0,
+                        force: trueCount ? 1 : undefined
+                    }
+                };
+                for(const hintKey in queryHints)
+                {
+                    const hint = request.hints.find(hint => hint.name === hintKey)
+
+                    if(!hint)
+                    {
+                        request.hints.push({
+                            name: hintKey,
+                            value: queryHints[hintKey].force === undefined ? queryHints[hintKey].default : queryHints[hintKey].force
+                        });
+                    }
+                    else if(hint && queryHints[hintKey].force !== undefined)
+                    {
+                        hint.value = queryHints[hintKey].force;
+                    }
+                }
                 return request;
             }
 
@@ -2605,7 +2722,7 @@
                 } );
             }
 
-            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthorative)
+            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthoritative, trueCount)
             {
 
                 if( !remote )
@@ -2618,18 +2735,8 @@
                     return;
                 }
                 let me = this;
-                if(forceAuthorative)
-                {
-                    remoteParams = Object.assign(
-                        remoteParams,
-                        {
-                            hints: [
-                                {name: 'allow_nonauthoritative', value: false}
-                            ]
-                        }
-                    );
-                }
-                let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals);
+
+                let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthoritative, trueCount);
                 this._error = false;
 
                 if( this._xhr )
@@ -2639,6 +2746,7 @@
 
                 this.set('_loadedColumns', [].concat(this._serializeOptionals));
 
+                this._xhrDomain = trueCount ? 'count' : 'data';
                 this._xhr = new XMLHttpRequest();
                 this._xhr.open("POST", remote, true);
                 this._xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -2647,6 +2755,7 @@
                     if(me._xhr.readyState === XMLHttpRequest.DONE) {
                         if( me._xhr.status === 200 )
                         {
+                            me._lastRequest = request;
                             let data = JSON.parse(me._xhr.responseText);
                             const count = Polymer.Path.get(data, remotePathCount);
 
@@ -2669,17 +2778,24 @@
                                 return;
                             }
                             me._setTotalItems(count);
-                            me.items = Polymer.Path.get(data, remotePathData);
-                            me._containedEntities = me.items.map(function(item) {
-                                return Polymer.Path.get(item, me.entityIdentifyingField);
-                            }).filter(function(value, index, self) {
-                                return self.indexOf(value) === index;
-                            });
-                            me.dispatchEvent( new CustomEvent( "after-load", {detail: data} ) );
+                            const trueCountQueried = request.hints.find(hint => hint.name === 'true_count' && hint.value);
+                            me._setTotalItemsTrueCount(trueCountQueried || count < 500);
+                            if(!trueCount)
+                            {
+                                me.items = Polymer.Path.get(data, remotePathData);
+                                me._containedEntities = me.items.map(function(item) {
+                                    return Polymer.Path.get(item, me.entityIdentifyingField);
+                                }).filter(function(value, index, self) {
+                                    return self.indexOf(value) === index;
+                                });
+                                me.dispatchEvent( new CustomEvent( "after-load", {detail: data} ) );
+                            }
                         }
                         else if( me._xhr.status !== 0 )
                         {
-                            if(!forceAuthorative)
+                            me._lastRequest = request;
+                            const authoritativeDataQueried = request.hints.find(hint => hint.name === 'allow_nonauthoritative' && !hint.value);
+                            if(!authoritativeDataQueried) // only if we did not force authoritative data: check if we received stale data
                             {
                                 try {
                                     const data = JSON.parse(me._xhr.responseText);
@@ -3040,13 +3156,14 @@
             /**
              * Deactivates page dropdown and shows input field instead
              *
-             * @param {Number} number of pages
+             * @param {Number} _maxPage number of pages
+             * @param {Boolean} totalItemsTrueCount
              * @return {Boolean}
              * @private
              */
-            _showPageDropdown(_maxPage)
+            _showPageDropdown(_maxPage, totalItemsTrueCount)
             {
-                return _maxPage <= this._pageDropdownThreshold;
+                return (_maxPage <= this._pageDropdownThreshold) && totalItemsTrueCount;
             }
 
             /**
@@ -3163,6 +3280,18 @@
             }
 
             /**
+             * checks if the queried domain is currently loading, i.e. a request is active and belongs to that domain
+             * @param {*} xhr
+             * @param {string} xhrDomain
+             * @param {string} domain
+             * @returns {boolean}
+             * @private
+             */
+            _domainIsLoading(xhr, xhrDomain, domain) {
+                return xhr && xhrDomain === domain;
+            }
+
+            /**
              * when click filter icon will show or hide filter area
              */
             _onClickFilterIcon() {
@@ -3180,7 +3309,7 @@
 
             /**
              * check header mode display is single or multi, default is single
-             * 
+             *
              */
             _isHeaderSingleMode() {
                 return !this.multiLineHeader;
