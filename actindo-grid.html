@@ -1595,9 +1595,8 @@
                 super.connectedCallback();
 
                 this._blockLoad = !this._isUserVisible();
-                if(!this._isUserVisible())
+                if(this._blockLoad)
                 {
-                    this._blockLoad = true;
                     const interval = window.setInterval(() => {
                         if(this._isUserVisible())
                         {
