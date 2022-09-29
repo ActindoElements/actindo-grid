@@ -1597,14 +1597,33 @@
                 this._blockLoad = !this._isUserVisible();
                 if(this._blockLoad)
                 {
-                    const interval = window.setInterval(() => {
-                        if(this._isUserVisible())
-                        {
-                            window.clearInterval(interval);
-                            this._blockLoad = false;
-                            this.refresh();
-                        }
-                    }, 750);
+                    let visibilityInterval = 0;
+                    const focusCallback = () => registerVisibilityInterval();
+                    const blurCallback = () => unregisterVisibilityInterval();
+
+                    window.addEventListener('focus', focusCallback);
+                    window.addEventListener('blur', blurCallback);
+
+                    const unregisterVisibilityInterval = () => {
+                        window.clearInterval(visibilityInterval);
+                    };
+                    const registerVisibilityInterval = () => {
+                        unregisterVisibilityInterval();
+                        visibilityInterval = window.setInterval(() => {
+                            if(this._isUserVisible())
+                            {
+                                window.removeEventListener('focus', focusCallback);
+                                window.removeEventListener('blur', blurCallback);
+                                unregisterVisibilityInterval();
+                                this._blockLoad = false;
+                                this.refresh();
+                            }
+                        }, 750);
+                    };
+
+                    if(!document.hidden) {
+                        registerVisibilityInterval();
+                    }
                 }
 
                 this.lastAddedWhileShift = [];
