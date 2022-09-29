@@ -1594,6 +1594,20 @@
             connectedCallback() {
                 super.connectedCallback();
 
+                this._blockLoad = !this._isUserVisible();
+                if(!this._isUserVisible())
+                {
+                    this._blockLoad = true;
+                    const interval = window.setInterval(() => {
+                        if(this._isUserVisible())
+                        {
+                            window.clearInterval(interval);
+                            this._blockLoad = false;
+                            this.refresh();
+                        }
+                    }, 750);
+                }
+
                 this.lastAddedWhileShift = [];
                 document.addEventListener( "keyup", (e) => {
                     if( e.key === 'Shift' )
@@ -2932,6 +2946,41 @@
             /*
              * internal helpers
              */
+
+            /**
+             * determines if this element is currently visible to the user
+             *
+             * @returns {boolean}
+             *
+             * @private
+             */
+            _isUserVisible() {
+                if(document.hidden) return false;
+                const elem = this;
+                const style = getComputedStyle(elem);
+                if (style.display === 'none') return false;
+                if (style.visibility !== 'visible') return false;
+                if (style.opacity < 0.1) return false;
+                if (elem.offsetWidth + elem.offsetHeight + elem.getBoundingClientRect().height +
+                    elem.getBoundingClientRect().width === 0) {
+                    return false;
+                }
+                const elemCenter   = {
+                    x: elem.getBoundingClientRect().left + elem.offsetWidth / 2,
+                    y: elem.getBoundingClientRect().top + elem.offsetHeight / 2
+                };
+                if (elemCenter.x < 0) return false;
+                if (elemCenter.x > (document.documentElement.clientWidth || window.innerWidth)) return false;
+                if (elemCenter.y < 0) return false;
+                if (elemCenter.y > (document.documentElement.clientHeight || window.innerHeight)) return false;
+                return true;
+                // the rest does not work through shadow dom
+                let pointContainer = document.elementFromPoint(elemCenter.x, elemCenter.y);
+                do {
+                    if (pointContainer === elem) return true;
+                } while (pointContainer = pointContainer.parentNode);
+                return false;
+            }
 
             /**
              * takes the given object and creates an http query string from it
