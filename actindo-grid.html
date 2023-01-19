@@ -97,7 +97,7 @@
                 border-left: 2px solid var(--actindo-secondary);
             }
 
-            [hidden] 
+            [hidden]
             {
                 display: none !important;
             }
@@ -436,7 +436,7 @@
                 align-items: center;
                 @apply(--header-title-style);
             }
-            
+
             #actions
             {
                 display: flex;
@@ -608,7 +608,7 @@
             <div hidden$="[[!_arrayLengthGT(selectedItems.*, 1)]]">
                 <slot name="multiActions"></slot>
             </div>
-            
+
             <div id="actions" hidden$="[[_arrayLengthGT(selectedItems.*, 0)]]">
                 <slot name="noSelectionActions"></slot>
                 <actindo-grid-search query="{{query}}" hidden$="[[_isSearchHidden(remote, _columns.*)]]"></actindo-grid-search>
@@ -720,7 +720,7 @@
                             <td><div class="frozenDisplay"><iron-icon icon="info"></iron-icon> [[_displayFrozenInfo(row.*, frozenByField)]]</div></td>
                         </tr>
                     </template>
-                    
+
                     <template is="dom-if" if="[[_error]]">
                         <actindo-grid-error id="errorComponent"></actindo-grid-error>
                     </template>
@@ -1119,7 +1119,7 @@
                         },
                         notify: true
                     },
-                    
+
                     /**
                      * if this is enabled and a selection mode is active, tapping a row will not select it. Rows can then
                      * only be selected by explicitely checking their checkboxes
@@ -1392,6 +1392,16 @@
                     frozenByField: {
                         type: String,
                         value: 'frozenByName'
+                    },
+
+                    /**
+                     * do not ever request non-authoritative data from the backend, i.e. always send the
+                     * allow_nonauthoritative hint as 0
+                     */
+                    forceAuthoritative: {
+                        type: Boolean,
+                        value: false,
+                        notify: true
                     }
                 }
             }
@@ -1447,7 +1457,7 @@
                         this.remote,
                         this.remotePathData,
                         this.remotePathCount,
-                        this.remoteParams,
+                        Object.assign({}, this.remoteParams),
                         this.remoteParamFilter,
                         this.remoteParamLimit,
                         this.remoteParamOffset,
@@ -1468,7 +1478,7 @@
                         this.remote,
                         this.remotePathData,
                         this.remotePathCount,
-                        this.remoteParams,
+                        Object.assign({}, this.remoteParams),
                         this.remoteParamFilter,
                         this.remoteParamLimit,
                         this.remoteParamOffset,
@@ -1899,7 +1909,7 @@
                         } else {
                             width = rowColumnWidth - 19.5;
                         }
-                        
+
                         const styleString = 'max-width: ' + width + 'px; min-width: ' + width + 'px; width: ' + width + 'px';
                         headerColumns[i].setAttribute('style', styleString);
                         rowColumns[i].setAttribute('style', styleString);
@@ -2286,7 +2296,7 @@
                             if (!isLocked) {
                                 selected.push(this.items[i]);
                             }
-                            
+
                         }
                         this.set('selectedItems', selected);
                     }
@@ -2505,7 +2515,7 @@
                 }
                 this._filterColumns = filterColumns;
                 this._serializeOptionals = serializeOptionals;
-                
+
             }
 
             _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals) {
@@ -2544,7 +2554,7 @@
                 //query hints
                 if(!request.hasOwnProperty('hints'))
                 {
-                    request.hints = [{name:'allow_nonauthoritative',value:1}];
+                    request.hints = [{name:'allow_nonauthoritative',value: this.forceAuthoritative ? 0 : 1}];
                 }
 
                 // searching
@@ -2607,7 +2617,6 @@
 
             _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthorative)
             {
-
                 if( !remote )
                 {
                     return;
@@ -2618,13 +2627,13 @@
                     return;
                 }
                 let me = this;
-                if(forceAuthorative)
+                if(forceAuthorative || this.forceAuthoritative)
                 {
                     remoteParams = Object.assign(
                         remoteParams,
                         {
                             hints: [
-                                {name: 'allow_nonauthoritative', value: false}
+                                {name: 'allow_nonauthoritative', value: 0}
                             ]
                         }
                     );
@@ -2751,7 +2760,7 @@
                            remote,
                            remotePathData,
                            remotePathCount,
-                           remoteParams,
+                           Object.assign({}, remoteParams),
                            remoteParamFilter,
                            remoteParamLimit,
                            remoteParamOffset,
@@ -3180,7 +3189,7 @@
 
             /**
              * check header mode display is single or multi, default is single
-             * 
+             *
              */
             _isHeaderSingleMode() {
                 return !this.multiLineHeader;
