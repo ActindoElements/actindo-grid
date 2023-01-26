@@ -2046,15 +2046,10 @@
              * @private
              */
             _onHeadTapped(e) {
-                let column;
-                for(let i = 0, c = e.path.length; i < c; i++) {
-                    if(i > 5 || !e.path[i].classList) {
-                        return;
-                    }
-                    if(e.path[i].classList.contains('sortable-true')) {
-                        column = e.path[i];
-                        break;
-                    }
+                let column = e.target.closest('th.sortable-true');
+                if(!column)
+                {
+                    return; // column is not sortable
                 }
                 let realIndex = -1;
                 let countNonHidden = 0;
