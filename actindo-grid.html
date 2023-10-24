@@ -2387,7 +2387,7 @@
              * @private
              */
             _onSelectionChanged() {
-                let unlockedItems = this.items.filter((item) => item.locked === false);
+                let unlockedItems = this.items.filter((item) => !!item[this.lockedField] === false);
                 this._everythingSelected = (this.selectedItems.length > 0 && this.selectedItems.length === unlockedItems.length);
                 this._partiallySelected = this.selectedItems.length > 0 && !this._everythingSelected;
                 this.dispatchEvent(new CustomEvent('selected-items-changed', {detail: {path: 'selectedItems', value: this.selectedItems}}));
