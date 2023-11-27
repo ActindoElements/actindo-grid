@@ -147,27 +147,32 @@
                 thead tr:hover {
                     background: none;
                 }
+                tr {
+                    background: var(--ui-actindo-grid-row, unset);
+                }
                 tr:hover {
-                    background: #EBECEC;
+                    background-color: var(--ui-actindo-grid-hover, rgb(0, 0, 0, 0.04));
+                    outline: 1px solid var(--ui-actindo-grid-hover-outline, #00efbf);
+                    outline-offset: -1px;
                 }
                 tr[selected] {
-                    background: #f0f9f9;
+                    background: var(--ui-actindo-grid-selected, #d1f4ef);
                 }
                 tr[selected]:hover {
-                    background: #D8E4E2;
+                    background: var(--ui-actindo-grid-hover-with-selected, var(--ui-actindo-grid-selected, #d1f4ef));
                 }
 
                 tr:nth-child(2n) {
-                    background: #f8f8f8;
+                    background: var(--ui-actindo-grid-even-row, var(--ui-actindo-grid-row, rgb(0, 0, 0, 0.01)));
                 }
                 tr:hover:nth-child(2n) {
-                    background: #E4E5E5;
+                    background: var(--ui-actindo-grid-even-hover, var(--ui-actindo-grid-hover, rgb(0, 0, 0, 0.04)));
                 }
                 tr[selected]:nth-child(2n) {
-                    background: #D8F0EE;
+                    background: var(--ui-actindo-grid-even-selected, var(--ui-actindo-grid-selected, #d1f4ef));
                 }
                 tr[selected]:hover:nth-child(2n) {
-                    background: #D5E1E0;
+                    background: var(--ui-actindo-grid-even-hover-with-selected, var(--ui-actindo-grid-even-selected, var(--ui-actindo-grid-selected, #d1f4ef)));
                 }
 
                 td {
