@@ -20,6 +20,7 @@
 <link rel="import" href="actindo-grid-filter-boolean.html">
 <link rel="import" href="actindo-grid-filter-columns.html">
 <link rel="import" href="actindo-grid-custom-render.html">
+<link rel="import" href="actindo-grid-time-series-filter.html">
 <link rel="import" href="../iron-a11y-keys/iron-a11y-keys.html">
 
 <!--
@@ -632,6 +633,15 @@
                             <span slot="content">Filter ([[filterList.length]])</span>
                         </actindo-grid-filter-configurator>
                     </template>
+                    <template is="dom-if" if="[[timeSeriesRemote]]">
+                        <actindo-grid-time-series-filter
+                            maximum-time-range-days="[[timeSeriesMaximumTimeRangeDays]]"
+                            from="{{_timeSeriesFrom}}"
+                            to="{{_timeSeriesTo}}"
+                            on-time-slice-updated="_onTimeSeriesSliceUpdated"
+                            select-initial-preset="[[timeSeriesSelectInitialPreset]]"
+                        ></actindo-grid-time-series-filter>
+                    </template>
                 </template>
             </div>
         </div>
@@ -653,6 +663,15 @@
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
                             <span slot="content">Filter ([[filterList.length]])</span>
                         </actindo-grid-filter-configurator>
+                    </template>
+                    <template is="dom-if" if="[[timeSeriesRemote]]">
+                        <actindo-grid-time-series-filter
+                            maximum-time-range-days="[[timeSeriesMaximumTimeRangeDays]]"
+                            from="{{_timeSeriesFrom}}"
+                            to="{{_timeSeriesTo}}"
+                            on-time-slice-updated="_onTimeSeriesSliceUpdated"
+                            select-initial-preset="[[timeSeriesSelectInitialPreset]]"
+                        ></actindo-grid-time-series-filter>
                     </template>
                 </div>
             </div>
@@ -774,23 +793,30 @@
                     </select>
                 </div>
 
-                [[_getItemsFrom(page, _itemsPerPage, totalItems)]]-[[_getItemsTo(page, _itemsPerPage, totalItems)]] of [[totalItems]]
-                <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
-                <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
-                <template is="dom-if" if="[[_showPageDropdown(_maxPage)]]">
-                    <select value="{{page::change}}">
-                        <template is="dom-repeat" items="[[_pages]]">
-                            <option value="[[item]]">[[item]]</option>
-                        </template>
-                    </select>
+                <template is="dom-if" if="[[timeSeriesRemote]]">
+                    <paper-icon-button disabled="[[!_canPageBackwardsInTimeSeries(_timeSeriesPageTo)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
+                    <paper-icon-button disabled="[[!_canPageForwardInTimeSeries(items, _itemsPerPage)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
                 </template>
-                <template is="dom-if" if="[[!_showPageDropdown(_maxPage)]]">
-                    <iron-a11y-keys keys="enter" on-keys-pressed="_switchPage">
-                        <input style="max-width: 4em" value="{{_pageInput::change}}"> / [[_maxPage]]
-                    </iron-a11y-keys>
+
+                <template is="dom-if" if="[[!timeSeriesRemote]]">
+                    [[_getItemsFrom(page, _itemsPerPage, totalItems)]]-[[_getItemsTo(page, _itemsPerPage, totalItems)]] of [[totalItems]]
+                    <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="first-page" on-tap="firstPage"></paper-icon-button>
+                    <paper-icon-button disabled="[[!_canPageBackward(page)]]" icon="chevron-left" on-tap="previousPage"></paper-icon-button>
+                    <template is="dom-if" if="[[_showPageDropdown(_maxPage)]]">
+                        <select value="{{page::change}}">
+                            <template is="dom-repeat" items="[[_pages]]">
+                                <option value="[[item]]">[[item]]</option>
+                            </template>
+                        </select>
+                    </template>
+                    <template is="dom-if" if="[[!_showPageDropdown(_maxPage)]]">
+                        <iron-a11y-keys keys="enter" on-keys-pressed="_switchPage">
+                            <input style="max-width: 4em" value="{{_pageInput::change}}"> / [[_maxPage]]
+                        </iron-a11y-keys>
+                    </template>
+                    <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
+                    <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
                 </template>
-                <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="chevron-right" on-tap="nextPage"></paper-icon-button>
-                <paper-icon-button disabled="[[!_canPageForward(page, _itemsPerPage, totalItems)]]" icon="last-page" on-tap="lastPage"></paper-icon-button>
             </div>
         </template>
     </template>
@@ -1407,6 +1433,42 @@
                         type: Boolean,
                         value: false,
                         notify: true
+                    },
+
+                    /**
+                     * whether the endpoint configured in `remote` is a time series endpoint
+                     */
+                    timeSeriesRemote: {
+                        type: Boolean,
+                        value: false
+                    },
+
+                    /**
+                     * the maximum allowed date range to look up in a request
+                     */
+                    timeSeriesMaximumTimeRangeDays: {
+                        type: Number,
+                        value: 7
+                    },
+
+                    /**
+                     * the index of the preset to select initially, defaults to 0
+                     */
+                    timeSeriesSelectInitialPreset: {
+                        type: Number,
+                        value: 0
+                    },
+
+                    _timeSeriesFrom: {
+                        type: Number
+                    },
+
+                    _timeSeriesTo: {
+                        type: Number
+                    },
+
+                    _timeSeriesPageTo: {
+                        type: String
                     }
                 }
             }
@@ -1424,7 +1486,15 @@
              * loads the first page
              */
             firstPage() {
-                this.page = 1;
+                if (this.timeSeriesRemote)
+                {
+                    const el = Polymer.dom(this.root).querySelector('actindo-grid-time-series-filter');
+                    el && el.refresh();
+                }
+                else
+                {
+                    this.page = 1;
+                }
             }
 
             /**
@@ -1438,6 +1508,13 @@
              * loads the next page
              */
             nextPage() {
+                if (this.timeSeriesRemote) {
+                    if (this.items && this.items.length > 0) {
+                        this._timeSeriesPageTo = this.items[this.items.length - 1]._timestamp;
+                    }
+                    return;
+                }
+
                 this.page = Math.max(1, Math.min(this.page + 1, Math.ceil(this.totalItems / this._itemsPerPage)));
             }
 
@@ -1475,7 +1552,11 @@
                         this.sort,
                         this.query,
                         this.filterList,
-                        this._serializeOptionals
+                        this._serializeOptionals,
+                        false,
+                        this._timeSeriesFrom,
+                        this._timeSeriesTo,
+                        this._timeSeriesPageTo
                     );
                     return;
                 }
@@ -1496,7 +1577,10 @@
                         this.sort,
                         this.query,
                         this.filterList,
-                        this._serializeOptionals
+                        this._serializeOptionals,
+                        this._timeSeriesFrom,
+                        this._timeSeriesTo,
+                        this._timeSeriesPageTo
                 );
             }
 
@@ -1592,6 +1676,7 @@
                     '_onItemsChanged(items.*)',
                     '_onSelectionChanged(selectedItems.*)',
                     '_onRemoteChanged(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, _itemsPerPage, page, sort, query, filterList, _serializeOptionals.*)',
+                    '_onTimeSeriesSliceChanged(_timeSeriesFrom, _timeSeriesTo, _timeSeriesPageTo)',
                     '_onFilterChanged(filterList.*)',
                     '_onColumnConfigurationChanged(_columns.*)'
                 ];
@@ -1750,8 +1835,19 @@
                 }
             }
 
+            _onTimeSeriesSliceUpdated() {
+                this._timeSeriesPageTo = null;
+            }
+
             _onRefreshTap()
             {
+                if (this.timeSeriesRemote)
+                {
+                    const el = Polymer.dom(this.root).querySelector('actindo-grid-time-series-filter');
+                    if (el && el.refresh()) {
+                        return;
+                    }
+                }
                 this.refresh(false);
             }
 
@@ -2519,14 +2615,31 @@
 
             }
 
-            _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals) {
+            _buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, timeSeriesFrom, timeSeriesTo, timeSeriesPageTo) {
                 let me = this;
                 let request = JSON.parse( JSON.stringify( remoteParams ) );
+
+                // pagination
                 if( !this.pagingDisabled )
                 {
-                    // pagination
-                    request[remoteParamLimit] = itemsPerPage;
-                    request[remoteParamOffset] = (page - 1) * itemsPerPage;
+                    if (this.timeSeriesRemote)
+                    {
+                        request[remoteParamLimit] = itemsPerPage;
+                        request["fromDateTime"] = moment(timeSeriesFrom).format('YYYY-MM-DD HH:mm:ss');
+                        if (timeSeriesPageTo)
+                        {
+                            request['to'] = timeSeriesPageTo;
+                        }
+                        else
+                        {
+                            request["toDateTime"] = moment(timeSeriesTo).format('YYYY-MM-DD HH:mm:ss');
+                        }
+                    }
+                    else
+                    {
+                        request[remoteParamLimit] = itemsPerPage;
+                        request[remoteParamOffset] = (page - 1) * itemsPerPage;
+                    }
                 }
 
                 // sorting
@@ -2550,12 +2663,15 @@
                     request[remoteParamFilter] = request[remoteParamFilter].concat( remoteParams[remoteParamFilter] );
                 }
 
-                request[this.remoteParamSerializeOptionals] = serializeOptionals;
-
-                //query hints
-                if(!request.hasOwnProperty('hints'))
+                if (!this.timeSeriesRemote)
                 {
-                    request.hints = [{name:'allow_nonauthoritative',value: this.forceAuthoritative ? 0 : 1}];
+                    request[this.remoteParamSerializeOptionals] = serializeOptionals;
+
+                    //query hints
+                    if(!request.hasOwnProperty('hints'))
+                    {
+                        request.hints = [{name:'allow_nonauthoritative',value: this.forceAuthoritative ? 0 : 1}];
+                    }
                 }
 
                 // searching
@@ -2616,12 +2732,20 @@
                 } );
             }
 
-            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthorative)
+            _load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, forceAuthorative, timeSeriesFrom, timeSeriesTo, timeSeriesPageTo)
             {
                 if( !remote )
                 {
                     return;
                 }
+                if (this.timeSeriesRemote)
+                {
+                    if (!timeSeriesFrom || !timeSeriesTo)
+                    {
+                        return; // time range picker may not yet have initialized
+                    }
+                }
+
                 if(this._blockLoad)
                 {
                     this._blockLoad = false;
@@ -2639,7 +2763,7 @@
                         }
                     );
                 }
-                let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals);
+                let request = this._buildRequest(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, timeSeriesFrom, timeSeriesTo, timeSeriesPageTo);
                 this._error = false;
 
                 if( this._xhr )
@@ -2696,7 +2820,7 @@
                                     if(data.errno === 10409)
                                     {
                                         me._loadingText = data.error;
-                                        return me._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, true);
+                                        return me._load(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filter, serializeOptionals, true, timeSeriesFrom, timeSeriesTo, timeSeriesPageTo);
                                     }
                                 }
                                 catch (e)
@@ -2733,7 +2857,12 @@
                         return;
                     }
                 }
-                if (this.page === 1)
+                if (this.timeSeriesRemote && !this._timeSeriesPageTo)
+                {
+                    this.refresh();
+                    return;
+                }
+                else if (this.page === 1)
                 {
                     this.refresh();
                     return;
@@ -2753,9 +2882,26 @@
                 this.refresh();
             }
 
-            _loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, serializeOptionals) {
+            /**
+             * called when the time series slice changes, either by user selection or through navigation
+             *
+             * @param {Number} timeSeriesFrom
+             * @param {Number} timeSeriesTo
+             * @param {String} timeSeriesPageTo
+             * @private
+             */
+            _onTimeSeriesSliceChanged(timeSeriesFrom, timeSeriesTo, timeSeriesPageTo) {
+                if (!timeSeriesFrom || (!timeSeriesTo && !timeSeriesPageTo))
+                {
+                    return;
+                }
+
+                this.refresh(true);
+            }
+
+            _loadDebounced(remote, remotePathData, remotePathCount, remoteParams, remoteParamFilter, remoteParamLimit, remoteParamOffset, remoteParamSearch, remoteParamSearchFields, remoteParamSort, remoteParamSerializeOptionals, itemsPerPage, page, sort, query, filterList, serializeOptionals, timeSeriesFrom, timeSeriesTo, timeSeriesPageTo) {
                this._debouncer = Polymer.Debouncer.debounce(this._debouncer,
-                  Polymer.Async.timeOut.after(500),
+                  Polymer.Async.timeOut.after(250),
                    () => {
                        this._load(
                            remote,
@@ -2774,7 +2920,11 @@
                            sort,
                            query,
                            filterList,
-                           serializeOptionals
+                           serializeOptionals,
+                           false,
+                           timeSeriesFrom,
+                           timeSeriesTo,
+                           timeSeriesPageTo
                        );
                    }
                );
@@ -2999,6 +3149,17 @@
             }
 
             /**
+             * checks if the user can page backwards to page 1 in a time series result
+             *
+             * @param {null|Number} timeSeriesPageTo
+             * @returns {boolean}
+             * @private
+             */
+            _canPageBackwardsInTimeSeries(timeSeriesPageTo) {
+                return !!timeSeriesPageTo;
+            }
+
+            /**
              * checks if the user can page forwards
              *
              * @param {Number} page the current page
@@ -3009,6 +3170,18 @@
              */
             _canPageForward(page, itemsPerPage, totalItems) {
                 return this._getItemsTo(page, itemsPerPage, totalItems) < totalItems;
+            }
+
+            /**
+             * checks if the user can page forwards in a time series result
+             *
+             * @param {Array} items
+             * @param {Number} itemsPerPage
+             * @returns {boolean}
+             * @private
+             */
+            _canPageForwardInTimeSeries(items, itemsPerPage) {
+                return items.length >= itemsPerPage;
             }
 
             _displayFrozenInfo(item, frozenByField) {
