@@ -13,17 +13,17 @@
         </style>
         <div class="container">
             <paper-input
-                error-message="You must enter a Number"
+                error-message="[[__L('actindogrid.error_must_enter_number', 'You must enter a Number')]]"
                 auto-validate
-                label="From"
+                label="[[__L('actindogrid.from', 'From')]]"
                 value="{{value.from}}"
                 pattern="^-?[0-9]\d*(\.\d+)?$"
                 allowed-pattern="[0-9\-\.]">
             </paper-input>
             <paper-input
-                error-message="You must enter a Number"
+                error-message="[[__L('actindogrid.error_must_enter_number', 'You must enter a Number')]]"
                 auto-validate
-                label="To"
+                label="[[__L('actindogrid.to', 'To')]]"
                 value="{{value.to}}"
                 pattern="^-?[0-9]\d*(\.\d+)?$"
                 allowed-pattern="[0-9\-\.]">
@@ -32,7 +32,7 @@
     </template>
 
     <script>
-        class ActindoGridFilterBetweenInput extends Polymer.Element {
+        class ActindoGridFilterBetweenInput extends Actindo.Element {
             static get is() { return 'actindo-grid-filter-between-input'; }
 
             static get properties() {

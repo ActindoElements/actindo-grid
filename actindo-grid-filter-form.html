@@ -29,7 +29,7 @@
         <div class="filter-form">
             <template is="dom-if" if="[[columns.length]]">
                 <actindo-combobox
-                    label="Column"
+                    label="[[__L('actindogrid.column', 'Column')]]"
                     items="[[columns]]"
                     display-field="label"
                     value-field="field"
@@ -43,7 +43,7 @@
             </template>
             <template is="dom-if" if="[[_selectedColumn.type]]">
                 <actindo-combobox
-                    label="Relation"
+                    label="[[__L('actindogrid.relation', 'Relation')]]"
                     items="[[_operators]]"
                     display-field="name"
                     value-field="value"
@@ -56,7 +56,7 @@
             </div>
 
             <paper-button class="btn-add" on-click="_save" raised>
-                <span>Add Filter</span>
+                <span>[[__L('actindogrid.add_filter', 'Add Filter')]]</span>
             </paper-button>
         </div>
         
@@ -64,7 +64,7 @@
 
     <script>
 
-        class ActindoGridFilterForm extends Polymer.Element {
+        class ActindoGridFilterForm extends Actindo.Element {
             static get is() { return 'actindo-grid-filter-form'; }
 
             static get properties() {

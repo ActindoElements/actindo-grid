@@ -598,7 +598,7 @@
         <div id="multiActionsOverlay" class="actionsoverlay invisible">
         </div>
         <div id="toolbar" class$="actions-[[_arrayLengthGT(selectedItems.*, 0)]]">
-            <div hidden$="[[!selectedItems.length]]">[[header]] ([[selectedItems.length]] gew&auml;hlt)</div>
+            <div hidden$="[[!selectedItems.length]]">[[header]] ([[selectedItems.length]] [[__L('actindogrid.selected', 'selected')]])</div>
             <div hidden$="[[!_arrayLengthEquals(selectedItems.*, 0)]]" class="header-bar">
                 <template is="dom-if" if="[[showBackIcon]]">
                     <paper-icon-button style="opacity: 0.7;margin-left:-10px" icon="chevron-left" on-click="_onBackIconClicked"></paper-icon-button>
@@ -624,13 +624,13 @@
                     <template is="dom-if" if="[[!hideColumnConfiguration]]">
                         <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
                             <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
-                            <span slot="content">Columns ([[_displayColumns.length]])</span>
+                            <span slot="content">[[__L('actindogrid.columns', 'Columns')]] ([[_displayColumns.length]])</span>
                         </actindo-grid-filter-configurator>
                     </template>
                     <template is="dom-if" if="[[_filterColumns.length]]">
                         <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
-                            <span slot="content">Filter ([[filterList.length]])</span>
+                            <span slot="content">[[__L('actindogrid.filter', 'Filter')]] ([[filterList.length]])</span>
                         </actindo-grid-filter-configurator>
                     </template>
                     <template is="dom-if" if="[[timeSeriesRemote]]">
@@ -655,13 +655,13 @@
                     <template is="dom-if" if="[[!hideColumnConfiguration]]">
                         <actindo-grid-filter-configurator on-click="_onClickColumnIcon" active="{{_showColumnsArea}}">
                             <paper-icon-button icon="icons:view-column" slot="content"></paper-icon-button>
-                            <span slot="content">Columns ([[_displayColumns.length]])</span>
+                            <span slot="content">[[__L('actindogrid.columns', 'Columns')]] ([[_displayColumns.length]])</span>
                         </actindo-grid-filter-configurator>
                     </template>
                     <template is="dom-if" if="[[_filterColumns.length]]">
                         <actindo-grid-filter-configurator on-click="_onClickFilterIcon" active="[[_showFilterArea]]">
                             <paper-icon-button icon="icons:filter-list" slot="content"></paper-icon-button>
-                            <span slot="content">Filter ([[filterList.length]])</span>
+                            <span slot="content">[[__L('actindogrid.filter', 'Filter')]] ([[filterList.length]])</span>
                         </actindo-grid-filter-configurator>
                     </template>
                     <template is="dom-if" if="[[timeSeriesRemote]]">
@@ -785,7 +785,7 @@
         <template is="dom-if" if="[[!pagingDisabled]]">
             <div id="paging" hidden="[[!remote]]">
                 <div id="rowsPerPage">
-                    <span>Rows per page:</span>
+                    <span>[[__L('actindogrid.rows_per_page', 'Rows per page:')]]</span>
                     <select value="{{_itemsPerPage::change}}">
                         <template is="dom-repeat" items="[[itemsPerPageList]]">
                             <option value="[[item]]" selected$="{{_isItemsPerPageSelected(item)}}">[[item]]</option>
@@ -821,7 +821,7 @@
         </template>
     </template>
     <script>
-        class ActindoGrid extends Polymer.Element {
+        class ActindoGrid extends Actindo.Element {
             static get is() { return 'actindo-grid'; }
 
             static get properties() {

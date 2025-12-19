@@ -17,13 +17,13 @@
         </style>
         <div class="container">
             <actindo-date-picker
-                label="From"
+                label="[[__L('actindogrid.from', 'From')]]"
                 id="from"
                 value="{{displayValueFrom}}"
                 on-date-object-changed="_onFromSelect">
             </actindo-date-picker>
             <actindo-date-picker
-                label="To"
+                label="[[__L('actindogrid.to', 'To')]]"
                 id="to"
                 value="{{displayValueTo}}"
                 on-date-object-changed="_onToSelect">
@@ -32,7 +32,7 @@
     </template>
 
     <script>
-        class ActindoGridFilterBetweenDate extends Polymer.Element {
+        class ActindoGridFilterBetweenDate extends Actindo.Element {
             static get is() { return 'actindo-grid-filter-between-date'; }
 
             static get properties() {

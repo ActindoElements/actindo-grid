@@ -105,7 +105,7 @@
             <div class="actions">
                 <div class="actions-left">
                     <actindo-combobox
-                        label="Column"
+                        label="[[__L('actindogrid.column', 'Column')]]"
                         items="[[_hiddenColumns]]"
                         display-field="label"
                         value-field="field"
@@ -114,12 +114,12 @@
                     >
                     </actindo-combobox>
                     <paper-button on-click="_onAddColumn" raised>
-                        <span>Add Column</span>
+                        <span>[[__L('actindogrid.add_column', 'Add Column')]]</span>
                     </paper-button>
                 </div>
                 <div class="actions-right">
                     <paper-button on-click="_onApply" raised>
-                        <span>Apply</span>
+                        <span>[[__L('actindogrid.apply', 'Apply')]]</span>
                     </paper-button>
                 </div>
             </div>
@@ -129,7 +129,7 @@
     </template>
 
     <script>
-        class ActindoGridFilterColumns extends Polymer.Element {
+        class ActindoGridFilterColumns extends Actindo.Element {
             static get is() { return 'actindo-grid-filter-columns'; }
             static get properties() {
                 return {
