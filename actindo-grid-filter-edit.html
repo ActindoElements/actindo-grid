@@ -79,14 +79,14 @@
         <paper-dialog id="alignedDialog">
             <actindo-basic-panel on-save="_save" on-cancel="_cancel" save-label="[[saveLabel]]" no-back-icon>
                 <div slot="header" class="header">
-                    <span>Edit Filter</span>
+                    <span>[[__L('actindogrid.edit_filter', 'Edit Filter')]]</span>
                     <span class="filter-name">[[filterName]]</span>
                 </div>
                 <div class="content" slot="content">
                     <div class="toolbar">
                         <template is="dom-if" if="[[columns.length]]">
                             <actindo-combobox
-                                label="Column"
+                                label="[[__L('actindogrid.column', 'Column')]]"
                                 items="[[columns]]"
                                 display-field="label"
                                 value-field="field"
@@ -99,7 +99,7 @@
                         </template>
                         <template is="dom-if" if="[[_selectedColumn.type]]">
                             <actindo-combobox
-                                label="Relation"
+                                label="[[__L('actindogrid.relation', 'Relation')]]"
                                 items="[[_operators]]"
                                 display-field="name"
                                 value-field="value"
@@ -119,7 +119,7 @@
 
     <script>
 
-        class ActindoGridFilterEdit extends Polymer.Element {
+        class ActindoGridFilterEdit extends Actindo.Element {
             static get is() { return 'actindo-grid-filter-edit'; }
 
             static get properties() {
@@ -448,9 +448,9 @@
             {
                 if (this.editing)
                 {
-                    return 'Apply';
+                    return this.__L('actindogrid.apply', 'Apply');
                 }
-                return 'Add';
+                return this.__L('actindogrid.add', 'Add');
             }
 
             /**

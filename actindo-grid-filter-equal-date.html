@@ -10,7 +10,7 @@
         </style>
         <div class="container">
             <actindo-date-picker
-                label="Select date"
+                label="[[__L('actindogrid.select_date', 'Select date')]]"
                 id="datepicker"
                 value="{{displayValue}}"
                 on-date-object-changed="_onDateSelect"
@@ -19,7 +19,7 @@
     </template>
 
     <script>
-        class ActindoGridFilterEqualDate extends Polymer.Element {
+        class ActindoGridFilterEqualDate extends Actindo.Element {
             static get is() { return 'actindo-grid-filter-equal-date'; }
 
             static get properties() {

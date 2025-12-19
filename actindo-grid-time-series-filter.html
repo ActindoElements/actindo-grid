@@ -57,20 +57,19 @@
                 <div>
                     <actindo-date-picker
                         id="manualFrom"
-                        label="From"
+                        label="[[__L('actindogrid.from', 'From')]]"
                         format="YYYY-MM-DD HH:mm:ss"
                         always-float-label
                     >
                     </actindo-date-picker>
                     <actindo-date-picker
                         id="manualTo"
-                        label="To"
+                        label="[[__L('actindogrid.to', 'To')]]"
                         format="YYYY-MM-DD HH:mm:ss"
                         always-float-label
                     >
                     </actindo-date-picker>
-                    <paper-button on-tap="_onApplyRangeTapped"
-                        >Apply range</paper-button
+                    <paper-button on-tap="_onApplyRangeTapped">[[__L('actindogrid.apply_range', 'Apply range')]]</paper-button
                     >
                 </div>
                 <div>
@@ -79,13 +78,13 @@
                         on-selected-item-changed="_onSelectPreset"
                         selected="[[selectInitialPreset]]"
                     >
-                        <paper-item data-span="900" data-start="now-15m" data-end="now">Last 15 minutes</paper-item>
-                        <paper-item data-span="3600"  data-start="now-1h" data-end="now">Last 1 hour</paper-item>
-                        <paper-item data-span="10800" data-start="now-3h" data-end="now">Last 3 hours</paper-item>
-                        <paper-item data-span="21600" data-start="now-6h" data-end="now">Last 6 hours</paper-item>
-                        <paper-item data-span="43200" data-start="now-12h" data-end="now">Last 12 hours</paper-item>
-                        <paper-item data-span="86400" data-start="now-1d" data-end="now">Last 24 hours</paper-item>
-                        <paper-item data-span="172800" data-start="now-2d" data-end="now">Last 2 days</paper-item>
+                        <paper-item data-span="900" data-start="now-15m" data-end="now">[[__L('actindogrid.last_15_minutes', 'Last 15 minutes')]]</paper-item>
+                        <paper-item data-span="3600"  data-start="now-1h" data-end="now">[[__L('actindogrid.last_1_hour', 'Last 1 hour')]]</paper-item>
+                        <paper-item data-span="10800" data-start="now-3h" data-end="now">[[__L('actindogrid.last_3_hours', 'Last 3 hours')]]</paper-item>
+                        <paper-item data-span="21600" data-start="now-6h" data-end="now">[[__L('actindogrid.last_6_hours', 'Last 6 hours')]]</paper-item>
+                        <paper-item data-span="43200" data-start="now-12h" data-end="now">[[__L('actindogrid.last_12_hours', 'Last 12 hours')]]</paper-item>
+                        <paper-item data-span="86400" data-start="now-1d" data-end="now">[[__L('actindogrid.last_24_hours', 'Last 24 hours')]]</paper-item>
+                        <paper-item data-span="172800" data-start="now-2d" data-end="now">[[__L('actindogrid.last_2_days', 'Last 2 days')]]</paper-item>
                     </paper-listbox>
                 </div>
             </div>
@@ -96,7 +95,7 @@
         // DateMathUtils lib
         !function(e,t){"object"==typeof exports&&"object"==typeof module?module.exports=t(require("moment")):"function"==typeof define&&define.amd?define(["moment"],t):"object"==typeof exports?exports.DateMathUtils=t(require("moment")):e.DateMathUtils=t(e.moment)}(self,(e=>(()=>{"use strict";var t={416:t=>{t.exports=e},447:(e,t,r)=>{Object.defineProperty(t,"__esModule",{value:!0}),t.default=void 0;var n,o=(n=r(416))&&n.__esModule?n:{default:n};function i(e){return function(e){if(Array.isArray(e))return a(e)}(e)||function(e){if("undefined"!=typeof Symbol&&Symbol.iterator in Object(e))return Array.from(e)}(e)||function(e,t){if(e){if("string"==typeof e)return a(e,t);var r=Object.prototype.toString.call(e).slice(8,-1);return"Object"===r&&e.constructor&&(r=e.constructor.name),"Map"===r||"Set"===r?Array.from(r):"Arguments"===r||/^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(r)?a(e,t):void 0}}(e)||function(){throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.")}()}function a(e,t){(null==t||t>e.length)&&(t=e.length);for(var r=0,n=new Array(t);r<t;r++)n[r]=e[r];return n}var s={ms:{weight:1,type:"fixed",base:1},s:{weight:2,type:"fixed",base:1e3},m:{weight:3,type:"mixed",base:6e4},h:{weight:4,type:"mixed",base:36e5},d:{weight:5,type:"mixed",base:864e5},w:{weight:6,type:"calendar",base:NaN},M:{weight:7,type:"calendar",base:NaN},y:{weight:9,type:"calendar",base:NaN}},u=Object.keys(s).sort((function(e,t){return s[t].weight-s[e].weight})),f=i(u),d=i(u).reverse(),c=function(e){return"[object Date]"===Object.prototype.toString.call(e)},l={parse:function(e){var t=arguments.length>1&&void 0!==arguments[1]?arguments[1]:{},r=t.roundUp,n=void 0!==r&&r,i=t.momentInstance,a=void 0===i?o.default:i,s=t.forceNow;if(e){if(a.isMoment(e))return e;if(c(e))return a(e);if(void 0!==s&&(!c(f=s)||isNaN(f.valueOf())))throw new Error("forceNow must be a valid Date");var f,d,l,p,b="";return"now"===e.substring(0,3)?(d=a(s),b=e.substring(3)):(-1===(l=e.indexOf("||"))?(p=e,b=""):(p=e.substring(0,l),b=e.substring(l+2)),d=a(p)),b.length?function(e,t,r){for(var n=t,o=e.length,i=0;i<o;){var a=e.charAt(i++),s=void 0,f=void 0,d=void 0;if("/"===a)s=0;else if("+"===a)s=1;else{if("-"!==a)return;s=2}if(isNaN(e.charAt(i)))f=1;else if(2===e.length)f=e.charAt(i);else{for(var c=i;!isNaN(e.charAt(i));)if(++i>=o)return;f=parseInt(e.substring(c,i),10)}if(0===s&&1!==f)return;d=e.charAt(i++);for(var l=i;l<o;l++){var p=e.charAt(i);if(!/[a-z]/i.test(p))break;d+=p,i++}if(-1===u.indexOf(d))return;0===s?r?n.endOf(d):n.startOf(d):1===s?n.add(f,d):2===s&&n.subtract(f,d)}return n}(b,d,n):d}},unitsMap:Object.freeze(s),units:Object.freeze(u),unitsAsc:Object.freeze(d),unitsDesc:Object.freeze(f)};t.default=l,e.exports=t.default}},r={};function n(e){var o=r[e];if(void 0!==o)return o.exports;var i=r[e]={exports:{}};return t[e](i,i.exports,n),i.exports}n.n=e=>{var t=e&&e.__esModule?()=>e.default:()=>e;return n.d(t,{a:t}),t},n.d=(e,t)=>{for(var r in t)n.o(t,r)&&!n.o(e,r)&&Object.defineProperty(e,r,{enumerable:!0,get:t[r]})},n.o=(e,t)=>Object.prototype.hasOwnProperty.call(e,t),n.r=e=>{"undefined"!=typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})};var o={};n.r(o),n.d(o,{parseDateMath:()=>s});var i=n(447),a=n.n(i);function s(e){const t=a().parse(e);return t?.isValid?.()?t.toISOString():null}return o})()));
 
-        class ActindoGridTimeSeriesFilter extends Polymer.Element {
+        class ActindoGridTimeSeriesFilter extends Actindo.Element {
             /**
              * Polymer custom element for selecting a time series range.
              *
@@ -260,10 +259,7 @@
                 if (to.diff(from, "days", true) > this.maximumTimeRangeDays) {
                     this.$.manualTo.setProperties({
                         invalid: true,
-                        _errorMessage:
-                            "Range too large, max. " +
-                            this.maximumTimeRangeDays +
-                            "d",
+                        _errorMessage: this.__L('actindogrid.error_range_too_large', 'Range too large, max. {0}d', this.maximumTimeRangeDays),
                     });
                     return;
                 }

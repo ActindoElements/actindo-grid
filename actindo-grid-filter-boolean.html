@@ -7,7 +7,7 @@
         <paper-toggle-button checked="{{checked}}"></paper-toggle-button>
     </template>
     <script>
-        class ActindoGridFilterBoolean extends Polymer.Element
+        class ActindoGridFilterBoolean extends Actindo.Element
         {
             static get is()
             {
@@ -35,7 +35,7 @@
 
             getDisplayValue(value)
             {
-                return value ? "true" : "false";
+                return value ? this.__L('actindogrid.true', 'true') : this.__L('actindogrid.false', 'false');
             }
         }
         customElements.define( ActindoGridFilterBoolean.is, ActindoGridFilterBoolean )
